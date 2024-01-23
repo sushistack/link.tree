@@ -1,15 +1,14 @@
 package com.sushistack.linkstacker.config.log
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
-import org.springframework.boot.test.context.SpringBootTest
 
-class LoggingAspectTest {
-    @Log
-    private lateinit var log: Logger
+private val log = KotlinLogging.logger {}
+
+class LoggingTest {
 
     @Test
     fun testLogging() {
-        log.info("TEST")
+        log.info { "info Test" }
     }
 }

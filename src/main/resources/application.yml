@@ -1,1 +1,7 @@
-spring.application.name=link.stacker
+spring:
+  application.name: link.stacker
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/link_stack
