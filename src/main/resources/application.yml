@@ -1,7 +1,15 @@
 spring:
   application.name: link.stacker
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/link_stack
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=UTC
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL8Dialect
+    batch:
+      initialize-schema: always

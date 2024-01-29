@@ -1,5 +1,5 @@
 package com.sushistack.linkstacker.model.git
 
 enum class HostingService {
-    GITHUB, GITLAB, BITBUCKET
+    GITHUB, GITLAB, BITBUCKET, UNKNOWN
 }

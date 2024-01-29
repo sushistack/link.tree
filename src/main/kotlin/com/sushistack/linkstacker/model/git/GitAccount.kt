@@ -1,11 +1,23 @@
 package com.sushistack.linkstacker.model.git
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
+import jakarta.persistence.*
 
-@Document("git_account")
+@Entity
+@Table(name = "ls_git_account")
 class GitAccount(
-    @Id val id: String? = null,
-    val username: String,
-    val hostingService: HostingService
-)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "git_account_seq", nullable = false)
+    val accountSeq: Long = 0,
+
+    @Column(name = "username", nullable = false)
+    val username: String = "",
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "hosting_service", nullable = false)
+    val hostingService: HostingService = HostingService.UNKNOWN
+) {
+    companion object {
+        fun empty() = GitAccount(0, "", HostingService.UNKNOWN)
+    }
+}
