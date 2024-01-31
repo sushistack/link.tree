@@ -1,8 +1,9 @@
-package com.sushistack.linkstacker.model.link
+package com.sushistack.linkstacker.entity.link
 
-import com.sushistack.linkstacker.model.content.Post
-import com.sushistack.linkstacker.model.git.GitRepository
-import com.sushistack.linkstacker.model.order.Order
+import com.sushistack.linkstacker.entity.BaseTimeEntity
+import com.sushistack.linkstacker.entity.content.Post
+import com.sushistack.linkstacker.entity.git.GitRepository
+import com.sushistack.linkstacker.entity.order.Order
 import jakarta.persistence.*
 
 @Entity
@@ -13,23 +14,23 @@ class LinkNode (
     @Column(name = "link_node_id", nullable = false)
     val nodeSeq: Long = 0,
 
-    @Column(name = "link_node_id", nullable = false)
+    @Column(name = "tier", nullable = false)
     val tier: Int = 0,
 
-    @Column(name = "link_node_id", nullable = false)
+    @Column(name = "url", nullable = false)
     val url: String = "",
 
-    @OneToOne
-    @Column(name = "repository", nullable = false)
-    val repository: GitRepository = GitRepository.empty(),
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "git_repo_seq", nullable = false)
+    val repository: GitRepository = GitRepository(),
 
-    @OneToOne
-    @Column(name = "post", nullable = false)
-    val post: Post = Post.empty(),
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_seq", nullable = false)
+    val post: Post = Post(),
 
-    @OneToOne
-    @Column(name = "order", nullable = false)
-    val order: Order = Order.empty(),
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_seq", nullable = false)
+    val order: Order = Order(),
 
     val parentNodeSeq: Long? = null
-)
+): BaseTimeEntity()

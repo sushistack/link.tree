@@ -1,5 +1,6 @@
-package com.sushistack.linkstacker.model.publisher
+package com.sushistack.linkstacker.entity.publisher
 
+import com.sushistack.linkstacker.entity.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
@@ -12,4 +13,4 @@ class Comment (
 
     @Column(name = "post_url", nullable = false)
     val postUrl: String = ""
-)
+): BaseTimeEntity()

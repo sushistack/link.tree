@@ -1,5 +1,6 @@
-package com.sushistack.linkstacker.model.git
+package com.sushistack.linkstacker.entity.git
 
+import com.sushistack.linkstacker.entity.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
@@ -7,17 +8,13 @@ import jakarta.persistence.*
 class GitRepository (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "git_repo_seq", nullable = false)
+    @Column(name = "repository_seq", nullable = false)
     val repositorySeq: Long = 0,
 
-    @Column(name = "repo_name", nullable = false)
+    @Column(name = "repository_name", nullable = false)
     val repositoryName: String = "",
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
-    val gitAccount: GitAccount = GitAccount.empty()
-) {
-    companion object {
-        fun empty() = GitRepository()
-    }
-}
+    val gitAccount: GitAccount = GitAccount()
+): BaseTimeEntity()

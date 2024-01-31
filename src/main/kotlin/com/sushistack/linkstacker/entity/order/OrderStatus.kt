@@ -1,4 +1,4 @@
-package com.sushistack.linkstacker.model.order
+package com.sushistack.linkstacker.entity.order
 
 enum class OrderStatus {
     READY, STAGED, PROCESSING, DONE

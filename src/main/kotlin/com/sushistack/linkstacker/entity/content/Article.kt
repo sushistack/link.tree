@@ -1,4 +1,4 @@
-package com.sushistack.linkstacker.model.content
+package com.sushistack.linkstacker.entity.content
 
 data class Article (
     val title: String,

@@ -1,4 +1,4 @@
-package com.sushistack.linkstacker.model.git
+package com.sushistack.linkstacker.entity.git
 
 enum class HostingService {
     GITHUB, GITLAB, BITBUCKET, UNKNOWN

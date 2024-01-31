@@ -1,25 +1,23 @@
-package com.sushistack.linkstacker.model.content
+package com.sushistack.linkstacker.entity.content
 
+import com.sushistack.linkstacker.entity.BaseTimeEntity
+import com.sushistack.linkstacker.entity.publisher.StaticWebpage
 import jakarta.persistence.*
 
 @Entity
 class Post (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "post_seq", nullable = false)
+    @Column(name = "post_seq", nullable = false)
     val postSeq: Long = 0,
 
-    @Column(columnDefinition = "file_path", nullable = false)
+    @Column(name = "file_path", nullable = false)
     val filePath: String = "",
 
-    @Column(columnDefinition = "file_name", nullable = false)
+    @Column(name = "file_name", nullable = false)
     val fileName: String = "",
 
-    @Column(columnDefinition = "publister_id", nullable = false)
-    val publisherId: String = ""
-) {
-    companion object {
-        fun empty() = Post()
-    }
-
-}
+    @OneToOne
+    @JoinColumn(name = "webpage_seq", nullable = false)
+    val webpage: StaticWebpage = StaticWebpage(),
+): BaseTimeEntity()

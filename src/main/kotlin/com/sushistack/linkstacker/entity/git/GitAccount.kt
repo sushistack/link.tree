@@ -1,5 +1,6 @@
-package com.sushistack.linkstacker.model.git
+package com.sushistack.linkstacker.entity.git
 
+import com.sushistack.linkstacker.entity.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
@@ -15,9 +16,8 @@ class GitAccount(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "hosting_service", nullable = false)
-    val hostingService: HostingService = HostingService.UNKNOWN
-) {
-    companion object {
-        fun empty() = GitAccount(0, "", HostingService.UNKNOWN)
-    }
-}
+    val hostingService: HostingService = HostingService.UNKNOWN,
+
+    @OneToMany(mappedBy = "gitAccount")
+    val gitRepositories: List<GitRepository> = mutableListOf()
+): BaseTimeEntity()
