@@ -1,9 +1,9 @@
 spring:
   application.name: link.stacker
   datasource:
-    url: jdbc:mysql://localhost:3306/mydatabase?useSSL=false&serverTimezone=UTC
-    username: root
-    password: password
+    url: ENC(ee7cMsD+CoBwHYupjSHlSD5SpJFVroLAMfCYK5yerLs49r+78ha6uZkjPQDQ1BAWc0cJ+s8sEFuP/o74A4veOSNIlNfKSaBLNm6dlRsg0AAsRW8Zs9lUB8+vhtGNokPqzk1FRP2vxYakkGPZvSA4rdcu6b8CmZSAGC8t7Hqnt7dvYopNl3lRHWfjswV4GcA/)
+    username: ENC(5HcBakGuQmsvLhEtcwYbPotxqEoN5Z3h)
+    password: ENC(SH9imB3zUHRqx7YMeSJfRP4Lw8DhSTszPmg82pQ17S4=)
     driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
       hibernate:
@@ -11,5 +11,20 @@ spring:
       properties:
         hibernate:
           dialect: org.hibernate.dialect.MySQL8Dialect
-    batch:
+  batch:
+    jdbc:
       initialize-schema: always
+  sql.init.mode: always
+
+jasypt:
+  encryptor:
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+    algorithm: PBEWithMD5AndDES
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.boot.autoconfigure.logging: INFO
+    org.hibernate.type: INFO
+    org.hibernate.boot.model: INFO
+    org.hibernate.query.sqm: INFO
