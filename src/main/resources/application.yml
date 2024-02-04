@@ -5,16 +5,11 @@ spring:
     username: ENC(5HcBakGuQmsvLhEtcwYbPotxqEoN5Z3h)
     password: ENC(SH9imB3zUHRqx7YMeSJfRP4Lw8DhSTszPmg82pQ17S4=)
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-      hibernate:
-        ddl-auto: update
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.MySQL8Dialect
+  jpa:
+    hibernate.ddl-auto: update
   batch:
-    jdbc:
-      initialize-schema: always
-  sql.init.mode: always
+    jdbc.initialize-schema: embedded
+    job.name: simpleJob
 
 jasypt:
   encryptor:
@@ -23,7 +18,7 @@ jasypt:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
     org.springframework.boot.autoconfigure.logging: INFO
     org.hibernate.type: INFO
     org.hibernate.boot.model: INFO
