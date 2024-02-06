@@ -11,6 +11,17 @@ spring:
     jdbc.initialize-schema: embedded
     job.name: simpleJob
 
+feign:
+  client:
+    config:
+      postClient:
+        connectTimeout: 5000
+        readTimeout: 5000
+        retryer:
+          period: 100
+          maxPeriod: 1000
+          maxAttempts: 3
+
 jasypt:
   encryptor:
     password: ${JASYPT_ENCRYPTOR_PASSWORD:}

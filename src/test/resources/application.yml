@@ -8,9 +8,28 @@ spring:
   jpa:
     hibernate.ddl-auto: create
     database-platform: org.hibernate.dialect.MySQL8Dialect
-  batch.jdbc.initialize-schema: always
+  batch:
+    jdbc.initialize-schema: always
+    job.enabled: false
+
+feign:
+  client:
+    config:
+      postClient:
+        connectTimeout: 5000
+        readTimeout: 5000
+        retryer:
+          period: 100
+          maxPeriod: 1000
+          maxAttempts: 3
 
 jasypt:
   encryptor:
     password: ${JASYPT_ENCRYPTOR_PASSWORD:}
     algorithm: PBEWithMD5AndDES
+
+# for test
+test:
+  bitbucket:
+    username: ENC(bqrGGG2PBPEI14By3gRAxgFvf4rhoxS+P9Gzdb66FCM=)
+    app-password: ENC(MCNjbmBF1ftN7kU7Lgenq9fJUnELjKJ2wDLx1o3qg/4dcjlCesiabu8EIm/xYMa4AEmGKbypybY=)

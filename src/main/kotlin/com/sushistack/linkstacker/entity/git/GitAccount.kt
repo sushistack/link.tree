@@ -1,7 +1,9 @@
 package com.sushistack.linkstacker.entity.git
 
 import com.sushistack.linkstacker.entity.BaseTimeEntity
+import com.sushistack.linkstacker.model.common.enums.AuthorizationScheme
 import jakarta.persistence.*
+import java.util.Base64
 
 @Entity
 @Table(name = "ls_git_account")
@@ -14,10 +16,19 @@ class GitAccount(
     @Column(name = "username", nullable = false)
     val username: String = "",
 
+    @Column(name = "appPassword", nullable = false)
+    val appPassword: String = "",
+
     @Enumerated(EnumType.STRING)
     @Column(name = "hosting_service", nullable = false)
     val hostingService: HostingService = HostingService.UNKNOWN,
 
     @OneToMany(mappedBy = "gitAccount")
     val gitRepositories: List<GitRepository> = mutableListOf()
-): BaseTimeEntity()
+): BaseTimeEntity() {
+
+    fun getAuthorization(authScheme: AuthorizationScheme = AuthorizationScheme.BASIC): String =
+        Base64.getEncoder()
+            .encodeToString("${this.username}:${this.appPassword}".toByteArray())
+            .also { "$authScheme $it" }
+}
