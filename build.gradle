@@ -53,6 +53,19 @@ kotlin {
     }
 }
 
+ext {
+    jasyptPassword = 'x5wqTmHhHjIjaZJ5OdRHkNTQp'
+}
+
+tasks.named('processResources') {
+    expand(project.properties)
+}
+
+tasks.named('processTestResources') {
+    print("properties := ${project.properties}")
+    expand(project.properties)
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }

@@ -24,7 +24,7 @@ feign:
 
 jasypt:
   encryptor:
-    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+    password: ${jasyptPassword}
     algorithm: PBEWithMD5AndDES
 
 logging:
