@@ -1,29 +1,54 @@
 package com.sushistack.linkstacker.external.excel
 
+import com.sushistack.linkstacker.external.excel.config.ExcelColumn
 import com.sushistack.linkstacker.external.excel.model.ExcelSheet
-import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.formula.functions.T
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.file.Path
+import kotlin.reflect.KClass
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 class ExcelUtil {
     companion object {
-        private fun <T> createRowAsString(excelSheet: Sheet, dataRows: List<T>, rowNum: Int): Row =
-            excelSheet.createRow(rowNum).also {
-                for (i in dataRows.indices) {
+        private fun <T: Any> setHeaderRow(excelSheet: Sheet, clazz: KClass<T>) {
+            val columns = clazz.declaredMemberProperties
+                .sortedBy { it.annotations.filterIsInstance<ExcelColumn>().firstOrNull()?.order ?: Int.MAX_VALUE }
+                .map { prop -> prop.findAnnotation<ExcelColumn>()?.name ?: prop.name }
+
+            excelSheet.createRow(0).also {
+                for (i in columns.indices) {
                     val cell = it.createCell(i)
-                    cell.setCellValue(dataRows[i].toString())
+                    cell.setCellValue(columns[i])
                 }
             }
+        }
 
-        private fun <T> createHeaderRow(excelSheet: Sheet, columns: List<T>, rowNum: Int = 0): Row =
-            createRowAsString(excelSheet, columns, rowNum)
+        private fun <T: Any> setDataRows(excelSheet: Sheet, dataRows: List<T>) {
+            dataRows.mapIndexed { index, row ->
+                excelSheet.createRow(index + 1).also {
 
-        private fun save(workbook: Workbook, filePath: String) {
+                    val memberValues = row::class.memberProperties
+                        .sortedBy { prop -> prop.annotations.filterIsInstance<ExcelColumn>().firstOrNull()?.order ?: Int.MAX_VALUE }
+                        .map { prop -> prop.getter.call(row) }
+
+                    for (i in memberValues.indices) {
+                        val cell = it.createCell(i)
+                        cell.setCellValue(memberValues[i].toString())
+                    }
+                }
+            }
+        }
+
+
+        private fun save(workbook: Workbook, filePath: Path) {
             try {
-                FileOutputStream(filePath).use { outputStream ->
+                FileOutputStream(filePath.toFile()).use { outputStream ->
                     workbook.write(outputStream)
                 }
             } catch (e: IOException) {
@@ -33,16 +58,14 @@ class ExcelUtil {
             }
         }
 
-        fun <T> writeExcel(excelSheets: List<ExcelSheet<T>>, filePath: String) {
+        fun <T: Any> writeExcel(sheets: List<ExcelSheet<T>>, filePath: Path) {
             val workbook: Workbook = XSSFWorkbook()
 
-            for (sheet in excelSheets) {
+            for (sheet in sheets) {
                 val excelSheet = workbook.createSheet(sheet.name)
 
-                createHeaderRow(excelSheet, sheet.columns)
-                for (rowIndex in sheet.rows.indices) {
-                    createRowAsString(excelSheet, sheet.rows, rowIndex + 1)
-                }
+                setHeaderRow(excelSheet, sheet.rows[0]::class)
+                setDataRows(excelSheet, sheet.rows)
             }
 
             save(workbook, filePath)
