@@ -2,7 +2,6 @@ package com.sushistack.linkstacker.external.excel
 
 import com.sushistack.linkstacker.external.excel.config.ExcelColumn
 import com.sushistack.linkstacker.external.excel.model.ExcelSheet
-import org.apache.poi.ss.formula.functions.T
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
