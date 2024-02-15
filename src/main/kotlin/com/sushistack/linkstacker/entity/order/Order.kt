@@ -19,6 +19,9 @@ class Order (
     @Column(name = "target_url", nullable = false)
     val targetUrl: String = "",
 
+    @Column(name = "customer_name", nullable = false)
+    val customerName: String = "",
+
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
     val orderStatus: OrderStatus = OrderStatus.READY,
