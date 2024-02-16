@@ -54,10 +54,6 @@ kotlin {
     }
 }
 
-ext {
-    jasyptPassword = 'x5wqTmHhHjIjaZJ5OdRHkNTQp'
-}
-
 tasks.named('processResources') {
     expand(project.properties)
 }
