@@ -1,10 +1,8 @@
 package com.sushistack.linkstacker.config.log
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import com.sushistack.linkstacker.log
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
-
-private val log = KotlinLogging.logger {}
 
 @SpringBootTest
 class LoggingTest {

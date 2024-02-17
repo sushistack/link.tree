@@ -1,5 +1,6 @@
 package com.sushistack.linkstacker.config
 
+import com.sushistack.linkstacker.log
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jasypt.encryption.StringEncryptor
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,8 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource
 
 @SpringBootTest
 class JasyptTest {
-
-    private val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var stringEncryptor: StringEncryptor

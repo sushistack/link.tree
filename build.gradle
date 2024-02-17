@@ -54,12 +54,10 @@ kotlin {
     }
 }
 
-tasks.named('processResources') {
-    expand(project.properties)
-}
-
 tasks.named('processTestResources') {
-    expand(project.properties)
+    filesMatching('application.yml') {
+        expand("jasyptPassword": project.findProperty("jasypt.encryptor.password"))
+    }
 }
 
 tasks.named('test') {

@@ -28,7 +28,7 @@ class GitAccount(
 ): BaseTimeEntity() {
 
     fun getAuthorization(authScheme: AuthorizationScheme = AuthorizationScheme.BASIC): String =
+        "$authScheme " +
         Base64.getEncoder()
             .encodeToString("${this.username}:${this.appPassword}".toByteArray())
-            .also { "$authScheme $it" }
 }

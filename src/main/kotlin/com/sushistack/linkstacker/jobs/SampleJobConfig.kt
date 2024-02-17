@@ -1,6 +1,6 @@
 package com.sushistack.linkstacker.jobs
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import com.sushistack.linkstacker.log
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -11,8 +11,6 @@ import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.orm.jpa.JpaTransactionManager
-
-private val log = KotlinLogging.logger {}
 
 @Configuration
 class SampleJobConfig{

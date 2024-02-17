@@ -2,10 +2,7 @@ package com.sushistack.linkstacker.service
 
 import com.sushistack.linkstacker.entity.order.Order
 import com.sushistack.linkstacker.repository.order.OrderRepository
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
-
-val log = KotlinLogging.logger {}
 
 @Service
 class OrderService(private val orderRepository: OrderRepository) {
