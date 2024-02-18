@@ -2,9 +2,7 @@ package com.sushistack.linkstacker.config.log
 
 import com.sushistack.linkstacker.log
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class LoggingTest {
 
     @Test
