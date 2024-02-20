@@ -1,9 +1,9 @@
 spring:
   application.name: link.stacker
   datasource:
-    url: ENC(ee7cMsD+CoBwHYupjSHlSD5SpJFVroLAMfCYK5yerLs49r+78ha6uZkjPQDQ1BAWc0cJ+s8sEFuP/o74A4veOSNIlNfKSaBLNm6dlRsg0AAsRW8Zs9lUB8+vhtGNokPqzk1FRP2vxYakkGPZvSA4rdcu6b8CmZSAGC8t7Hqnt7dvYopNl3lRHWfjswV4GcA/)
-    username: ENC(5HcBakGuQmsvLhEtcwYbPotxqEoN5Z3h)
-    password: ENC(SH9imB3zUHRqx7YMeSJfRP4Lw8DhSTszPmg82pQ17S4=)
+    url: ENC(awEWgbb1L1yQ2yfsO/QMtE3phdQ6mLPtM9aeYeRyWFMY71rGwSmQHxzYNomEvGHZXFiSsu5mRoYmQno0E5yo1LG8rziGe2wbzprYFS0IwqN7Pvm5rTKKIOatVrkczBXkGBY98cSMFsY7bt688JeDSJEqCczhkmz07mV4m92zIWzYtzs6swPtZrHzUYalqMy0)
+    username: ENC(CqR5l09/l73ZsBLN91OL+Mp+12Kmlw+D)
+    password: ENC(jTPup2V27WdgNkLX8iped/mRWB3+PwLusG+Ecqr4nqU=)
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate.ddl-auto: create

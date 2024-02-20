@@ -5,15 +5,12 @@ import com.sushistack.linkstacker.entity.order.OrderStatus
 import com.sushistack.linkstacker.entity.order.OrderType
 import com.sushistack.linkstacker.log
 import org.junit.jupiter.api.BeforeEach
-
 import org.junit.jupiter.api.DisplayName
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Profile
 import org.springframework.test.annotation.Rollback
 import kotlin.test.Test
 
-@Profile("test")
 @SpringBootTest
 @Rollback(value = true)
 class OrderServiceTest {

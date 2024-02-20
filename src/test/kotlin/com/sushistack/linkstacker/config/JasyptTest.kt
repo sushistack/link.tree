@@ -1,13 +1,12 @@
 package com.sushistack.linkstacker.config
 
 import com.sushistack.linkstacker.log
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.jasypt.encryption.StringEncryptor
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.assertj.core.api.Assertions
+import org.jasypt.encryption.StringEncryptor
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class JasyptTest {
