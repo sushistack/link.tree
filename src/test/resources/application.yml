@@ -31,5 +31,5 @@ jasypt:
 # for test
 test:
   bitbucket:
-    username: ENC(bqrGGG2PBPEI14By3gRAxgFvf4rhoxS+P9Gzdb66FCM=)
-    app-password: ENC(MCNjbmBF1ftN7kU7Lgenq9fJUnELjKJ2wDLx1o3qg/4dcjlCesiabu8EIm/xYMa4AEmGKbypybY=)
+    username: ENC(R/zYZt2Fi7FwWkLRC7KPEU3qC9FV/1qMgDHADZTl8Bc=)
+    app-password: ENC(TCgsIZrdInsso9ZNZYdPnkUytqujMQdqRZYMw+NDk9uvMUt+yo8wvN1CYjUeiy1ZXvjdlgdapis=)
