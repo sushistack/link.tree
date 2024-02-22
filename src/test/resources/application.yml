@@ -1,5 +1,5 @@
 spring:
-  application.name: link.stacker
+  application.name: link.tree
   datasource:
     url: ENC(awEWgbb1L1yQ2yfsO/QMtE3phdQ6mLPtM9aeYeRyWFMY71rGwSmQHxzYNomEvGHZXFiSsu5mRoYmQno0E5yo1LG8rziGe2wbzprYFS0IwqN7Pvm5rTKKIOatVrkczBXkGBY98cSMFsY7bt688JeDSJEqCczhkmz07mV4m92zIWzYtzs6swPtZrHzUYalqMy0)
     username: ENC(CqR5l09/l73ZsBLN91OL+Mp+12Kmlw+D)
