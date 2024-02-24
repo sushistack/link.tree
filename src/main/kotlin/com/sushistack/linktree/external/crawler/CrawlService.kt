@@ -16,11 +16,14 @@ import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.article
 import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.articleTitleSelector
 import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.searchUrl
 import com.sushistack.linktree.external.crawler.model.Article
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 import java.io.FileOutputStream
 import java.nio.file.Paths
 
 class CrawlService {
+
+    private val log = KotlinLogging.logger {}
 
     fun crawlArticles(keywords: List<String>) {
         Playwright.create().use { playwright ->
@@ -32,14 +35,27 @@ class CrawlService {
                 Browser.NewPageOptions().setUserAgent(PC_UA)
             )
 
+            var articleNumbers = 0
             for (keyword in keywords) {
                 for (pageNumber in 1..MAX_PAGE) {
-                    page.navigate(searchUrl(keyword, pageNumber))
+                    try {
+                        page.navigate(searchUrl(keyword, pageNumber))
+                    } catch (e: Exception) {
+                        log.error(e) { "Page navigate failed!" }
+                        continue
+                    }
                     val articleCards = page.locator(articleCardsSelector).all()
-
+                    log.info { "keyword := [$keyword], page := [${pageNumber}], article.size := [${articleCards.size}]" }
                     for (articleCard in articleCards) {
-                        val titleElement = articleCard.evaluate("el => el.querySelector('${articleTitleSelector}')") as Locator
-                        val descriptionElement = articleCard.evaluate("el => el.querySelector('${articleDescriptionSelector}')") as Locator
+                        var titleElement: Locator
+                        var descriptionElement: Locator
+                        try {
+                            titleElement = articleCard.locator(articleTitleSelector)
+                            descriptionElement = articleCard.locator(articleDescriptionSelector)
+                        } catch (e: Exception) {
+                            log.error(e) { "Element locating failed!" }
+                            continue
+                        }
                         val article = Article(
                             title = titleElement.innerText(),
                             description = descriptionElement.innerText(),
@@ -48,10 +64,18 @@ class CrawlService {
 
                         if (article.content.split(" ").size > MIN_WORDS) {
                             val articleJson = Json.encodeToString(Article.serializer(), article)
-                            val file = Paths.get("files/articles/$keyword/$pageNumber.json").toFile()
+                            val file = Paths.get("files/articles/$keyword/${articleNumbers++}.json").toFile()
+                            file.parentFile?.let { parentDir ->
+                                if (!parentDir.exists()) {
+                                    parentDir.mkdirs()
+                                }
+                            }
                             FileOutputStream(file).use { outputStream ->
                                 outputStream.write(articleJson.toByteArray())
                             }
+                            log.info { "Saved article successfully!" }
+                        } else {
+                            log.info { "Skip saving Article." }
                         }
                     }
                 }
@@ -60,7 +84,7 @@ class CrawlService {
         }
     }
 
-    private fun crawlArticle(url: String): String {
+    fun crawlArticle(url: String): String {
         var content = ""
         Playwright.create().use { playwright ->
             val browser = playwright.chromium().launch(
@@ -71,15 +95,20 @@ class CrawlService {
                 Browser.NewPageOptions().setUserAgent(MOBILE_UA)
             )
 
-            page.navigate(url)
-            for (selector in articleSelectors) {
-                val elements = page.locator(selector).all()
-                content = Html2MarkdownConverter.convert(elements)
-                if (content.isNotEmpty()) {
-                    break
+            try {
+                page.navigate(url)
+                for (selector in articleSelectors) {
+                    val elements = page.locator(selector).all()
+                    content = Html2MarkdownConverter.convert(elements)
+                    if (content.isNotEmpty()) {
+                        break
+                    }
                 }
+            } catch (e: Exception) {
+                log.error(e) { "crawl article failed! url := [$url]" }
+            } finally {
+                browser.close()
             }
-            browser.close()
         }
 
         return content

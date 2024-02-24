@@ -9,14 +9,14 @@ class Html2MarkdownConverter {
         fun convert(elements: List<Locator>): String =
             elements.joinToString("") { el ->
                 val tagName = (el.evaluate("el => el.tagName") as String).lowercase()
-                "${head2Hash(tagName, getMinHeadNumber(elements))} ${el.innerText()}\n".trim()
+                "${head2Hash(tagName, getMinHeadNumber(elements))} ${el.innerText()}\n"
             }
 
         private fun head2Hash(tagName: String, minHeadNumber: Int) : String {
-            if (tagName.startsWith('h') && tagName.length == 2) {
+            if (headings.contains(tagName)) {
                 val headNumber = tagName.removePrefix("h").toInt()
                 return if (headNumber >= minHeadNumber) {
-                    "\n#".repeat( headNumber - minHeadNumber + 2)
+                    "\n" + "#".repeat( headNumber - minHeadNumber + 2)
                 } else {
                     ""
                 }
@@ -27,6 +27,6 @@ class Html2MarkdownConverter {
         private fun getMinHeadNumber(elements: List<Locator>): Int =
             elements.map { el -> (el.evaluate("el => el.tagName") as String).lowercase() }
                 .filter { tagName -> headings.contains(tagName) }
-                .minOfOrNull { tagName -> tagName[0].toString().toInt() } ?: 7
+                .minOfOrNull { tagName -> tagName[1].toString().toInt() } ?: 7
     }
 }

@@ -13,7 +13,7 @@ class CrawlVariables {
                 .map { "css=$it h1,$it h2,$it h3,$it h4,$it h5,$it h6,$it p:not(.og-title):not(.og-host):not(.og-desc)" }
         val searchUrl: (String, Int) -> String = { keyword, page -> "https://search.daum.net/search?w=fusion&col=blog&q=${keyword}&DA=TWA&p=${page}" }
         const val articleCardsSelector = "#twcColl .c-item-doc"
-        const val articleTitleSelector = ".tit-g.clamp-g > a"
-        const val articleDescriptionSelector = ".conts-desc.clamp-g > a"
+        const val articleTitleSelector = ".item-title > c-title > strong > a"
+        const val articleDescriptionSelector = ".item-contents c-contents-desc:nth-child(1) > p > a"
     }
 }
