@@ -31,7 +31,7 @@ class CrawlServiceTest {
         }
     }
 
-    @Disabled
+    @Disabled("It is so slow test.")
     @DisplayName("CrawlArticle Test.")
     @ParameterizedTest(name = "[{index}] url = [{0}]")
     @ValueSource(strings = ["https://43in.tistory.com/517", "https://blog.naver.com/dydtmd4/223610605424"])
@@ -39,6 +39,7 @@ class CrawlServiceTest {
         log.info { "content = ${crawlService.crawlArticle(url)}" }
     }
 
+    @Disabled("It is so slow test.")
     @DisplayName("CrawlArticles Test.")
     @ParameterizedTest(name = "[{index}] keyword = [{0}]")
     @MethodSource("keywordsProvider")
