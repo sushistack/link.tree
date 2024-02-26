@@ -1,9 +1,11 @@
 package com.sushistack.linktree.config.log
 
-import com.sushistack.linktree.log
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Test
 
 class LoggingTest {
+
+    val log = KotlinLogging.logger {}
 
     @Test
     fun testLogging() {

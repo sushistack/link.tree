@@ -1,6 +1,6 @@
 package com.sushistack.linktree.config
 
-import com.sushistack.linktree.log
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.Assertions
 import org.jasypt.encryption.StringEncryptor
 import org.junit.jupiter.params.ParameterizedTest
@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class JasyptTest {
+
+    val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var stringEncryptor: StringEncryptor

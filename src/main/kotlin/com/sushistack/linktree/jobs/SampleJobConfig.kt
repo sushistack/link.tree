@@ -1,6 +1,6 @@
 package com.sushistack.linktree.jobs
 
-import com.sushistack.linktree.log
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -14,6 +14,8 @@ import org.springframework.orm.jpa.JpaTransactionManager
 
 @Configuration
 class SampleJobConfig{
+
+    val log = KotlinLogging.logger {}
 
     @Bean
     fun simpleJob1(

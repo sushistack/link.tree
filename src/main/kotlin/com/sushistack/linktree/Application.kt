@@ -1,11 +1,8 @@
 package com.sushistack.linktree
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-
-val log = KotlinLogging.logger {}
+import org.springframework.cloud.openfeign.EnableFeignClients
 
 @EnableFeignClients
 @SpringBootApplication

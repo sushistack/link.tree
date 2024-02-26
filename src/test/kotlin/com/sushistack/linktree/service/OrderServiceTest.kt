@@ -3,7 +3,7 @@ package com.sushistack.linktree.service
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.OrderStatus
 import com.sushistack.linktree.entity.order.OrderType
-import com.sushistack.linktree.log
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +14,8 @@ import kotlin.test.Test
 @SpringBootTest
 @Rollback(value = true)
 class OrderServiceTest {
+
+    val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var orderService: OrderService
