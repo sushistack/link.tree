@@ -11,10 +11,16 @@ class GitRepository (
     @Column(name = "repository_seq", nullable = false)
     val repositorySeq: Long = 0,
 
+    @Column(name = "workspace_name", nullable = false)
+    val workspaceName: String = "",
+
     @Column(name = "repository_name", nullable = false)
     val repositoryName: String = "",
 
+    @Column(name = "domain", nullable = false)
+    val domain: String = "",
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "git_account_seq")
     val gitAccount: GitAccount = GitAccount()
 ): BaseTimeEntity()
