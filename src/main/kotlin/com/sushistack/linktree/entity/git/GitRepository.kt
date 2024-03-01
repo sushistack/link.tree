@@ -17,9 +17,6 @@ class GitRepository (
     @Column(name = "repository_name", nullable = false)
     val repositoryName: String = "",
 
-    @Column(name = "domain", nullable = false)
-    val domain: String = "",
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "git_account_seq")
     val gitAccount: GitAccount = GitAccount()
