@@ -15,6 +15,7 @@ class StaticWebpage (
     @Column(name = "domain", nullable = false)
     val domain: String = "",
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "provider_type", nullable = false)
     val providerType: ServiceProviderType = ServiceProviderType.UNKNOWN,
 
