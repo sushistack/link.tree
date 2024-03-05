@@ -1,6 +1,5 @@
 package com.sushistack.linktree.utils
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.springframework.core.io.ClassPathResource
 import java.nio.charset.StandardCharsets
