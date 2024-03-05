@@ -22,13 +22,13 @@ class ArticleUtils {
         }
 
         fun spinSynonyms(content: String): String {
-            val synonymData = ClassPathResource(SYNONYMS_FILE_PATH)
+            val synonyms = ClassPathResource(SYNONYMS_FILE_PATH)
                 .inputStream.readBytes()
                 .toString(StandardCharsets.UTF_8)
-                .let { Json.decodeFromString<SynonymData>(it) }
+                .let { Json.decodeFromString<List<List<String>>>(it) }
 
             return content.split(" ").joinToString(" ") { word ->
-                for (s in synonymData.synonyms) {
+                for (s in synonyms) {
                     if (s.contains(word)) {
                         return@joinToString s.filter { it != word }.random()
                     }
@@ -38,8 +38,3 @@ class ArticleUtils {
         }
     }
 }
-
-@Serializable
-data class SynonymData (
-    val synonyms: List<List<String>>
-)
