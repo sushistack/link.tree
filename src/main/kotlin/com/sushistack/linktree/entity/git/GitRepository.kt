@@ -4,7 +4,7 @@ import com.sushistack.linktree.entity.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "ls_git_repository")
+@Table(name = "lt_git_repository")
 class GitRepository (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
