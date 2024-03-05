@@ -5,7 +5,7 @@ import com.sushistack.linktree.entity.link.LinkNode
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "ls_order")
+@Table(name = "lt_order")
 class Order (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
