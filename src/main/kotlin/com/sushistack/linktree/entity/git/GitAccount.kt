@@ -6,7 +6,7 @@ import jakarta.persistence.*
 import java.util.Base64
 
 @Entity
-@Table(name = "ls_git_account")
+@Table(name = "lt_git_account")
 class GitAccount(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ class GitAccount(
     @Column(name = "hosting_service", nullable = false)
     val hostingService: HostingService = HostingService.UNKNOWN,
 
-    @OneToMany(mappedBy = "gitAccount")
+    @OneToMany(mappedBy = "gitAccount", fetch = FetchType.LAZY)
     val gitRepositories: List<GitRepository> = mutableListOf()
 ): BaseTimeEntity() {
 
