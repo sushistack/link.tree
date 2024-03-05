@@ -4,7 +4,7 @@ import com.sushistack.linktree.entity.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "ls_comment")
+@Table(name = "lt_comment")
 class Comment (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
