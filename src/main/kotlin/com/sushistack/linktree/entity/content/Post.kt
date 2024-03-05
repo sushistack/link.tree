@@ -5,6 +5,7 @@ import com.sushistack.linktree.entity.publisher.StaticWebpage
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "lt_post")
 class Post (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +18,7 @@ class Post (
     @Column(name = "file_name", nullable = false)
     val fileName: String = "",
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "webpage_seq", nullable = false)
     val webpage: StaticWebpage = StaticWebpage(),
 ): BaseTimeEntity()
