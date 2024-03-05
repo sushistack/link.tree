@@ -1,11 +1,12 @@
 package com.sushistack.linktree.entity.publisher
 
 import com.sushistack.linktree.entity.BaseTimeEntity
+import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.git.GitRepository
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "ls_static_webpage")
+@Table(name = "lt_static_webpage")
 class StaticWebpage (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +22,8 @@ class StaticWebpage (
 
     @OneToOne
     @JoinColumn(name = "git_repo_seq", nullable = false)
-    val repository: GitRepository = GitRepository()
+    val repository: GitRepository = GitRepository(),
+
+    @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)
+    val posts: List<Post> = emptyList()
 ): BaseTimeEntity()
