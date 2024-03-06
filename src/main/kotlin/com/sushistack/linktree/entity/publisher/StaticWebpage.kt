@@ -20,6 +20,9 @@ class StaticWebpage (
     @Column(name = "provider_type", nullable = false)
     val providerType: ServiceProviderType = ServiceProviderType.UNKNOWN,
 
+    @Column(name = "used_count", nullable = false)
+    val usedCount: Int = 0,
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "git_repo_seq", nullable = false)
     val repository: GitRepository = GitRepository(),
