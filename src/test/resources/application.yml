@@ -1,7 +1,7 @@
 spring:
   application.name: link.tree
   datasource:
-    url: ENC(awEWgbb1L1yQ2yfsO/QMtE3phdQ6mLPtM9aeYeRyWFMY71rGwSmQHxzYNomEvGHZXFiSsu5mRoYmQno0E5yo1LG8rziGe2wbzprYFS0IwqN7Pvm5rTKKIOatVrkczBXkGBY98cSMFsY7bt688JeDSJEqCczhkmz07mV4m92zIWzYtzs6swPtZrHzUYalqMy0)
+    url: ENC(XBUSi0SKEwyXcqcBlqZhWMTd60JExrlu3hMVmfppicokOcDbVTas6TzZJbnZshNvrZdLrliLi/GzNG8Jl2SAxTwiSsjxnT23pBNSw3NvygYzDeRX2edYeJ3ZTbMaUX6dh4lSrLiTxzH3R1qqO4YDobQzjF6Kf8wYKdR7KX19vg89AcGqZJEoo+0UJHYohUha)
     username: ENC(CqR5l09/l73ZsBLN91OL+Mp+12Kmlw+D)
     password: ENC(jTPup2V27WdgNkLX8iped/mRWB3+PwLusG+Ecqr4nqU=)
     driver-class-name: com.mysql.cj.jdbc.Driver
