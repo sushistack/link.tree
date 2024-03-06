@@ -6,7 +6,7 @@ spring:
     password: ENC(jTPup2V27WdgNkLX8iped/mRWB3+PwLusG+Ecqr4nqU=)
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL8Dialect
   batch:
     jdbc.initialize-schema: always
