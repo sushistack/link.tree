@@ -12,5 +12,8 @@ class Comment (
     val commentSeq: Long = 0,
 
     @Column(name = "post_url", nullable = false)
-    val postUrl: String = ""
+    val postUrl: String = "",
+
+    @Column(name = "used_count", nullable = false)
+    val usedCount: Int = 0,
 ): BaseTimeEntity()
