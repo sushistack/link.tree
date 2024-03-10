@@ -23,9 +23,8 @@ class StaticWebpage (
     @Column(name = "used_count", nullable = false)
     val usedCount: Int = 0,
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "git_repo_seq", nullable = false)
-    val repository: GitRepository = GitRepository(),
+    @OneToOne(mappedBy = "webpage")
+    val repository: GitRepository? = null,
 
     @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)
     val posts: List<Post> = emptyList()
