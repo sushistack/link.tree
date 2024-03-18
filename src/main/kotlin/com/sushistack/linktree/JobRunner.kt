@@ -1,25 +1,32 @@
 package com.sushistack.linktree
 
+import com.sushistack.linktree.entity.order.OrderType
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
 @Component
 class JobRunner {
+
+    private val log = KotlinLogging.logger {}
+
     @Bean
-    fun runJob(jobLauncher: JobLauncher, job: Job): CommandLineRunner {
+    fun runJob(jobLauncher: JobLauncher, @Qualifier("linkGenerationJob") job: Job): CommandLineRunner {
         return CommandLineRunner {
-            // JobParameters 생성
             val jobParameters = JobParametersBuilder()
-                .addLong("time", System.currentTimeMillis())
+                .addLong("runTime", System.currentTimeMillis())
+                .addString("orderType", OrderType.DELUXE.name)
+                .addString("targetUrl", "https://test.com")
+                .addString("customerName", "고객명")
                 .toJobParameters()
 
-            // Job 실행
             val jobExecution = jobLauncher.run(job, jobParameters)
-            println("Job Status: ${jobExecution.status}")
+            log.info { "Job Status: ${jobExecution.status}" }
         }
     }
 }

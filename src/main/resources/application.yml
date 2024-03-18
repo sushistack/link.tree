@@ -9,7 +9,7 @@ spring:
     hibernate.ddl-auto: update
   batch:
     jdbc.initialize-schema: embedded
-    job.name: simpleJob
+    job.name: linkGenerationJob
 
 feign:
   client:
