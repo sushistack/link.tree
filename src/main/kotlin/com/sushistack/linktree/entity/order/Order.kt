@@ -28,4 +28,6 @@ class Order (
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     val linkNodes: List<LinkNode> = emptyList(),
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    override fun toString(): String = "Order(seq=$orderSeq,type=$orderType,url='$targetUrl',customerName=$customerName,orderStatus=$orderStatus)"
+}
