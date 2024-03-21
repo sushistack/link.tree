@@ -41,7 +41,7 @@ class StaticWebpageServiceTest {
         entityManager.flush()
         entityManager.clear()
 
-        val webpages = staticWebpageService.findStaticWebpages(limit)
+        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.UNKNOWN, limit)
         Assertions.assertThat(webpages).hasSize(expectedSize)
     }
 
