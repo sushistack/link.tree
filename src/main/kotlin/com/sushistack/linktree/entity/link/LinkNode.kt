@@ -21,16 +21,16 @@ class LinkNode (
     val url: String = "",
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "git_repo_seq", nullable = false)
-    val repository: GitRepository = GitRepository(),
+    @JoinColumn(name = "git_repo_seq")
+    val repository: GitRepository? = null,
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_seq", nullable = false)
-    val post: Post = Post(),
+    @JoinColumn(name = "post_seq")
+    val post: Post? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_seq", nullable = false)
-    val order: Order = Order(),
+    @JoinColumn(name = "order_seq")
+    val order: Order? = null,
 
     val parentNodeSeq: Long? = null
 ): BaseTimeEntity()
