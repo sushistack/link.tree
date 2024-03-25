@@ -3,6 +3,7 @@ package com.sushistack.linktree.entity.order
 import com.sushistack.linktree.entity.BaseTimeEntity
 import com.sushistack.linktree.entity.link.LinkNode
 import jakarta.persistence.*
+import kotlinx.serialization.Serializable
 
 @Entity
 @Table(name = "lt_order")
@@ -24,10 +25,10 @@ class Order (
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
-    val orderStatus: OrderStatus = OrderStatus.READY,
+    var orderStatus: OrderStatus = OrderStatus.READY,
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     val linkNodes: List<LinkNode> = emptyList(),
-): BaseTimeEntity() {
+): BaseTimeEntity(), java.io.Serializable {
     override fun toString(): String = "Order(seq=$orderSeq,type=$orderType,url='$targetUrl',customerName=$customerName,orderStatus=$orderStatus)"
 }
