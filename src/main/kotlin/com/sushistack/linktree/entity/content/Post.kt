@@ -19,6 +19,8 @@ class Post (
     val fileName: String = "",
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "webpage_seq", nullable = false)
-    val webpage: StaticWebpage = StaticWebpage(),
+    @JoinColumn(name = "webpage_seq")
+    val webpage: StaticWebpage? = null,
+
+
 ): BaseTimeEntity()
