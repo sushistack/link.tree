@@ -30,7 +30,7 @@ class OrderTasklet(
             customerName = customerName
         )
         orderRepository.save(order)
-        chunkContext.stepContext.jobExecutionContext["order"] = order
+        contribution.stepExecution.jobExecution.executionContext.put("order", order)
         log.info { "Saved Order := [${order}]" }
 
         return RepeatStatus.FINISHED
