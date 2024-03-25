@@ -11,6 +11,9 @@ class LinkNodeService(private val linkNodeRepository: LinkNodeRepository) {
     fun createLinkNode(linkNode: LinkNode): LinkNode =
         linkNodeRepository.save(linkNode)
 
+    fun createLinkNodes(linkNodes: List<LinkNode>): List<LinkNode> =
+        linkNodeRepository.saveAll(linkNodes)
+
     fun findByOrder(order: Order, tier: Int): List<LinkNode> =
         linkNodeRepository.findByOrderAndTier(order, tier)
 

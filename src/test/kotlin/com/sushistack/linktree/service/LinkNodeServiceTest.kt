@@ -39,6 +39,20 @@ class LinkNodeServiceTest {
     }
 
     @Test
+    fun createLinkNodes() {
+        // Given
+        val linkNode = LinkNode()
+        val linkNode2 = LinkNode()
+        linkNodeService.createLinkNodes(listOf(linkNode, linkNode2))
+        entityManager.flush()
+        entityManager.clear()
+
+        // Then
+        val linkNodes = linkNodeRepository.findAll()
+        Assertions.assertThat(linkNodes).hasSize(2)
+    }
+
+    @Test
     fun findByOrder() {
         // Given
         val tier = 1
