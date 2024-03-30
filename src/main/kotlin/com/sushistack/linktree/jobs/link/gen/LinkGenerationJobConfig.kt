@@ -1,6 +1,11 @@
 package com.sushistack.linktree.jobs.link.gen
 
+import com.sushistack.linktree.entity.link.LinkNode
+import com.sushistack.linktree.entity.order.Order
+import com.sushistack.linktree.jobs.link.gen.link.LinkNodesWriter
+import com.sushistack.linktree.jobs.link.gen.order.OrderReader
 import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
+import com.sushistack.linktree.jobs.link.gen.order.OrderToLinkNodeProcessor
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -14,13 +19,19 @@ import org.springframework.orm.jpa.JpaTransactionManager
 @Configuration
 class LinkGenerationJobConfig {
 
+    companion object {
+        const val ORDER_PROCESSING_SIZE = 1
+    }
+
     @Bean
     fun linkGenerationJob(
         jobRepository: JobRepository,
-        saveOrderStep: Step
+        saveOrderStep: Step,
+        addPrivateBlogsToOrderStep: Step,
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
             .start(saveOrderStep)
+            .next(addPrivateBlogsToOrderStep)
             .build()
 
     @Bean
@@ -31,6 +42,21 @@ class LinkGenerationJobConfig {
     ): TaskletStep =
         StepBuilder("saveOrderStep", jobRepository)
             .tasklet(orderTasklet, jpaTransactionManager)
+            .build()
+
+    @Bean
+    fun addPrivateBlogsToOrderStep(
+        jobRepository: JobRepository,
+        jpaTransactionManager: JpaTransactionManager,
+        orderReader: OrderReader,
+        orderToLinkNodeProcessor: OrderToLinkNodeProcessor,
+        linkNodesWriter: LinkNodesWriter
+    ): Step =
+        StepBuilder("addPrivateBlogsToOrderStep", jobRepository)
+            .chunk<Order, List<LinkNode>>(ORDER_PROCESSING_SIZE, jpaTransactionManager)
+            .reader(orderReader)
+            .processor(orderToLinkNodeProcessor)
+            .writer(linkNodesWriter)
             .build()
 
 }
