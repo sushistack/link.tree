@@ -21,7 +21,7 @@ class OrderReader: ItemReader<Order> {
         return if (!processed) {
             processed = true
             order.orderStatus = OrderStatus.STAGED
-            log.info { "Read ${order}" }
+            log.info { "Read $order" }
             order
         } else null
     }
