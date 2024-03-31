@@ -5,7 +5,7 @@ import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.jobs.link.gen.link.LinkNodesWriter
 import com.sushistack.linktree.jobs.link.gen.order.OrderReader
 import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
-import com.sushistack.linktree.jobs.link.gen.order.OrderToLinkNodeProcessor
+import com.sushistack.linktree.jobs.link.gen.order.OrderToLinkNodesProcessor
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -49,13 +49,13 @@ class LinkGenerationJobConfig {
         jobRepository: JobRepository,
         jpaTransactionManager: JpaTransactionManager,
         orderReader: OrderReader,
-        orderToLinkNodeProcessor: OrderToLinkNodeProcessor,
+        orderToLinkNodesProcessor: OrderToLinkNodesProcessor,
         linkNodesWriter: LinkNodesWriter
     ): Step =
         StepBuilder("addPrivateBlogsToOrderStep", jobRepository)
             .chunk<Order, List<LinkNode>>(ORDER_PROCESSING_SIZE, jpaTransactionManager)
             .reader(orderReader)
-            .processor(orderToLinkNodeProcessor)
+            .processor(orderToLinkNodesProcessor)
             .writer(linkNodesWriter)
             .build()
 

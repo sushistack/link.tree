@@ -12,7 +12,7 @@ import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
 
 @Component
-class OrderToLinkNodeProcessor(
+class OrderToLinkNodesProcessor(
     private val postService: PostService,
     private val staticWebpageService: StaticWebpageService
 ): ItemProcessor<Order, List<LinkNode>> {
