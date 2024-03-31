@@ -12,7 +12,7 @@ class LinkNodesWriter(private val linkNodeService: LinkNodeService): ItemWriter<
     val log = KotlinLogging.logger {}
 
     override fun write(chunk: Chunk<out List<LinkNode>>) {
-         chunk.forEach { linkNodes -> linkNodeService.createLinkNodes(linkNodes) }
+        chunk.forEach { linkNodes -> linkNodeService.createLinkNodes(linkNodes) }
         log.info { "Successfully created link nodes" }
     }
 }
