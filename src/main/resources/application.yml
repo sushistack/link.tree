@@ -36,3 +36,11 @@ logging:
     org.hibernate.type: INFO
     org.hibernate.boot.model: INFO
     org.hibernate.query.sqm: INFO
+
+decorator:
+  datasource:
+    p6spy:
+      logging: slf4j
+      log-format: '%(currentTime)|%(executionTime)ms|connection %(connectionId)|[%(category)]:%(sql)'
+      log-filter:
+        pattern: '^(?!.*(BATCH_JOB_|BATCH_STEP_)).*$'

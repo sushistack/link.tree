@@ -28,6 +28,14 @@ jasypt:
     password: ${jasyptPassword}
     algorithm: PBEWithMD5AndDES
 
+decorator:
+  datasource:
+    p6spy:
+      logging: slf4j
+      log-format: '%(currentTime)|%(executionTime)ms|connection %(connectionId)|[%(category)]:%(sql)'
+      log-filter:
+        pattern: '^(?!.*(BATCH_JOB_|BATCH_STEP_)).*$'
+
 # for test
 test:
   bitbucket:
