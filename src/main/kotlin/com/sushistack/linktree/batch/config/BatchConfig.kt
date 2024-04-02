@@ -1,4 +1,4 @@
-package com.sushistack.linktree.config
+package com.sushistack.linktree.batch.config
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.persistence.EntityManagerFactory
