@@ -20,7 +20,7 @@ class OrderReader: ItemReader<Order> {
     override fun read(): Order? {
         return if (!processed) {
             processed = true
-            order.orderStatus = OrderStatus.STAGED
+            order.orderStatus = OrderStatus.PROCESSING_1
             log.info { "Read $order" }
             order
         } else null
