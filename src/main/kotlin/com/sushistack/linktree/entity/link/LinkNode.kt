@@ -20,7 +20,7 @@ class LinkNode (
     @Column(name = "url", nullable = false)
     val url: String = "",
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_seq")
     val repository: GitRepository? = null,
 
