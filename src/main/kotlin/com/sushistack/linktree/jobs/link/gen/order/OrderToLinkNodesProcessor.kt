@@ -3,7 +3,6 @@ package com.sushistack.linktree.jobs.link.gen.order
 import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
-import com.sushistack.linktree.entity.order.OrderStatus
 import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.service.PostService
 import com.sushistack.linktree.service.StaticWebpageService
@@ -19,9 +18,6 @@ class OrderToLinkNodesProcessor(
     private val log = KotlinLogging.logger {}
 
     override fun process(order: Order): List<LinkNode> {
-        order.orderStatus = OrderStatus.PROCESSING
-        log.info { "(${order.orderStatus}) is processed." }
-
         val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.PRIVATE_BLOG_NETWORK, order.orderType.linkCount.toLong())
 
         return webpages.map { webpage ->
