@@ -20,7 +20,7 @@ class LinkNodeToLinkNodesProcessor(
         return webpages.map { webpage ->
             val post = Post(webpage = webpage)
             postService.createPost(post)
-            LinkNode(order = parentNode.order, repository = webpage.repository, parentNodeSeq = parentNode.nodeSeq)
+            LinkNode(order = parentNode.order, repository = webpage.repository, parentNodeSeq = parentNode.nodeSeq, tier = parentNode.tier + 1)
         }
     }
 }
