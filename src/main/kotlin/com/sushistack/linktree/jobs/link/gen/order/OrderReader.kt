@@ -1,7 +1,6 @@
 package com.sushistack.linktree.jobs.link.gen.order
 
 import com.sushistack.linktree.entity.order.Order
-import com.sushistack.linktree.entity.order.OrderStatus
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.item.ItemReader
@@ -20,7 +19,6 @@ class OrderReader: ItemReader<Order> {
     override fun read(): Order? {
         return if (!processed) {
             processed = true
-            order.orderStatus = OrderStatus.PROCESSING_1
             log.info { "Read $order" }
             order
         } else null
