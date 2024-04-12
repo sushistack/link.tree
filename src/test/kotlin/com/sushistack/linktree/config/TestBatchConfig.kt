@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Primary
 import org.springframework.orm.jpa.JpaTransactionManager
 
 @Configuration
-class BatchConfig {
+class TestBatchConfig {
     private val log = KotlinLogging.logger {}
 
     @Bean
