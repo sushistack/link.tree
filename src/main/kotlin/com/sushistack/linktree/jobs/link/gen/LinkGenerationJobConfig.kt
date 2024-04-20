@@ -3,6 +3,7 @@ package com.sushistack.linktree.jobs.link.gen
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
+import com.sushistack.linktree.jobs.link.gen.link.CommentProcessor
 import com.sushistack.linktree.jobs.link.gen.link.LinkNodeToLinkNodesProcessor
 import com.sushistack.linktree.jobs.link.gen.link.LinkNodesWriter
 import com.sushistack.linktree.jobs.link.gen.order.OrderReader
@@ -24,6 +25,7 @@ class LinkGenerationJobConfig {
     companion object {
         const val ORDER_PROCESSING_SIZE = 1
         const val LINK_NODE_PROCESSING_SIZE = 40
+        const val COMMENT_PROCESSING_SIZE = 200
     }
 
     @Bean
@@ -82,4 +84,19 @@ class LinkGenerationJobConfig {
             .writer(linkNodesWriter)
             .build()
 
+
+    @Bean
+    fun addCommentsToLinkNodesStep(
+        jobRepository: JobRepository,
+        jpaTransactionManager: JpaTransactionManager,
+        linkNodeReader: QuerydslPagingItemReader<LinkNode>,
+        commentProcessor: CommentProcessor,
+        linkNodesWriter: LinkNodesWriter
+    ): Step =
+        StepBuilder("addCloudBlogsToOrderStep", jobRepository)
+            .chunk<LinkNode, List<LinkNode>>(COMMENT_PROCESSING_SIZE, jpaTransactionManager)
+            .reader(linkNodeReader)
+            .processor(commentProcessor)
+            .writer(linkNodesWriter)
+            .build()
 }
