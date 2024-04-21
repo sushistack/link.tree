@@ -4,7 +4,7 @@ import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.jobs.link.gen.link.CommentProcessor
-import com.sushistack.linktree.jobs.link.gen.link.LinkNodeToLinkNodesProcessor
+import com.sushistack.linktree.jobs.link.gen.link.StaticWebpageProcessor
 import com.sushistack.linktree.jobs.link.gen.link.LinkNodesWriter
 import com.sushistack.linktree.jobs.link.gen.order.OrderReader
 import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
@@ -74,13 +74,13 @@ class LinkGenerationJobConfig {
         jobRepository: JobRepository,
         jpaTransactionManager: JpaTransactionManager,
         linkNodeReader: QuerydslPagingItemReader<LinkNode>,
-        linkNodeToLinkNodesProcessor: LinkNodeToLinkNodesProcessor,
+        staticWebpageProcessor: StaticWebpageProcessor,
         linkNodesWriter: LinkNodesWriter
     ): Step =
         StepBuilder("addCloudBlogsToOrderStep", jobRepository)
             .chunk<LinkNode, List<LinkNode>>(LINK_NODE_PROCESSING_SIZE, jpaTransactionManager)
             .reader(linkNodeReader)
-            .processor(linkNodeToLinkNodesProcessor)
+            .processor(staticWebpageProcessor)
             .writer(linkNodesWriter)
             .build()
 

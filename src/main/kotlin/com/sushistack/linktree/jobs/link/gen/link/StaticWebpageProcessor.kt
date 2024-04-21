@@ -9,7 +9,7 @@ import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
 
 @Component
-class LinkNodeToLinkNodesProcessor(
+class StaticWebpageProcessor(
     private val postService: PostService,
     private val staticWebpageService: StaticWebpageService
 ): ItemProcessor<LinkNode, List<LinkNode>> {
