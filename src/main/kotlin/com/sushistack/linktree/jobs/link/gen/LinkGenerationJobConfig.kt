@@ -95,7 +95,7 @@ class LinkGenerationJobConfig {
         commentProcessor: CommentProcessor,
         linkNodesWriter: LinkNodesWriter
     ): Step =
-        StepBuilder("addCloudBlogsToOrderStep", jobRepository)
+        StepBuilder("addCommentsToLinkNodesStep", jobRepository)
             .chunk<LinkNode, List<LinkNode>>(COMMENT_CHUNK_SIZE, jpaTransactionManager)
             .reader(linkNodeReader)
             .processor(commentProcessor)
