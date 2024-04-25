@@ -15,7 +15,7 @@ open class QuerydslPagingItemReader<T>(
     private lateinit var queryFactory: JPAQueryFactory
 
     init {
-        this.pageSize = 100
+        this.pageSize = 200
         this.name = "QuerydslPagingItemReader"
     }
 
