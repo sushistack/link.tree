@@ -16,7 +16,7 @@ class CommentProcessor(
         val comments = commentService.findByOrderByUsedCountLimit(limit = 3)
 
         return comments.map { comment ->
-            LinkNode(order = parentNode.order, tier = parentNode.tier + 1, url = comment.postUrl)
+            LinkNode(order = parentNode.order, tier = parentNode.tier + 1, url = comment.postUrl, parentNodeSeq = parentNode.nodeSeq)
         }
     }
 }
