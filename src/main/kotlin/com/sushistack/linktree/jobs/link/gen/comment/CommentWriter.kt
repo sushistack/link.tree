@@ -16,11 +16,7 @@ class CommentWriter(private val linkNodeService: LinkNodeService): ItemWriter<Li
     val log = KotlinLogging.logger {}
 
     override fun write(chunk: Chunk<out List<LinkNode>>) {
-        log.info { "chunk.size() := ${chunk.size()}" }
-        chunk.forEach { linkNodes ->
-            log.info { "linkNodesSize := ${linkNodes.size}" }
-            linkNodeService.createLinkNodes(linkNodes)
-        }
+        chunk.forEach { linkNodes -> linkNodeService.createLinkNodes(linkNodes) }
         log.info { "Successfully created link nodes." }
     }
 }
