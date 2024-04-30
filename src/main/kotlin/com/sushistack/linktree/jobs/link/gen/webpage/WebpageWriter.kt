@@ -12,7 +12,8 @@ class WebpageWriter(private val linkNodeService: LinkNodeService): ItemWriter<Li
     val log = KotlinLogging.logger {}
 
     override fun write(chunk: Chunk<out List<LinkNode>>) {
-        chunk.forEach { linkNodes -> linkNodeService.createLinkNodes(linkNodes) }
-        log.info { "Successfully created link nodes." }
+        val nodes = chunk.flatMap { it }
+        linkNodeService.createLinkNodes(nodes)
+        log.info { "Successfully created link nodes. (size: ${nodes.size})" }
     }
 }
