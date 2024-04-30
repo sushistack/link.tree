@@ -4,16 +4,15 @@ import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.jobs.link.gen.comment.CommentProcessor
-import com.sushistack.linktree.jobs.link.gen.webpage.WebpageProcessor
-import com.sushistack.linktree.jobs.link.gen.webpage.WebpageWriter
 import com.sushistack.linktree.jobs.link.gen.comment.CommentWriter
 import com.sushistack.linktree.jobs.link.gen.listener.CloudBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.CommentStepListener
-import com.sushistack.linktree.jobs.link.gen.listener.OrderStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.order.OrderReader
 import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
 import com.sushistack.linktree.jobs.link.gen.order.OrderToLinkNodesProcessor
+import com.sushistack.linktree.jobs.link.gen.webpage.WebpageProcessor
+import com.sushistack.linktree.jobs.link.gen.webpage.WebpageWriter
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -53,12 +52,10 @@ class LinkGenerationJobConfig {
     fun saveOrderStep(
         jobRepository: JobRepository,
         orderTasklet: OrderTasklet,
-        jpaTransactionManager: JpaTransactionManager,
-        orderStepListener: OrderStepListener
+        jpaTransactionManager: JpaTransactionManager
     ): TaskletStep =
         StepBuilder("saveOrderStep", jobRepository)
             .tasklet(orderTasklet, jpaTransactionManager)
-            .listener(orderStepListener)
             .build()
 
 
