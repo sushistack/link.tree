@@ -18,6 +18,12 @@ class PrivateBlogsStepListener: StepExecutionListener {
     @Value("#{jobExecutionContext['order']}")
     lateinit var order: Order
 
+    override fun beforeStep(stepExecution: StepExecution) {
+        order.orderStatus = OrderStatus.next(order.orderStatus)
+        log.info { "${stepExecution.stepName} is Started, Order(${order.orderStatus})" }
+        super.beforeStep(stepExecution)
+    }
+
     override fun afterStep(stepExecution: StepExecution): ExitStatus {
         order.orderStatus = OrderStatus.next(order.orderStatus)
         log.info { "${stepExecution.stepName} is Completed, Order(${order.orderStatus})" }
