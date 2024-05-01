@@ -1,7 +1,6 @@
 package com.sushistack.linktree.repository.publisher
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.sushistack.linktree.entity.git.QGitAccount
 import com.sushistack.linktree.entity.git.QGitAccount.gitAccount
 import com.sushistack.linktree.entity.git.QGitRepository.gitRepository
 import com.sushistack.linktree.entity.publisher.QStaticWebpage.staticWebpage
