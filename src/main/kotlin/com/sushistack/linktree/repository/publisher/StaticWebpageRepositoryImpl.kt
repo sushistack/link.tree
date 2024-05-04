@@ -14,8 +14,8 @@ class StaticWebpageRepositoryImpl(private val queryFactory: JPAQueryFactory): St
             .selectFrom(staticWebpage)
             .join(staticWebpage.repository, gitRepository).fetchJoin()
             .join(gitRepository.gitAccount, gitAccount).fetchJoin()
-            .orderBy(staticWebpage.usedCount.asc())
             .where(staticWebpage.providerType.eq(providerType))
+            .orderBy(staticWebpage.usedCount.asc())
             .limit(limit)
             .fetch()
 
