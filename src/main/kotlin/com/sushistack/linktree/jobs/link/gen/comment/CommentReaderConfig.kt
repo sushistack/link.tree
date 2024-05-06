@@ -1,6 +1,8 @@
 package com.sushistack.linktree.jobs.link.gen.comment
 
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
+import com.sushistack.linktree.entity.git.QGitAccount
+import com.sushistack.linktree.entity.git.QGitRepository.gitRepository
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.link.QLinkNode.linkNode
 import com.sushistack.linktree.entity.order.Order
@@ -27,12 +29,14 @@ class CommentReaderConfig {
         return QuerydslPagingItemReader(entityManagerFactory) { queryFactory, offset, limit ->
             queryFactory
                 .selectFrom(linkNode)
-                .innerJoin(QOrder.order)
-                .on(
-                    linkNode.order.orderSeq.eq(QOrder.order.orderSeq)
+                .join(linkNode.order, QOrder.order).fetchJoin()
+                .join(linkNode.repository, gitRepository).fetchJoin()
+                .join(gitRepository.gitAccount, QGitAccount.gitAccount).fetchJoin()
+                .where(
+                    linkNode.tier.eq(tier)
+                        .and(linkNode.order.orderSeq.eq(QOrder.order.orderSeq))
                         .and(QOrder.order.orderSeq.eq(order.orderSeq))
                 )
-                .where(linkNode.tier.eq(tier))
                 .offset(offset.toLong())
                 .limit(limit.toLong())
                 .fetch()
