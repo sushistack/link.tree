@@ -10,6 +10,9 @@ class OrderService(private val orderRepository: OrderRepository) {
     fun createOrder(order: Order): Order =
         orderRepository.save(order)
 
+    fun updateOrder(order: Order): Order =
+        orderRepository.save(order)
+
     fun getOrderBySeq(orderSeq: Long): Order =
         orderRepository.findById(orderSeq).orElseThrow()
 
