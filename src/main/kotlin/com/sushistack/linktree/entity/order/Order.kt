@@ -3,7 +3,6 @@ package com.sushistack.linktree.entity.order
 import com.sushistack.linktree.entity.BaseTimeEntity
 import com.sushistack.linktree.entity.link.LinkNode
 import jakarta.persistence.*
-import kotlinx.serialization.Serializable
 
 @Entity
 @Table(name = "lt_order")
