@@ -3,6 +3,7 @@ package com.sushistack.linktree.jobs.link.gen.order
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.OrderType
 import com.sushistack.linktree.repository.order.OrderRepository
+import com.sushistack.linktree.service.OrderService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobScope
@@ -18,18 +19,19 @@ class OrderTasklet(
     @Value("#{jobParameters['orderType']}") private val orderType: String,
     @Value("#{jobParameters['targetUrl']}") private val targetUrl: String,
     @Value("#{jobParameters['customerName']}") private val customerName: String,
-    private val orderRepository: OrderRepository
+    private val orderService: OrderService
 ): Tasklet {
 
     val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
-        val order = Order(
-            orderType = OrderType.valueOf(orderType),
-            targetUrl = targetUrl,
-            customerName = customerName
+        val order = orderService.createOrder(
+            Order(
+                orderType = OrderType.valueOf(orderType),
+                targetUrl = targetUrl,
+                customerName = customerName
+            )
         )
-        orderRepository.save(order)
         contribution.stepExecution.jobExecution.executionContext.put("order", order)
         log.info { "Saved Order := [${order}]" }
 
