@@ -2,7 +2,6 @@ package com.sushistack.linktree.jobs.link.gen.order
 
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.OrderType
-import com.sushistack.linktree.repository.order.OrderRepository
 import com.sushistack.linktree.service.OrderService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.StepContribution
