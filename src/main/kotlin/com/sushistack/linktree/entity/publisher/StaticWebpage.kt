@@ -28,4 +28,7 @@ class StaticWebpage (
 
     @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)
     val posts: List<Post> = emptyList()
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    fun getPostUrl(post: Post): String =
+        "https://${domain}/${post.filePath.split(".")[0]}"
+}
