@@ -25,7 +25,7 @@ class OrderToLinkNodesProcessor(
                 order = order,
                 url = webpage.getPostUrl(post),
                 repository = webpage.repository,
-                tier = order.orderStatus.tier + 1,
+                tier = order.orderStatus.tier,
                 parentNodeSeq = order.orderSeq
             )
         }
