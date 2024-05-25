@@ -5,4 +5,5 @@ import com.sushistack.linktree.entity.order.Order
 
 interface LinkNodeRepositoryCustom {
     fun findByOrderAndTier(order: Order, tier: Int): List<LinkNode>
+    fun findAllByOrderAndTier(order: Order, tier: Int): List<LinkNode>
 }
