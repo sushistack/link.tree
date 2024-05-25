@@ -1,7 +1,11 @@
 package com.sushistack.linktree.service
 
+import com.sushistack.linktree.entity.content.Post
+import com.sushistack.linktree.entity.git.GitAccount
+import com.sushistack.linktree.entity.git.GitRepository
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
+import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.repository.link.LinkNodeRepository
 import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions
@@ -67,5 +71,29 @@ class LinkNodeServiceTest {
         val nodes = linkNodeService.findByOrder(order, tier)
         Assertions.assertThat(nodes).hasSize(1)
         Assertions.assertThat(nodes[0].order?.orderSeq).isEqualTo(order.orderSeq)
+    }
+
+    @Test
+    fun findAllByOrderAndTier() {
+        val tier = 1
+        val order = Order(customerName = "Customer Name")
+        entityManager.persist(order)
+        val webpage = StaticWebpage(domain = "test.com")
+        entityManager.persist(webpage)
+        val post = Post(filePath = "life/test.md", webpage = webpage)
+        entityManager.persist(post)
+        val gitAccount = GitAccount()
+        entityManager.persist(gitAccount)
+        val repository = GitRepository(webpage = webpage, gitAccount = gitAccount)
+        entityManager.persist(repository)
+        val linkNode = LinkNode(order = order, tier = tier, repository = repository)
+        linkNodeService.createLinkNode(linkNode)
+        entityManager.flush()
+        entityManager.clear()
+
+        // Then
+        val nodes = linkNodeService.findAllByOrderAndTier(order, tier)
+        Assertions.assertThat(nodes).hasSize(1)
+        Assertions.assertThat(nodes[0].repository?.webpage?.domain).isEqualTo("test.com")
     }
 }

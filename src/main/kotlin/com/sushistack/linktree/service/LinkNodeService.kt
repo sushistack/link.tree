@@ -17,4 +17,6 @@ class LinkNodeService(private val linkNodeRepository: LinkNodeRepository) {
     fun findByOrder(order: Order, tier: Int): List<LinkNode> =
         linkNodeRepository.findByOrderAndTier(order, tier)
 
+    fun findAllByOrderAndTier(order: Order, tier: Int): List<LinkNode> =
+        linkNodeRepository.findAllByOrderAndTier(order, tier)
 }
