@@ -23,6 +23,6 @@ class CloudBlogsStepListener(private val orderService: OrderService): StepExecut
         order.orderStatus = OrderStatus.next(order.orderStatus)
         orderService.updateOrder(order)
         log.info { "${stepExecution.stepName} is Completed, Order(${order.orderStatus})" }
-        return stepExecution.exitStatus;
+        return stepExecution.exitStatus
     }
 }
