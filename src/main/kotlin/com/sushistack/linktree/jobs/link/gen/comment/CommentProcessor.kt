@@ -16,7 +16,7 @@ class CommentProcessor(
         return comments.map { comment ->
             LinkNode(
                 order = parentNode.order,
-                tier = parentNode.tier,
+                tier = parentNode.tier + 1,
                 url = comment.postUrl,
                 parentNodeSeq = parentNode.nodeSeq
             )

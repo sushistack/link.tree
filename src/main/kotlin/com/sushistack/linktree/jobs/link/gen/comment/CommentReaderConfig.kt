@@ -24,8 +24,7 @@ class CommentReaderConfig {
         @Value("#{jobExecutionContext['order']}") order: Order,
         entityManagerFactory: EntityManagerFactory
     ): QuerydslPagingItemReader<LinkNode> {
-        val tier = order.orderStatus.tier
-        log.info { "tier := [${tier}]" }
+        val prevTier = order.orderStatus.tier - 1
         return QuerydslPagingItemReader(entityManagerFactory) { queryFactory, offset, limit ->
             queryFactory
                 .selectFrom(linkNode)
@@ -33,7 +32,7 @@ class CommentReaderConfig {
                 .join(linkNode.repository, gitRepository).fetchJoin()
                 .join(gitRepository.gitAccount, QGitAccount.gitAccount).fetchJoin()
                 .where(
-                    linkNode.tier.eq(tier)
+                    linkNode.tier.eq(prevTier)
                         .and(linkNode.order.orderSeq.eq(QOrder.order.orderSeq))
                         .and(QOrder.order.orderSeq.eq(order.orderSeq))
                 )
