@@ -23,6 +23,6 @@ class CommentStepListener(private val orderService: OrderService): StepExecution
         order.orderStatus = OrderStatus.next(order.orderStatus)
         orderService.updateOrder(order)
         log.info { "${stepExecution.stepName} is Completed, Order(${order.orderStatus})" }
-        return stepExecution.exitStatus;
+        return stepExecution.exitStatus
     }
 }
