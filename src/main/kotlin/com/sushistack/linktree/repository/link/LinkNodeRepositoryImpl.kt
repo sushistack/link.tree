@@ -27,8 +27,6 @@ class LinkNodeRepositoryImpl(private val queryFactory: JPAQueryFactory): LinkNod
         queryFactory
             .selectFrom(linkNode)
             .join(linkNode.order, QOrder.order).fetchJoin()
-            .join(linkNode.repository, gitRepository).fetchJoin()
-            .join(gitRepository.webpage, QStaticWebpage.staticWebpage).fetchJoin()
             .where(
                 linkNode.tier.eq(tier)
                     .and(linkNode.order.orderSeq.eq(QOrder.order.orderSeq))
