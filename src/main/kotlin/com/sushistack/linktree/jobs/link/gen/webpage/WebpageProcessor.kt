@@ -18,9 +18,15 @@ class WebpageProcessor(
         val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.CLOUD_BLOG_NETWORK, 20)
 
         return webpages.map { webpage ->
-            val post = Post(webpage = webpage)
+            val post = Post(filePath = "life/test.md", webpage = webpage)
             postService.createPost(post)
-            LinkNode(order = parentNode.order, repository = webpage.repository, parentNodeSeq = parentNode.nodeSeq, tier = parentNode.tier + 1)
+            LinkNode(
+                order = parentNode.order,
+                url = webpage.getPostUrl(post),
+                repository = webpage.repository,
+                parentNodeSeq = parentNode.nodeSeq,
+                tier = parentNode.tier + 1
+            )
         }
     }
 }
