@@ -11,6 +11,7 @@ import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.order.OrderReader
 import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
 import com.sushistack.linktree.jobs.link.gen.order.OrderToLinkNodesProcessor
+import com.sushistack.linktree.jobs.link.gen.report.ReportTasklet
 import com.sushistack.linktree.jobs.link.gen.webpage.WebpageProcessor
 import com.sushistack.linktree.jobs.link.gen.webpage.WebpageWriter
 import org.springframework.batch.core.Job
@@ -38,13 +39,15 @@ class LinkGenerationJobConfig {
         saveOrderStep: Step,
         addPrivateBlogsToOrderStep: Step,
         addCloudBlogsToOrderStep: Step,
-        addCommentsToLinkNodesStep: Step
+        addCommentsToLinkNodesStep: Step,
+        saveToExcelStep: Step
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
             .start(saveOrderStep)
             .next(addPrivateBlogsToOrderStep)
             .next(addCloudBlogsToOrderStep)
             .next(addCommentsToLinkNodesStep)
+            .next(saveToExcelStep)
             .build()
 
 
@@ -75,7 +78,6 @@ class LinkGenerationJobConfig {
             .writer(webpageWriter)
             .listener(privateBlogsStepListener)
             .build()
-
 
 
     @Bean
@@ -111,5 +113,16 @@ class LinkGenerationJobConfig {
             .processor(commentProcessor)
             .writer(commentWriter)
             .listener(commentStepListener)
+            .build()
+
+
+    @Bean
+    fun saveToExcelStep(
+        jobRepository: JobRepository,
+        jpaTransactionManager: JpaTransactionManager,
+        reportTasklet: ReportTasklet
+    ): Step =
+        StepBuilder("saveToExcelStep", jobRepository)
+            .tasklet(reportTasklet, jpaTransactionManager)
             .build()
 }
