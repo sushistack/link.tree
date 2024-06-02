@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import kotlin.reflect.full.declaredMemberProperties
 
 class ExcelUtilTest {
-    private lateinit var excelSheets: List<ExcelSheet<TestClazz>>
+    private lateinit var excelSheets: List<ExcelSheet>
     private lateinit var testClass: TestClazz
 
     @BeforeEach

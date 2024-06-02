@@ -1,6 +1,6 @@
 package com.sushistack.linktree.external.excel.model
 
-data class ExcelSheet<T> (
+data class ExcelSheet (
     val name: String,
-    val rows: List<T>
+    val rows: List<Any>
 )

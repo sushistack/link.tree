@@ -15,7 +15,7 @@ import kotlin.reflect.full.memberProperties
 
 class ExcelUtil {
     companion object {
-        private fun <T: Any> setHeaderRow(excelSheet: Sheet, clazz: KClass<T>) {
+        private fun setHeaderRow(excelSheet: Sheet, clazz: KClass<out Any>) {
             val columns = clazz.declaredMemberProperties
                 .sortedBy { it.annotations.filterIsInstance<ExcelColumn>().firstOrNull()?.order ?: Int.MAX_VALUE }
                 .map { prop -> prop.findAnnotation<ExcelColumn>()?.name ?: prop.name }
@@ -28,7 +28,7 @@ class ExcelUtil {
             }
         }
 
-        private fun <T: Any> setDataRows(excelSheet: Sheet, dataRows: List<T>) {
+        private fun setDataRows(excelSheet: Sheet, dataRows: List<Any>) {
             dataRows.mapIndexed { index, row ->
                 excelSheet.createRow(index + 1).also {
 
@@ -57,7 +57,7 @@ class ExcelUtil {
             }
         }
 
-        fun <T: Any> writeExcel(sheets: List<ExcelSheet<T>>, filePath: Path) {
+        fun writeExcel(sheets: List<ExcelSheet>, filePath: Path) {
             val workbook: Workbook = XSSFWorkbook()
 
             for (sheet in sheets) {
