@@ -31,10 +31,12 @@ class ExcelUtil {
         private fun setDataRows(excelSheet: Sheet, dataRows: List<Any>) {
             dataRows.mapIndexed { index, row ->
                 excelSheet.createRow(index + 1).also {
-
-                    val memberValues = row::class.memberProperties
-                        .sortedBy { prop -> prop.annotations.filterIsInstance<ExcelColumn>().firstOrNull()?.order ?: Int.MAX_VALUE }
-                        .map { prop -> prop.getter.call(row) }
+                    val memberValues = when (row) {
+                        is List<*> -> row
+                        else -> row::class.memberProperties
+                            .sortedBy { prop -> prop.annotations.filterIsInstance<ExcelColumn>().firstOrNull()?.order ?: Int.MAX_VALUE }
+                            .map { prop -> prop.getter.call(row) }
+                    }
 
                     for (i in memberValues.indices) {
                         val cell = it.createCell(i)
