@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 @Transactional
-class OrderRepositoryTest {
+class OrderGitRepositoryUtilTest {
 
     @Autowired
     lateinit var entityManager: EntityManager

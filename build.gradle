@@ -38,6 +38,7 @@ dependencies {
     implementation 'io.github.oshai:kotlin-logging:7.0.0'
     implementation 'com.microsoft.playwright:playwright:1.47.0'
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.2'
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'

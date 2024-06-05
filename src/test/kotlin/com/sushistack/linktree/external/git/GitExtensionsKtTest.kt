@@ -1,17 +1,26 @@
-package com.sushistack.linktree.external.git.client
+package com.sushistack.linktree.external.git
 
-import com.sushistack.linktree.external.git.*
 import org.eclipse.jgit.api.Git
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class GitExtensionsKtTest {
 
+    private lateinit var git: Git
+
+    @BeforeEach
+    fun setup() {
+        git = Git.open(File("test.git"))
+    }
+
     @Test
-    fun gitOpenTest() {
+    fun gitAddAndCommitTest() {
         // Given
 
         // When
-        Git.open()
+
+
 
         // Then
     }
