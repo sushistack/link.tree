@@ -7,41 +7,40 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 
 class GitRepositoryUtil {
-    val log = KotlinLogging.logger {}
+    companion object {
 
-    fun open(
-        workspaceName: String,
-        repositoryName: String,
-        appPassword: String
-    ): Git {
-        // Spring 프로젝트 루트 디렉토리 가져오기
-        val projectRoot = System.getProperty("user.dir")
+        private val log = KotlinLogging.logger {}
 
-        // 로컬 저장소 경로 설정
-        val repoPath = File(projectRoot, "repositories/$workspaceName/$repositoryName")
-        val gitDir = File(repoPath, ".git")
+        fun open(
+            appHomeDir: String,
+            workspaceName: String,
+            repositoryName: String,
+            appPassword: String
+        ): Git {
+            val repoPath = File(appHomeDir, "repo/$workspaceName/$repositoryName")
+            val gitDir = File(repoPath, ".git")
 
-        return if (gitDir.exists()) {
-            // 로컬 저장소가 존재하면 엽니다.
-            val repository = FileRepositoryBuilder()
-                .setGitDir(gitDir)
-                .readEnvironment()
-                .findGitDir()
-                .build()
-            Git(repository)
-        } else {
-            val remoteUrl = "https://bitbucket.org/$workspaceName/$repositoryName.git"
-            log.info { "원격 저장소 URL: $remoteUrl" }
+            return if (gitDir.exists()) {
+                val repository = FileRepositoryBuilder()
+                    .setGitDir(gitDir)
+                    .readEnvironment()
+                    .findGitDir()
+                    .build()
+                Git(repository)
+            } else {
+                val remoteUrl = "https://bitbucket.org/$workspaceName/$repositoryName.git"
+                log.info { "Remote Repository URL: $remoteUrl" }
 
-            try {
-                Git.cloneRepository()
-                    .setURI(remoteUrl)
-                    .setDirectory(repoPath)
-                    .setCredentialsProvider(UsernamePasswordCredentialsProvider(workspaceName, appPassword))
-                    .call()
-            } catch (e: Exception) {
-                log.info { "원격 저장소 클론에 실패했습니다: ${e.message}" }
-                throw IllegalArgumentException("원격 저장소 클론에 실패했습니다: ${e.message}", e)
+                try {
+                    Git.cloneRepository()
+                        .setURI(remoteUrl)
+                        .setDirectory(repoPath)
+                        .setCredentialsProvider(UsernamePasswordCredentialsProvider(workspaceName, appPassword))
+                        .call()
+                } catch (e: Exception) {
+                    log.info { "Failed to clone remote repository: ${e.message}" }
+                    throw IllegalArgumentException("Failed to clone remote repository: ${e.message}", e)
+                }
             }
         }
     }

@@ -30,7 +30,7 @@ class BitbucketClientTest {
             username = this.bitbucketUsername,
             appPassword = this.bitbucketAppPassword
         )
-        gitRepository = GitRepository(repositoryName = "pbn-live001")
+        gitRepository = GitRepository(repositoryName = "playground")
     }
 
     @Test
