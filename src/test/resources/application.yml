@@ -39,5 +39,5 @@ decorator:
 # for test
 test:
   bitbucket:
-    username: ENC(R/zYZt2Fi7FwWkLRC7KPEU3qC9FV/1qMgDHADZTl8Bc=)
-    app-password: ENC(TCgsIZrdInsso9ZNZYdPnkUytqujMQdqRZYMw+NDk9uvMUt+yo8wvN1CYjUeiy1ZXvjdlgdapis=)
+    username: ENC(65V3I5R6Mx3EG7gNfcQDGccRkBCNMh9gdi3UkSdNaAc=)
+    app-password: ENC(6nXfJ6AEafPtkYu9hPBHa/chjglDNHtCdGD2vJRnzdFWQmGUCgZdpCEemTYeHc9UICGkVkmiO6c=)
