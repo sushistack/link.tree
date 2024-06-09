@@ -1,7 +1,6 @@
 package com.sushistack.linktree.entity.link
 
 import com.sushistack.linktree.entity.BaseTimeEntity
-import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.git.GitRepository
 import com.sushistack.linktree.entity.order.Order
 import jakarta.persistence.*
@@ -22,11 +21,11 @@ class LinkNode (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_seq")
-    val repository: GitRepository? = null,
+    val repository: GitRepository,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_seq")
-    val order: Order? = null,
+    val order: Order,
 
     val parentNodeSeq: Long? = null
 ): BaseTimeEntity()

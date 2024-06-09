@@ -57,10 +57,11 @@ fun Git.resetTo(commitId: String = DEFAULT_RESET_COMMIT_REF, mode: ResetCommand.
     return resultRes
 }
 
-fun Git.push(remoteName: String = DEFAULT_REMOTE_NAME, branchName: String = DEFAULT_BRANCH_NAME, username: String, appPassword: String): Iterable<PushResult> {
+fun Git.push(remoteName: String = DEFAULT_REMOTE_NAME, branchName: String = DEFAULT_BRANCH_NAME, username: String, appPassword: String, force: Boolean = false): Iterable<PushResult> {
     val pushResult = this.push()
         .setRemote(remoteName)
         .add(branchName)
+        .setForce(force)
         .setCredentialsProvider(UsernamePasswordCredentialsProvider(username, appPassword))
         .call()
 

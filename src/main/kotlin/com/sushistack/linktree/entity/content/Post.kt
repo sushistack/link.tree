@@ -20,7 +20,10 @@ class Post (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "webpage_seq")
-    val webpage: StaticWebpage? = null,
+    val webpage: StaticWebpage
 
 
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    fun getLocalFileFullPath(appHomeDir: String): String =
+        "${appHomeDir}/${webpage.repository.workspaceName}/${webpage.repository.repositoryName}"
+}

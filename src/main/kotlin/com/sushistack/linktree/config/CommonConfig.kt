@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class CommonConfig {
 
-    @Bean(name = ["homeDir"])
-    fun homeDir(@Value("\${spring.application.name}") appName: String): String =
+    @Bean(name = ["appHomeDir"])
+    fun appHomeDir(@Value("\${spring.application.name}") appName: String): String =
         "${System.getProperty("user.home")}/${appName}"
 
 }

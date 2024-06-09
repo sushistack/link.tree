@@ -24,7 +24,7 @@ class StaticWebpage (
     val usedCount: Int = 0,
 
     @OneToOne(mappedBy = "webpage")
-    val repository: GitRepository? = null,
+    val repository: GitRepository,
 
     @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)
     val posts: List<Post> = emptyList()

@@ -20,9 +20,9 @@ class GitRepository (
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "webpage_seq")
-    val webpage: StaticWebpage = StaticWebpage(),
+    val webpage: StaticWebpage,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "git_account_seq")
-    val gitAccount: GitAccount = GitAccount()
+    val gitAccount: GitAccount
 ): BaseTimeEntity()
