@@ -1,5 +1,6 @@
 package com.sushistack.linktree.utils
 
+import com.sushistack.linktree.external.crawler.model.Article
 import kotlinx.serialization.json.Json
 import org.springframework.core.io.ClassPathResource
 import java.nio.charset.StandardCharsets
@@ -7,6 +8,7 @@ import java.nio.charset.StandardCharsets
 class ArticleUtils {
     companion object {
         private const val SYNONYMS_FILE_PATH = "synonyms.json"
+        private const val MARKDOWN_TEMPATE = "templates/post-template.md"
         private val consonantsAndGathers = listOf(
             "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "ㄲ", "ㄸ", "ㅃ", "ㅆ", "ㅉ",
             "ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅜ", "ㅠ", "ㅗ", "ㅛ", "ㅡ", "ㅣ", "ㅐ", "ㅔ", "ㅟ", "ㅢ", "ㅙ", "ㅝ", "ㅞ", "ㅒ", "ㅖ"
@@ -35,5 +37,13 @@ class ArticleUtils {
                 return@joinToString word
             }
         }
+
+        fun markdownify(article: Article) = ClassPathResource(MARKDOWN_TEMPATE)
+            .inputStream.readBytes()
+            .toString(StandardCharsets.UTF_8)
+            .let {
+                it.replace("{{title}}", article.getSafeTitle())
+                it.replace("{{content}}", article.content)
+            }
     }
 }

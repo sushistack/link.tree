@@ -2,10 +2,11 @@ package com.sushistack.linktree
 
 import com.sushistack.linktree.entity.order.OrderType
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
@@ -21,6 +22,7 @@ class JobRunner {
             .addString("orderType", OrderType.DELUXE.name)
             .addString("targetUrl", "https://test.com")
             .addString("customerName", "고객명")
+            .addString("keywords", Json.encodeToString(listOf("감자의 효능")))
             .toJobParameters()
 
         // val jobExecution = jobLauncher.run(job, jobParameters)

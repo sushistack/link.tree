@@ -6,12 +6,14 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.service.PostService
 import com.sushistack.linktree.service.StaticWebpageService
 import org.springframework.batch.item.ItemProcessor
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
 class WebpageProcessor(
     private val postService: PostService,
-    private val staticWebpageService: StaticWebpageService
+    private val staticWebpageService: StaticWebpageService,
+    @Value("#{jobExecutionContext['keywords']}") private val keywords: List<String>
 ): ItemProcessor<LinkNode, List<LinkNode>> {
 
     override fun process(parentNode: LinkNode): List<LinkNode> {
@@ -19,7 +21,7 @@ class WebpageProcessor(
 
         return webpages.map { webpage ->
             val post = Post(filePath = "life/test.md", webpage = webpage)
-            postService.createPost(post)
+            postService.createPost(post, keywords)
             LinkNode(
                 order = parentNode.order,
                 url = webpage.getPostUrl(post),

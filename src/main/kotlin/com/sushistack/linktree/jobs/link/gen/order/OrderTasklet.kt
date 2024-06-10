@@ -4,6 +4,7 @@ import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.OrderType
 import com.sushistack.linktree.service.OrderService
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.serialization.json.Json
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.scope.context.ChunkContext
@@ -18,10 +19,11 @@ class OrderTasklet(
     @Value("#{jobParameters['orderType']}") private val orderType: String,
     @Value("#{jobParameters['targetUrl']}") private val targetUrl: String,
     @Value("#{jobParameters['customerName']}") private val customerName: String,
+    @Value("#{jobParameters['keywords']}") private val keywordsJson: String,
     private val orderService: OrderService
 ): Tasklet {
 
-    val log = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
         val order = orderService.createOrder(
@@ -32,6 +34,7 @@ class OrderTasklet(
             )
         )
         contribution.stepExecution.jobExecution.executionContext.put("order", order)
+        contribution.stepExecution.jobExecution.executionContext.put("keywords", Json.decodeFromString(keywordsJson))
         log.info { "Saved Order := [${order}]" }
 
         return RepeatStatus.FINISHED
