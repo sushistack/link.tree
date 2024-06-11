@@ -1,6 +1,8 @@
 package com.sushistack.linktree.jobs.link.gen.webpage
 
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
+import com.sushistack.linktree.entity.content.QPublication
+import com.sushistack.linktree.entity.content.QPublication.*
 import com.sushistack.linktree.entity.git.QGitAccount
 import com.sushistack.linktree.entity.git.QGitRepository
 import com.sushistack.linktree.entity.git.QGitRepository.gitRepository
@@ -30,8 +32,7 @@ class WebpageReaderConfig {
             queryFactory
                 .selectFrom(linkNode)
                 .join(linkNode.order, QOrder.order).fetchJoin()
-                .join(linkNode.repository, gitRepository).fetchJoin()
-                .join(gitRepository.gitAccount, QGitAccount.gitAccount).fetchJoin()
+                .join(linkNode.publication, publication).fetchJoin()
                 .where(
                     linkNode.tier.eq(prevTier)
                         .and(linkNode.order.orderSeq.eq(QOrder.order.orderSeq))

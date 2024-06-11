@@ -1,13 +1,13 @@
 package com.sushistack.linktree.service
 
-import com.sushistack.linktree.entity.publisher.Comment
-import com.sushistack.linktree.repository.publisher.CommentRepository
+import com.sushistack.linktree.entity.publisher.CommentableWebpage
+import com.sushistack.linktree.repository.publisher.CommentableWebpageRepository
 import org.springframework.stereotype.Service
 
 @Service
-class CommentService(private val commentRepository: CommentRepository) {
+class CommentableWebpageService(private val commentableWebpageRepository: CommentableWebpageRepository) {
 
-    fun findByOrderByUsedCountLimit(limit: Long): List<Comment> =
-        commentRepository.findByOrderByUsedCountLimit(limit)
+    fun findByOrderByUsedCountLimit(limit: Long): List<CommentableWebpage> =
+        commentableWebpageRepository.findByOrderByUsedCountLimit(limit)
 
 }

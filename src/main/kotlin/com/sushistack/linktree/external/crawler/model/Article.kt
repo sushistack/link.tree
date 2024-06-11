@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class Article (
     val title: String,
     val description: String,
-    val content: String
+    var content: String
 ) {
     fun getSafeTitle() = title
         .replace("<", "")

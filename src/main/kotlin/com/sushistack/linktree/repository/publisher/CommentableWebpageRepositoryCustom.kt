@@ -1,7 +1,7 @@
 package com.sushistack.linktree.repository.publisher
 
-import com.sushistack.linktree.entity.publisher.Comment
+import com.sushistack.linktree.entity.publisher.CommentableWebpage
 
-interface CommentRepositoryCustom {
-    fun findByOrderByUsedCountLimit(limit: Long): List<Comment>
+interface CommentableWebpageRepositoryCustom {
+    fun findByOrderByUsedCountLimit(limit: Long): List<CommentableWebpage>
 }

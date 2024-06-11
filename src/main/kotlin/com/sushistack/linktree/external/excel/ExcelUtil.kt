@@ -16,6 +16,7 @@ import kotlin.reflect.full.memberProperties
 class ExcelUtil {
     companion object {
         private fun setHeaderRow(excelSheet: Sheet, clazz: KClass<out Any>) {
+            if (clazz == List::class || clazz == ArrayList::class) return
             val columns = clazz.declaredMemberProperties
                 .sortedBy { it.annotations.filterIsInstance<ExcelColumn>().firstOrNull()?.order ?: Int.MAX_VALUE }
                 .map { prop -> prop.findAnnotation<ExcelColumn>()?.name ?: prop.name }
@@ -49,6 +50,13 @@ class ExcelUtil {
 
         private fun save(workbook: Workbook, filePath: Path) {
             try {
+                val file = filePath.toFile()
+                file.parentFile?.let { parentDir ->
+                    if (!parentDir.exists()) {
+                        parentDir.mkdirs()
+                    }
+                }
+
                 FileOutputStream(filePath.toFile()).use { outputStream ->
                     workbook.write(outputStream)
                 }
@@ -65,8 +73,10 @@ class ExcelUtil {
             for (sheet in sheets) {
                 val excelSheet = workbook.createSheet(sheet.name)
 
-                setHeaderRow(excelSheet, sheet.rows[0]::class)
-                setDataRows(excelSheet, sheet.rows)
+                if (sheet.rows.isNotEmpty()) {
+                    setHeaderRow(excelSheet, sheet.rows[0]::class)
+                    setDataRows(excelSheet, sheet.rows)
+                }
             }
 
             save(workbook, filePath)

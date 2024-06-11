@@ -18,7 +18,10 @@ import java.time.LocalDate
 
 @JobScope
 @Component
-class ReportTasklet(private val linkNodeService: LinkNodeService): Tasklet {
+class ReportTasklet(
+    private val appHomeDir: String,
+    private val linkNodeService: LinkNodeService
+): Tasklet {
     companion object {
         private const val FIRST_TIER_SHEET_NAME = "기사형 1티어 백링크"
         private const val SECOND_TIER_SHEET_NAME = "기사형 2티어 백링크"
@@ -47,7 +50,7 @@ class ReportTasklet(private val linkNodeService: LinkNodeService): Tasklet {
             ExcelSheet(THIRD_TIER_SHEET_NAME, third.map { LinkTable(second.find { f -> f.nodeSeq == it.parentNodeSeq }?.url ?: "", it.url, it.createdDate.toString()) })
         )
 
-        ExcelUtil.writeExcel(sheets, Paths.get("files/excel/${order.customerName}_${order.orderSeq}_${LocalDate.now()}.xlsx"))
+        ExcelUtil.writeExcel(sheets, Paths.get("${appHomeDir}/files/excel/${order.customerName}_${order.orderSeq}_${LocalDate.now()}.xlsx"))
 
         return RepeatStatus.FINISHED
     }

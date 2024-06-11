@@ -1,29 +1,25 @@
 package com.sushistack.linktree.entity.content
 
-import com.sushistack.linktree.entity.BaseTimeEntity
+import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.publisher.StaticWebpage
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "lt_post")
+@DiscriminatorValue(PublicationType.POST_DISCRIMINATOR)
 class Post (
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_seq", nullable = false)
-    val postSeq: Long = 0,
-
-    @Column(name = "file_path", nullable = false)
-    val filePath: String = "",
-
-    @Column(name = "file_name", nullable = false)
-    val fileName: String = "",
+    @Column(name = "file_path")
+    val filePath: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "webpage_seq")
-    val webpage: StaticWebpage
+    val webpage: StaticWebpage? = null,
 
+    linkNode: LinkNode? = null
+): Publication(linkNode = linkNode) {
 
-): BaseTimeEntity() {
     fun getLocalFileFullPath(appHomeDir: String): String =
-        "${appHomeDir}/${webpage.repository.workspaceName}/${webpage.repository.repositoryName}"
+        "${appHomeDir}/repo/${webpage?.repository?.workspaceName}/${webpage?.repository?.repositoryName}/${getFilename()}"
+
+    fun getFilename(): String = filePath?.split("/")?.last() ?: ""
+
 }

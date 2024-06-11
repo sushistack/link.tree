@@ -1,7 +1,7 @@
 package com.sushistack.linktree.service
 
-import com.sushistack.linktree.entity.publisher.Comment
-import com.sushistack.linktree.repository.publisher.CommentRepository
+import com.sushistack.linktree.entity.publisher.CommentableWebpage
+import com.sushistack.linktree.repository.publisher.CommentableWebpageRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -13,31 +13,31 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @SpringBootTest
-class CommentServiceTest {
+class CommentableWebpageServiceTest {
 
 
     @Autowired
-    lateinit var commentService: CommentService
+    lateinit var commentableWebpageService: CommentableWebpageService
 
     @Autowired
-    lateinit var commentRepository: CommentRepository
+    lateinit var commentableWebpageRepository: CommentableWebpageRepository
 
     @DisplayName("find comment with limit size")
     @ParameterizedTest(name = "[{index}] comments size = {0}, limit = {1}, expected size = {2}")
-    @MethodSource("commentsProvider")
+    @MethodSource("commentableWebpagesProvider")
     fun findByOrderByUsedCountLimit(commentSize: Long, limit: Long, expectedSize: Int) {
         // Given
-        val comments = (1..commentSize).map { Comment() }
-        commentRepository.saveAll(comments)
+        val commentableWebpages = (1..commentSize).map { CommentableWebpage() }
+        commentableWebpageRepository.saveAll(commentableWebpages)
 
         // Then
-        val savedComments = commentService.findByOrderByUsedCountLimit(limit)
-        Assertions.assertThat(savedComments).hasSize(expectedSize)
+        val savedCommentableWebpages = commentableWebpageService.findByOrderByUsedCountLimit(limit)
+        Assertions.assertThat(savedCommentableWebpages).hasSize(expectedSize)
     }
 
     companion object {
         @JvmStatic
-        fun commentsProvider() = listOf(
+        fun commentableWebpagesProvider() = listOf(
             Arguments.of(2, 3, 2),
             Arguments.of(10, 3, 3)
         )

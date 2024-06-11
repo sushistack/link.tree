@@ -21,7 +21,9 @@ import kotlinx.serialization.json.Json
 import java.io.FileOutputStream
 import java.nio.file.Paths
 
-class CrawlService {
+class CrawlService(
+    private val appHomeDir: String
+) {
 
     private val log = KotlinLogging.logger {}
 
@@ -64,7 +66,7 @@ class CrawlService {
 
                         if (article.content.split(" ").size > MIN_WORDS) {
                             val articleJson = Json.encodeToString(Article.serializer(), article)
-                            val file = Paths.get("files/articles/$keyword/${articleNumbers++}.json").toFile()
+                            val file = Paths.get("${appHomeDir}/files/articles/$keyword/${articleNumbers++}.json").toFile()
                             file.parentFile?.let { parentDir ->
                                 if (!parentDir.exists()) {
                                     parentDir.mkdirs()
@@ -73,7 +75,7 @@ class CrawlService {
                             FileOutputStream(file).use { outputStream ->
                                 outputStream.write(articleJson.toByteArray())
                             }
-                            log.info { "Saved article successfully!" }
+                            log.info { "Article is saved successfully!" }
                         } else {
                             log.info { "Skip saving Article." }
                         }

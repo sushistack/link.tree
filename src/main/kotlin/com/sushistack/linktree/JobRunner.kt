@@ -25,9 +25,7 @@ class JobRunner {
             .addString("keywords", Json.encodeToString(listOf("감자의 효능")))
             .toJobParameters()
 
-        // val jobExecution = jobLauncher.run(job, jobParameters)
-        // log.info { "Job Status: ${jobExecution.status}" }
+         val jobExecution = jobLauncher.run(job, jobParameters)
+         log.info { "Job Status: ${jobExecution.status}" }
     }
-
-
 }

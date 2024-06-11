@@ -14,7 +14,7 @@ class OrderReader: ItemReader<Order> {
     private var processed = false
 
     @Value("#{jobExecutionContext['order']}")
-    lateinit var order: Order
+    private lateinit var order: Order
 
     override fun read(): Order? {
         return if (!processed) {

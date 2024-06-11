@@ -1,0 +1,4 @@
+username,appPassword,hostingService
+a,b,GITHUB
+d,e,GITLAB
+g,h,BITBUCKET

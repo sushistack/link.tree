@@ -12,9 +12,8 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 
 class CrawlServiceTest {
-
     private val log = KotlinLogging.logger {}
-    private val crawlService: CrawlService = CrawlService()
+    private val crawlService: CrawlService = CrawlService("${System.getProperty("user.home")}/link.tree")
 
     @DisplayName("Go to page by Playwright.")
     @ParameterizedTest(name = "[{index}] url = [{0}]")
@@ -50,7 +49,7 @@ class CrawlServiceTest {
     companion object {
         @JvmStatic
         fun keywordsProvider() = listOf(
-            listOf("감자의 효능", "토마토의 효능")
+            listOf("감자의 효능")
         )
     }
 

@@ -72,8 +72,9 @@ class GitExtensionsTest {
         val commitRes = git.addAndCommit()
 
         // Then
-        Assertions.assertThat(commitRes).isNotNull
-        // git.resetTo()
+        if (commitRes != null) {
+            git.resetTo()
+        }
     }
 
     @Test

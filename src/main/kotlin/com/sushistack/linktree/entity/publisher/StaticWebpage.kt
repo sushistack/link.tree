@@ -24,11 +24,11 @@ class StaticWebpage (
     val usedCount: Int = 0,
 
     @OneToOne(mappedBy = "webpage")
-    val repository: GitRepository,
+    var repository: GitRepository? = null,
 
     @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)
     val posts: List<Post> = emptyList()
 ): BaseTimeEntity() {
     fun getPostUrl(post: Post): String =
-        "https://${domain}/${post.filePath.split(".")[0]}"
+        "https://${domain}/${post.filePath?.split(".")?.get(0) ?: ""}"
 }
