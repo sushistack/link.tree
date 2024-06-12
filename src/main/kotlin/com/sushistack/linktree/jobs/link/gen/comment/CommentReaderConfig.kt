@@ -1,10 +1,7 @@
 package com.sushistack.linktree.jobs.link.gen.comment
 
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
-import com.sushistack.linktree.entity.content.QPublication
-import com.sushistack.linktree.entity.content.QPublication.*
-import com.sushistack.linktree.entity.git.QGitAccount
-import com.sushistack.linktree.entity.git.QGitRepository.gitRepository
+import com.sushistack.linktree.entity.content.QPublication.publication
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.link.QLinkNode.linkNode
 import com.sushistack.linktree.entity.order.Order
