@@ -22,15 +22,14 @@ class CommentReaderConfig {
     fun commentReader(
         @Value("#{jobExecutionContext['order']}") order: Order,
         entityManagerFactory: EntityManagerFactory
-    ): QuerydslPagingItemReader<LinkNode> {
-        val prevTier = order.orderStatus.tier - 1
-        return QuerydslPagingItemReader(entityManagerFactory) { queryFactory, offset, limit ->
+    ): QuerydslPagingItemReader<LinkNode> =
+        QuerydslPagingItemReader(entityManagerFactory) { queryFactory, offset, limit ->
             queryFactory
                 .selectFrom(linkNode)
                 .join(linkNode.order, QOrder.order).fetchJoin()
                 .join(linkNode.publication, publication).fetchJoin()
                 .where(
-                    linkNode.tier.eq(prevTier)
+                    linkNode.tier.eq(order.orderStatus.tier - 1)
                         .and(linkNode.order.orderSeq.eq(QOrder.order.orderSeq))
                         .and(QOrder.order.orderSeq.eq(order.orderSeq))
                 )
@@ -38,5 +37,4 @@ class CommentReaderConfig {
                 .limit(limit.toLong())
                 .fetch()
         }
-    }
 }
