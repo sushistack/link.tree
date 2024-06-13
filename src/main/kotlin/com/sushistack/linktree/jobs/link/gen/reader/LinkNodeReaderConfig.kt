@@ -1,4 +1,4 @@
-package com.sushistack.linktree.jobs.link.gen.comment
+package com.sushistack.linktree.jobs.link.gen.reader
 
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.content.QPublication.publication
@@ -6,7 +6,6 @@ import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.link.QLinkNode.linkNode
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.QOrder
-import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.persistence.EntityManagerFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.beans.factory.annotation.Value
@@ -14,12 +13,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class CommentReaderConfig {
-    private val log = KotlinLogging.logger {}
+class LinkNodeReaderConfig {
 
     @Bean
     @JobScope
-    fun commentReader(
+    fun linkNodeReader(
         @Value("#{jobExecutionContext['order']}") order: Order,
         entityManagerFactory: EntityManagerFactory
     ): QuerydslPagingItemReader<LinkNode> =
@@ -37,4 +35,5 @@ class CommentReaderConfig {
                 .limit(limit.toLong())
                 .fetch()
         }
+
 }

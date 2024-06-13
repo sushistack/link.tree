@@ -1,12 +1,10 @@
-package com.sushistack.linktree.jobs.link.gen.order
+package com.sushistack.linktree.jobs.link.gen.tasklet
 
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.OrderType
-import com.sushistack.linktree.model.getMinUsed
 import com.sushistack.linktree.service.ArticleService
 import com.sushistack.linktree.service.OrderService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobScope

@@ -3,17 +3,16 @@ package com.sushistack.linktree.jobs.link.gen
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
-import com.sushistack.linktree.jobs.link.gen.comment.CommentProcessor
-import com.sushistack.linktree.jobs.link.gen.comment.CommentWriter
+import com.sushistack.linktree.jobs.link.gen.processor.CommentLinksToCloudBlogsProcessor
 import com.sushistack.linktree.jobs.link.gen.listener.CloudBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.CommentStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
-import com.sushistack.linktree.jobs.link.gen.order.OrderReader
+import com.sushistack.linktree.jobs.link.gen.reader.OrderReader
 import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
-import com.sushistack.linktree.jobs.link.gen.order.OrderToLinkNodesProcessor
+import com.sushistack.linktree.jobs.link.gen.processor.PrivateBlogLinksToOrderProcessor
 import com.sushistack.linktree.jobs.link.gen.report.ReportTasklet
-import com.sushistack.linktree.jobs.link.gen.webpage.WebpageProcessor
-import com.sushistack.linktree.jobs.link.gen.webpage.WebpageWriter
+import com.sushistack.linktree.jobs.link.gen.processor.CloudBlogLinksToPrivateBlogsProcessor
+import com.sushistack.linktree.jobs.link.gen.writer.LinkNodeWriter
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -67,15 +66,15 @@ class LinkGenerationJobConfig {
         jobRepository: JobRepository,
         jpaTransactionManager: JpaTransactionManager,
         orderReader: OrderReader,
-        orderToLinkNodesProcessor: OrderToLinkNodesProcessor,
-        webpageWriter: WebpageWriter,
+        privateBlogLinksToOrderProcessor: PrivateBlogLinksToOrderProcessor,
+        linkNodeWriter: LinkNodeWriter,
         privateBlogsStepListener: PrivateBlogsStepListener
     ): Step =
         StepBuilder("addPrivateBlogsToOrderStep", jobRepository)
             .chunk<Order, List<LinkNode>>(ORDER_CHUNK_SIZE, jpaTransactionManager)
             .reader(orderReader)
-            .processor(orderToLinkNodesProcessor)
-            .writer(webpageWriter)
+            .processor(privateBlogLinksToOrderProcessor)
+            .writer(linkNodeWriter)
             .listener(privateBlogsStepListener)
             .build()
 
@@ -84,16 +83,16 @@ class LinkGenerationJobConfig {
     fun addCloudBlogsToOrderStep(
         jobRepository: JobRepository,
         jpaTransactionManager: JpaTransactionManager,
-        webpageReader: QuerydslPagingItemReader<LinkNode>,
-        webpageProcessor: WebpageProcessor,
-        webpageWriter: WebpageWriter,
+        linkNodeReader: QuerydslPagingItemReader<LinkNode>,
+        cloudBlogLinksToPrivateBlogsProcessor: CloudBlogLinksToPrivateBlogsProcessor,
+        linkNodeWriter: LinkNodeWriter,
         cloudBlogsStepListener: CloudBlogsStepListener
     ): Step =
         StepBuilder("addCloudBlogsToOrderStep", jobRepository)
             .chunk<LinkNode, List<LinkNode>>(WEBPAGE_CHUNK_SIZE, jpaTransactionManager)
-            .reader(webpageReader)
-            .processor(webpageProcessor)
-            .writer(webpageWriter)
+            .reader(linkNodeReader)
+            .processor(cloudBlogLinksToPrivateBlogsProcessor)
+            .writer(linkNodeWriter)
             .listener(cloudBlogsStepListener)
             .build()
 
@@ -102,16 +101,16 @@ class LinkGenerationJobConfig {
     fun addCommentsToLinkNodesStep(
         jobRepository: JobRepository,
         jpaTransactionManager: JpaTransactionManager,
-        commentReader: QuerydslPagingItemReader<LinkNode>,
-        commentProcessor: CommentProcessor,
-        commentWriter: CommentWriter,
+        linkNodeReader: QuerydslPagingItemReader<LinkNode>,
+        commentLinksToCloudBlogsProcessor: CommentLinksToCloudBlogsProcessor,
+        linkNodeWriter: LinkNodeWriter,
         commentStepListener: CommentStepListener
     ): Step =
         StepBuilder("addCommentsToLinkNodesStep", jobRepository)
             .chunk<LinkNode, List<LinkNode>>(COMMENT_CHUNK_SIZE, jpaTransactionManager)
-            .reader(commentReader)
-            .processor(commentProcessor)
-            .writer(commentWriter)
+            .reader(linkNodeReader)
+            .processor(commentLinksToCloudBlogsProcessor)
+            .writer(linkNodeWriter)
             .listener(commentStepListener)
             .build()
 

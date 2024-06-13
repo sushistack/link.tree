@@ -1,4 +1,4 @@
-package com.sushistack.linktree.jobs.link.gen.report.model
+package com.sushistack.linktree.model
 
 import com.sushistack.linktree.external.excel.config.ExcelColumn
 

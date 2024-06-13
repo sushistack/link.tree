@@ -1,9 +1,9 @@
-package com.sushistack.linktree.jobs.link.gen.report
+package com.sushistack.linktree.jobs.link.gen.tasklet
 
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.external.excel.ExcelUtil
 import com.sushistack.linktree.external.excel.model.ExcelSheet
-import com.sushistack.linktree.jobs.link.gen.report.model.LinkTable
+import com.sushistack.linktree.model.LinkTable
 import com.sushistack.linktree.service.LinkNodeService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.StepContribution

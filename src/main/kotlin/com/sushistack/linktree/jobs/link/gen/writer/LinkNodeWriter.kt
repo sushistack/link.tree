@@ -1,4 +1,4 @@
-package com.sushistack.linktree.jobs.link.gen.webpage
+package com.sushistack.linktree.jobs.link.gen.writer
 
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.service.LinkNodeService
@@ -8,7 +8,7 @@ import org.springframework.batch.item.ItemWriter
 import org.springframework.stereotype.Component
 
 @Component
-class WebpageWriter(private val linkNodeService: LinkNodeService): ItemWriter<List<LinkNode>> {
+class LinkNodeWriter(private val linkNodeService: LinkNodeService): ItemWriter<List<LinkNode>> {
     val log = KotlinLogging.logger {}
 
     override fun write(chunk: Chunk<out List<LinkNode>>) {

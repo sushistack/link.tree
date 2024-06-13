@@ -1,4 +1,4 @@
-package com.sushistack.linktree.jobs.link.gen.comment
+package com.sushistack.linktree.jobs.link.gen.processor
 
 import com.sushistack.linktree.entity.content.Comment
 import com.sushistack.linktree.entity.link.LinkNode
@@ -7,7 +7,7 @@ import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
 
 @Component
-class CommentProcessor(
+class CommentLinksToCloudBlogsProcessor(
     private val commentableWebpageService: CommentableWebpageService
 ): ItemProcessor<LinkNode, List<LinkNode>> {
 

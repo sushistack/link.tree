@@ -1,4 +1,4 @@
-package com.sushistack.linktree.jobs.link.gen.order
+package com.sushistack.linktree.jobs.link.gen.reader
 
 import com.sushistack.linktree.entity.order.Order
 import io.github.oshai.kotlinlogging.KotlinLogging
