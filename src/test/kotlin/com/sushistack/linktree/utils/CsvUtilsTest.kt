@@ -1,8 +1,8 @@
 package com.sushistack.linktree.utils
 
-import com.sushistack.linktree.model.vo.GitAccount
-import com.sushistack.linktree.model.vo.GitRepository
-import com.sushistack.linktree.model.vo.StaticWebpage
+import com.sushistack.linktree.model.vo.GitAccountVO
+import com.sushistack.linktree.model.vo.GitRepositoryVO
+import com.sushistack.linktree.model.vo.StaticWebpageVO
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -14,9 +14,9 @@ class CsvUtilsTest {
     @MethodSource("csvFilePathProvider")
     fun readTest(ga: String, gr: String, wp: String) {
         // When
-        val gitAccounts: List<GitAccount> = CsvUtils.read(ga)
-        val gitRepositories: List<GitRepository> = CsvUtils.read(gr)
-        val webpages: List<StaticWebpage> = CsvUtils.read(wp)
+        val gitAccounts: List<GitAccountVO> = CsvUtils.read(ga)
+        val gitRepositories: List<GitRepositoryVO> = CsvUtils.read(gr)
+        val webpages: List<StaticWebpageVO> = CsvUtils.read(wp)
 
         // Then
         Assertions.assertThat(gitAccounts).hasSize(3)
@@ -29,9 +29,9 @@ class CsvUtilsTest {
     fun readTextTest(ga: String, gr: String, wp: String) {
 
         // When
-        val gitAccounts: List<GitAccount> = CsvUtils.readText(ga)
-        val gitRepositories: List<GitRepository> = CsvUtils.readText(gr)
-        val webpages: List<StaticWebpage> = CsvUtils.readText(wp)
+        val gitAccounts: List<GitAccountVO> = CsvUtils.readText(ga)
+        val gitRepositories: List<GitRepositoryVO> = CsvUtils.readText(gr)
+        val webpages: List<StaticWebpageVO> = CsvUtils.readText(wp)
 
         // Then
         Assertions.assertThat(gitAccounts).hasSize(3)

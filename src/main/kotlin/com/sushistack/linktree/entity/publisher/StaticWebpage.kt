@@ -31,4 +31,6 @@ class StaticWebpage (
 ): BaseTimeEntity() {
     fun getPostUrl(post: Post): String =
         "https://${domain}/${post.filePath?.split(".")?.get(0) ?: ""}"
+
+    override fun toString(): String = "StaticWebpage(webpageSeq=$webpageSeq, domain='$domain', providerType=$providerType, usedCount=$usedCount)"
 }

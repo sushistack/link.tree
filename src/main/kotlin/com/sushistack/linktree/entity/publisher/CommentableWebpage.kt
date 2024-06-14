@@ -16,4 +16,6 @@ class CommentableWebpage (
 
     @Column(name = "used_count", nullable = false)
     val usedCount: Int = 0,
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    override fun toString(): String = "CommentableWebpage(commentSeq=$commentSeq, postUrl=$postUrl, usedCount=$usedCount)"
+}

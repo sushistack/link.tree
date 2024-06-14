@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @SpringBootTest
-class StaticWebpageServiceTest {
+class StaticWebpageVOServiceTest {
     @Autowired
     lateinit var entityManager: EntityManager
 

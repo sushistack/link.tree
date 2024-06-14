@@ -31,4 +31,6 @@ class GitAccount(
         "${authScheme.prefix} " +
         Base64.getEncoder()
             .encodeToString("${this.username}:${this.appPassword}".toByteArray())
+
+    override fun toString(): String = "GitAccount(accountSeq=$accountSeq, username=$username, appPassword=$appPassword, hostingService=$hostingService)"
 }

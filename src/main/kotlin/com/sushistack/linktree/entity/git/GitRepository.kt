@@ -30,4 +30,6 @@ class GitRepository (
         this.webpage = webpage
         this.webpage?.repository = this
     }
+
+    override fun toString(): String = "GitRepository(repositorySeq=$repositorySeq, workspaceName='$workspaceName', repositoryName='$repositoryName', webpage=$webpage, gitAccount=$gitAccount)"
 }

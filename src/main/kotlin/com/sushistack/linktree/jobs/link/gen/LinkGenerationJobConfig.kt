@@ -8,10 +8,11 @@ import com.sushistack.linktree.jobs.link.gen.listener.CloudBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.CommentStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.reader.OrderReader
-import com.sushistack.linktree.jobs.link.gen.order.OrderTasklet
 import com.sushistack.linktree.jobs.link.gen.processor.PrivateBlogLinksToOrderProcessor
-import com.sushistack.linktree.jobs.link.gen.report.ReportTasklet
 import com.sushistack.linktree.jobs.link.gen.processor.CloudBlogLinksToPrivateBlogsProcessor
+import com.sushistack.linktree.jobs.link.gen.tasklet.InitializationTasklet
+import com.sushistack.linktree.jobs.link.gen.tasklet.OrderTasklet
+import com.sushistack.linktree.jobs.link.gen.tasklet.ReportTasklet
 import com.sushistack.linktree.jobs.link.gen.writer.LinkNodeWriter
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -35,6 +36,7 @@ class LinkGenerationJobConfig {
     @Bean
     fun linkGenerationJob(
         jobRepository: JobRepository,
+        initializationStep: Step,
         saveOrderStep: Step,
         addPrivateBlogsToOrderStep: Step,
         addCloudBlogsToOrderStep: Step,
@@ -42,13 +44,23 @@ class LinkGenerationJobConfig {
         saveToExcelStep: Step
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
-            .start(saveOrderStep)
+            .start(initializationStep)
+            .next(saveOrderStep)
             .next(addPrivateBlogsToOrderStep)
             .next(addCloudBlogsToOrderStep)
             .next(addCommentsToLinkNodesStep)
             .next(saveToExcelStep)
             .build()
 
+    @Bean
+    fun initializationStep(
+        jobRepository: JobRepository,
+        initializationTasklet: InitializationTasklet,
+        jpaTransactionManager: JpaTransactionManager
+    ): TaskletStep =
+        StepBuilder("initializationStep", jobRepository)
+            .tasklet(initializationTasklet, jpaTransactionManager)
+            .build()
 
     @Bean
     fun saveOrderStep(
