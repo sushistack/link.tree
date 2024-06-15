@@ -61,9 +61,9 @@ class ReportTasklet(
             listOf(
                 mutableListOf(REPORT_NAME),
                 mutableListOf(),
-                mutableListOf("기사형 1티어 백링크", "$firstSize", "개", "(타겟 URL을 직접 링크합니다.)"),
-                mutableListOf("기사형 2티어 백링크", "$secondSize", "개", "(위의 기사형 1티어 백링크를 링크합니다.)"),
-                mutableListOf("댓글형 3티어 백링크", "$thirdSize", "개", "(위의 기사형 2티어 백링크를 링크합니다.)"),
+                mutableListOf(FIRST_TIER_SHEET_NAME, "$firstSize", "개", "(타겟 URL을 직접 링크합니다.)"),
+                mutableListOf(SECOND_TIER_SHEET_NAME, "$secondSize", "개", "(위의 기사형 1티어 백링크를 링크합니다.)"),
+                mutableListOf(THIRD_TIER_SHEET_NAME, "$thirdSize", "개", "(위의 기사형 2티어 백링크를 링크합니다.)"),
                 mutableListOf(),
                 mutableListOf("총합", "${firstSize + secondSize + thirdSize}", "개", "의 피라미드 구조 백링크가 생성 완료되었습니다."),
                 mutableListOf(),
