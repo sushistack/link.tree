@@ -33,26 +33,50 @@ class InitializationService(
 
     @Transactional
     fun initialize() {
-        val commentableWebpages = CsvUtils.read<CommentableWebpageVO>(COMMENT_FILE_PATH)
-            .map { it.toEntity(stringEncryptor::decrypt) }
-            .let { commentableWebpageRepository.saveAll(it) }
+        val cc = commentableWebpageRepository.findAll()
+        if (cc.isEmpty()) {
+            val commentableWebpages = CsvUtils.read<CommentableWebpageVO>(COMMENT_FILE_PATH)
+                .map { it.toEntity(stringEncryptor::decrypt) }
+                .let { commentableWebpageRepository.saveAll(it) }
 
-        val gitAccounts = CsvUtils.read<GitAccountVO>(ACCOUNT_FILE_PATH)
-            .map { it.toEntity(stringEncryptor::decrypt) }
-            .let { gitAccountRepository.saveAll(it) }
+            log.info { "commentableWebpages.size = ${commentableWebpages.size}" }
+        } else {
+            log.info { "skip saving, commentableWebpages.size = ${cc.size}" }
+        }
 
-        val webpages = CsvUtils.read<StaticWebpageVO>(WEBPAGE_FILE_PATH)
-            .map { it.toEntity(stringEncryptor::decrypt) }
-            .let { staticWebpageRepository.saveAll(it) }
+        val ac = gitAccountRepository.findAll()
+        if (ac.isEmpty()) {
+            val gitAccounts = CsvUtils.read<GitAccountVO>(ACCOUNT_FILE_PATH)
+                .map { it.toEntity(stringEncryptor::decrypt) }
+                .let { gitAccountRepository.saveAll(it) }
+            log.info { "gitAccounts.size = ${gitAccounts.size}" }
+        } else {
+            log.info { "skip saving, gitAccounts.size = ${ac.size}" }
+        }
 
-        val repositories = CsvUtils.read<GitRepositoryVO>(REPOSITORY_FILE_PATH).mapIndexed { index, repo ->
-            val account = gitAccounts.find { ga -> ga.username == stringEncryptor.decrypt(repo.account) } ?: throw IllegalArgumentException("Not found")
-            repo.toEntity(webpages[index], account, stringEncryptor::decrypt)
-        }.let { gitRepoRepository.saveAll(it) }
+        val sc = staticWebpageRepository.findAll()
+        if (sc.isEmpty()) {
+            val webpages = CsvUtils.read<StaticWebpageVO>(WEBPAGE_FILE_PATH)
+                .map { it.toEntity(stringEncryptor::decrypt) }
+                .let { staticWebpageRepository.saveAll(it) }
 
-        log.info { "gitAccounts.size = ${gitAccounts.size}" }
-        log.info { "commentableWebpages.size = ${commentableWebpages.size}" }
-        log.info { "webpages.size = ${webpages.size}" }
-        log.info { "repositories.count = ${repositories.size}" }
+            log.info { "webpages.size = ${webpages.size}" }
+        } else {
+            log.info { "skip saving, webpages.size = ${sc.size}" }
+        }
+
+        val rc = gitRepoRepository.findAll()
+        if (rc.isEmpty()) {
+            val gitAccounts = gitAccountRepository.findAll()
+            val webpages = staticWebpageRepository.findAll()
+            val repositories = CsvUtils.read<GitRepositoryVO>(REPOSITORY_FILE_PATH).mapIndexed { index, repo ->
+                val account = gitAccounts.find { ga -> ga.username == stringEncryptor.decrypt(repo.account) } ?: throw IllegalArgumentException("Not found")
+                repo.toEntity(webpages[index], account, stringEncryptor::decrypt)
+            }.let { gitRepoRepository.saveAll(it) }
+
+            log.info { "repositories.count = ${repositories.size}" }
+        } else {
+            log.info { "skip saving, repositories.count = ${rc.size}" }
+        }
     }
 }
