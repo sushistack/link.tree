@@ -23,7 +23,7 @@ class GitAccount(
     @Column(name = "hosting_service", nullable = false)
     val hostingService: HostingService = HostingService.UNKNOWN,
 
-    @OneToMany(mappedBy = "gitAccount", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "gitAccount", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val gitRepositories: List<GitRepository> = mutableListOf()
 ): BaseTimeEntity() {
 

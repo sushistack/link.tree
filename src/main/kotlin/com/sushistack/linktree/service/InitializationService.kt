@@ -79,4 +79,13 @@ class InitializationService(
             log.info { "skip saving, repositories.count = ${rc.size}" }
         }
     }
+
+    @Transactional
+    fun clearAll() {
+        commentableWebpageRepository.deleteAll()
+        gitRepoRepository.findAll().forEach {
+            it.gitAccount = null
+            it.webpage = null
+        }
+    }
 }

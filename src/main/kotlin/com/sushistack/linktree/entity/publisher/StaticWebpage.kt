@@ -23,7 +23,7 @@ class StaticWebpage (
     @Column(name = "used_count", nullable = false)
     val usedCount: Int = 0,
 
-    @OneToOne(mappedBy = "webpage")
+    @OneToOne(mappedBy = "webpage", cascade = [CascadeType.ALL], orphanRemoval = true)
     var repository: GitRepository? = null,
 
     @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)

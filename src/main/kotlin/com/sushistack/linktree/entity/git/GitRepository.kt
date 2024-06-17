@@ -24,7 +24,7 @@ class GitRepository (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "git_account_seq")
-    val gitAccount: GitAccount? = null
+    var gitAccount: GitAccount? = null
 ): BaseTimeEntity() {
     fun changeWebPage(webpage: StaticWebpage) {
         this.webpage = webpage
