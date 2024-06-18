@@ -10,6 +10,7 @@ import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.reader.OrderReader
 import com.sushistack.linktree.jobs.link.gen.processor.PrivateBlogLinksToOrderProcessor
 import com.sushistack.linktree.jobs.link.gen.processor.CloudBlogLinksToPrivateBlogsProcessor
+import com.sushistack.linktree.jobs.link.gen.tasklet.ClearingInitializationTask
 import com.sushistack.linktree.jobs.link.gen.tasklet.InitializationTasklet
 import com.sushistack.linktree.jobs.link.gen.tasklet.OrderTasklet
 import com.sushistack.linktree.jobs.link.gen.tasklet.ReportTasklet
@@ -37,6 +38,7 @@ class LinkGenerationJobConfig {
     fun linkGenerationJob(
         jobRepository: JobRepository,
         initializationStep: Step,
+        clearingInitializationStep: Step,
         saveOrderStep: Step,
         addPrivateBlogsToOrderStep: Step,
         addCloudBlogsToOrderStep: Step,
@@ -50,6 +52,7 @@ class LinkGenerationJobConfig {
 //            .next(addCloudBlogsToOrderStep)
 //            .next(addCommentsToLinkNodesStep)
 //            .next(saveToExcelStep)
+//            .next(clearingInitializationStep)
             .build()
 
     @Bean
@@ -135,5 +138,16 @@ class LinkGenerationJobConfig {
     ): Step =
         StepBuilder("saveToExcelStep", jobRepository)
             .tasklet(reportTasklet, jpaTransactionManager)
+            .build()
+
+
+    @Bean
+    fun clearingInitializationStep(
+        jobRepository: JobRepository,
+        clearingInitializationTask: ClearingInitializationTask,
+        jpaTransactionManager: JpaTransactionManager
+    ): TaskletStep =
+        StepBuilder("clearingInitializationStep", jobRepository)
+            .tasklet(clearingInitializationTask, jpaTransactionManager)
             .build()
 }

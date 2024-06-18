@@ -26,7 +26,7 @@ class Order (
     @Column(name = "order_status", nullable = false)
     var orderStatus: OrderStatus = OrderStatus.READY,
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val linkNodes: List<LinkNode> = emptyList(),
 ): BaseTimeEntity(), java.io.Serializable {
     override fun toString(): String = "Order(seq=$orderSeq,type=$orderType,url='$targetUrl',customerName=$customerName,orderStatus=$orderStatus)"

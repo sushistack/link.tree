@@ -23,12 +23,18 @@ class StaticWebpage (
     @Column(name = "used_count", nullable = false)
     val usedCount: Int = 0,
 
-    @OneToOne(mappedBy = "webpage", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "repository_seq")
     var repository: GitRepository? = null,
 
-    @OneToMany(mappedBy = "webpage", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "webpage")
     val posts: List<Post> = emptyList()
 ): BaseTimeEntity() {
+    fun changeRepository(repository: GitRepository?) {
+        this.repository = repository
+        this.repository?.webpage = this
+    }
+
     fun getPostUrl(post: Post): String =
         "https://${domain}/${post.filePath?.split(".")?.get(0) ?: ""}"
 

@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component
 class ClearingInitializationTask(private val initializationService: InitializationService): Tasklet {
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
-
-        initializationService.initialize()
-
+        initializationService.clearAll()
         return RepeatStatus.FINISHED
     }
 }

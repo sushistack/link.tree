@@ -1,6 +1,7 @@
 package com.sushistack.linktree.entity.publisher
 
 import com.sushistack.linktree.entity.BaseTimeEntity
+import com.sushistack.linktree.entity.content.Comment
 import jakarta.persistence.*
 
 @Entity
@@ -16,6 +17,9 @@ class CommentableWebpage (
 
     @Column(name = "used_count", nullable = false)
     val usedCount: Int = 0,
+
+    @OneToMany(mappedBy = "commentableWebpage", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val comments: List<Comment> = emptyList()
 ): BaseTimeEntity() {
     override fun toString(): String = "CommentableWebpage(commentSeq=$commentSeq, postUrl=$postUrl, usedCount=$usedCount)"
 }

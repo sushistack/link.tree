@@ -18,18 +18,13 @@ class GitRepository (
     @Column(name = "repository_name", nullable = false)
     val repositoryName: String = "",
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "webpage_seq")
+    @OneToOne(mappedBy = "repository", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     var webpage: StaticWebpage? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "git_account_seq")
     var gitAccount: GitAccount? = null
 ): BaseTimeEntity() {
-    fun changeWebPage(webpage: StaticWebpage) {
-        this.webpage = webpage
-        this.webpage?.repository = this
-    }
 
     override fun toString(): String = "GitRepository(repositorySeq=$repositorySeq, workspaceName='$workspaceName', repositoryName='$repositoryName', webpage=$webpage, gitAccount=$gitAccount)"
 }

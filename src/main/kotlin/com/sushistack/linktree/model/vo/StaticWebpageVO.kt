@@ -1,5 +1,6 @@
 package com.sushistack.linktree.model.vo
 
+import com.sushistack.linktree.entity.git.GitRepository
 import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.StaticWebpage
 import kotlinx.serialization.Serializable
@@ -10,9 +11,9 @@ data class StaticWebpageVO (
     val providerType: String,
     val usedCount: Int
 ) {
-    fun toEntity(decrypt: (String) -> String) = StaticWebpage(
+    fun toEntity(repository: GitRepository, decrypt: (String) -> String) = StaticWebpage(
         domain = decrypt(domain),
         providerType = ServiceProviderType.valueOf(providerType),
         usedCount = usedCount
-    )
+    ).also { it.changeRepository(repository) }
 }
