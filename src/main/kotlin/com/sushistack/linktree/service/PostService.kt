@@ -50,7 +50,7 @@ class PostService(
         val articleSource = articles.getMinUsed()
         require(articleSource != null) { "Article source not available" }
 
-        val article = File("${appHomeDir}/${articleSource.get()}")
+        val article = File(articleSource.get())
             .readText()
             .let { Json.decodeFromString<Article>(it) }
             .also {

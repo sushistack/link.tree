@@ -20,6 +20,7 @@ class OrderTasklet(
     @Value("#{jobParameters['orderType']}") private val orderType: String,
     @Value("#{jobParameters['targetUrl']}") private val targetUrl: String,
     @Value("#{jobParameters['customerName']}") private val customerName: String,
+    @Value("#{jobParameters['anchorTexts']}") private val anchorTextsJson: String,
     @Value("#{jobParameters['keywords']}") private val keywordsJson: String,
     private val orderService: OrderService,
     private val articleService: ArticleService
@@ -37,6 +38,9 @@ class OrderTasklet(
         )
         contribution.stepExecution.jobExecution.executionContext.put("order", order)
         log.info { "Saved Order := [${order}]" }
+
+        val anchorTexts: List<String> = Json.decodeFromString(anchorTextsJson)
+        contribution.stepExecution.jobExecution.executionContext.put("anchorTexts", anchorTexts)
 
         val keywords: List<String> = Json.decodeFromString(keywordsJson)
         val articleSources = keywords.flatMap { articleService.getArticleSources(it) }

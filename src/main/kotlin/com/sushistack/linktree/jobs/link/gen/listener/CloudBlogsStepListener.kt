@@ -20,9 +20,11 @@ class CloudBlogsStepListener(private val orderService: OrderService): StepExecut
     lateinit var order: Order
 
     override fun afterStep(stepExecution: StepExecution): ExitStatus {
-        order.orderStatus = OrderStatus.next(order.orderStatus)
-        orderService.updateOrder(order)
-        log.info { "${stepExecution.stepName} is Completed, Order(${order.orderStatus})" }
+        if (ExitStatus.COMPLETED.equals(stepExecution.exitStatus)) {
+            order.orderStatus = OrderStatus.next(order.orderStatus)
+            orderService.updateOrder(order)
+            log.info { "${stepExecution.stepName} is Completed, Order(${order.orderStatus})" }
+        }
         return stepExecution.exitStatus
     }
 }

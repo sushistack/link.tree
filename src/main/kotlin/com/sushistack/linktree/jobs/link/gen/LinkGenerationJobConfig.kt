@@ -47,12 +47,11 @@ class LinkGenerationJobConfig {
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
             .start(initializationStep)
-//            .next(saveOrderStep)
-//            .next(addPrivateBlogsToOrderStep)
-//            .next(addCloudBlogsToOrderStep)
-//            .next(addCommentsToLinkNodesStep)
-//            .next(saveToExcelStep)
-//            .next(clearingInitializationStep)
+            .next(saveOrderStep)
+            .next(addPrivateBlogsToOrderStep)
+            .next(addCloudBlogsToOrderStep)
+            .next(addCommentsToLinkNodesStep)
+            .next(saveToExcelStep)
             .build()
 
     @Bean

@@ -14,6 +14,6 @@ class Publication (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val publicationSeq: Long = 0,
 
-    @OneToOne(mappedBy = "publication", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "publication", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     var linkNode: LinkNode? = null
 ): BaseTimeEntity()
