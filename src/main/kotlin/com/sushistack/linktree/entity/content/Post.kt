@@ -18,7 +18,7 @@ class Post (
 ): Publication(linkNode = linkNode) {
 
     fun getLocalFileFullPath(appHomeDir: String): String =
-        "${appHomeDir}/repo/${webpage?.repository?.workspaceName}/${webpage?.repository?.repositoryName}/${getFilename()}"
+        "${appHomeDir}/repo/${webpage?.repository?.workspaceName}/${webpage?.repository?.repositoryName}/${filePath}"
 
     fun getFilename(): String = filePath?.split("/")?.last() ?: ""
 

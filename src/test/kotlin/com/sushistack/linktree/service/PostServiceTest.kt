@@ -47,7 +47,7 @@ class PostServiceTest {
         entityManager.persist(gitAccount)
         val webpage = StaticWebpage()
         entityManager.persist(webpage)
-        val repository = GitRepository(workspaceName = bitbucketUsername, repositoryName = "playground", gitAccount = gitAccount).also { it.changeWebPage(webpage) }
+        val repository = GitRepository(workspaceName = bitbucketUsername, repositoryName = "playground", gitAccount = gitAccount)
         entityManager.persist(repository)
         val post = Post(filePath = "life/test.md", webpage = webpage)
         entityManager.persist(post)

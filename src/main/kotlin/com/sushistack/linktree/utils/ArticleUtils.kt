@@ -4,6 +4,7 @@ import com.sushistack.linktree.external.crawler.model.Article
 import kotlinx.serialization.json.Json
 import org.springframework.core.io.ClassPathResource
 import java.nio.charset.StandardCharsets
+import kotlin.random.Random
 
 class ArticleUtils {
     companion object {
@@ -37,6 +38,13 @@ class ArticleUtils {
                 return@joinToString word
             }
         }
+
+        fun inject(content: String, link: String): String =
+            content
+                .split(" ")
+                .toMutableList()
+                .apply { add(Random.nextInt(size + 1), link) }
+                .joinToString(" ")
 
         fun markdownify(article: Article) = ClassPathResource(MARKDOWN_TEMPLATE)
             .inputStream.readBytes()

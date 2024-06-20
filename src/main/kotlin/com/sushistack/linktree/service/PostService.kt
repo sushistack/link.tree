@@ -7,6 +7,7 @@ import com.sushistack.linktree.external.git.addAndCommit
 import com.sushistack.linktree.external.git.getCommitId
 import com.sushistack.linktree.external.git.push
 import com.sushistack.linktree.external.git.resetTo
+import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.model.getMinUsed
 import com.sushistack.linktree.repository.content.PostRepository
@@ -21,6 +22,7 @@ import java.io.FileOutputStream
 class PostService(
     private val appHomeDir: String,
     private val gitFactory: GitFactory,
+    private val linkProvider: LinkProvider,
     private val postRepository: PostRepository,
     private val txCallbackHandler: TransactionCallbackHandler
 ) {
@@ -56,6 +58,7 @@ class PostService(
             .also {
                 it.content = ArticleUtils.removeConsonantsAndGathers(it.content)
                 it.content = ArticleUtils.spinSynonyms(it.content)
+                it.content = ArticleUtils.inject(it.content, linkProvider.getMarkdownLink())
             }
             .let { ArticleUtils.markdownify(it) }
 

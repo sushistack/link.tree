@@ -6,6 +6,8 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.service.PostService
 import com.sushistack.linktree.service.StaticWebpageService
+import com.sushistack.linktree.utils.DateRange
+import com.sushistack.linktree.utils.pick
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.beans.factory.annotation.Value
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class CloudBlogLinksToPrivateBlogsProcessor(
     private val postService: PostService,
-    private val staticWebpageService: StaticWebpageService,
+    private val staticWebpageService: StaticWebpageService
 ): ItemProcessor<LinkNode, List<LinkNode>> {
 
     @Value("#{jobExecutionContext['articleSources']}")
@@ -23,6 +25,8 @@ class CloudBlogLinksToPrivateBlogsProcessor(
 
     override fun process(parentNode: LinkNode): List<LinkNode> {
         val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.CLOUD_BLOG_NETWORK, 20)
+        val date = DateRange().pick()
+
 
         return webpages.map { webpage ->
             val post = postService.createPost(
