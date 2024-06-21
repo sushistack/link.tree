@@ -20,7 +20,6 @@ class PrivateBlogsStepListener(private val orderService: OrderService): StepExec
     lateinit var order: Order
 
     override fun beforeStep(stepExecution: StepExecution) {
-        log.info { "### ${stepExecution.exitStatus}" }
         if (ExitStatus.EXECUTING.equals(stepExecution.exitStatus)) {
             order.orderStatus = OrderStatus.next(order.orderStatus)
             log.info { "${stepExecution.stepName} is Started, Order(${order.orderStatus})" }

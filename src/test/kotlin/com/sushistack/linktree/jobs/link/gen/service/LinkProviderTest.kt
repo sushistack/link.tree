@@ -9,11 +9,11 @@ class LinkProviderTest {
 
     @ParameterizedTest
     @MethodSource("anchorTextsProvider")
-    fun getMarkdownLinkTest(anchorTextJson: String) {
-        val provider = LinkProvider("https://test.com", anchorTextJson)
+    fun getTest(anchorTextJson: String) {
+        val provider = LinkProvider("https://test.com", listOf())
 
         repeat(20) {
-            log.info { provider.getMarkdownLink() }
+            log.info { provider.get() }
         }
 
     }

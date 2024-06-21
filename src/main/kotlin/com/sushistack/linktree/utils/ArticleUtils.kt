@@ -39,19 +39,25 @@ class ArticleUtils {
             }
         }
 
-        fun inject(content: String, link: String): String =
+        fun inject(content: String, link: Pair<String, String>): String =
             content
                 .split(" ")
                 .toMutableList()
-                .apply { add(Random.nextInt(size + 1), link) }
+                .apply {
+                    val markdownLink = " [${link.first}](${link.second}) "
+                    val index = indexOfFirst { it == link.first }
+                    if (index != -1) {
+                        this[index] = markdownLink
+                    } else {
+                        this.add(Random.nextInt(size + 1), markdownLink)
+                    }
+                }
                 .joinToString(" ")
 
         fun markdownify(article: Article) = ClassPathResource(MARKDOWN_TEMPLATE)
             .inputStream.readBytes()
             .toString(StandardCharsets.UTF_8)
-            .let {
-                it.replace("{{title}}", article.getSafeTitle())
-                it.replace("{{content}}", article.content)
-            }
+            .replace("{{title}}", article.getSafeTitle())
+            .replace("{{content}}", article.content)
     }
 }

@@ -2,6 +2,7 @@ package com.sushistack.linktree.service
 
 import com.sushistack.linktree.config.transaction.TransactionCallbackHandler
 import com.sushistack.linktree.entity.content.Post
+import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.external.crawler.model.Article
 import com.sushistack.linktree.external.git.addAndCommit
 import com.sushistack.linktree.external.git.getCommitId
@@ -12,6 +13,8 @@ import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.model.getMinUsed
 import com.sushistack.linktree.repository.content.PostRepository
 import com.sushistack.linktree.utils.ArticleUtils
+import com.sushistack.linktree.utils.DateRange
+import com.sushistack.linktree.utils.pick
 import kotlinx.serialization.json.Json
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,17 +25,22 @@ import java.io.FileOutputStream
 class PostService(
     private val appHomeDir: String,
     private val gitFactory: GitFactory,
-    private val linkProvider: LinkProvider,
     private val postRepository: PostRepository,
     private val txCallbackHandler: TransactionCallbackHandler
 ) {
+    companion object {
+        private val DATE_RANGE = DateRange()
+    }
 
     @Transactional
-    fun createPost(post: Post, articleSources: List<ArticleSource>): Post {
-        val repo = post.webpage!!.repository!!
+    fun createPost(webpage: StaticWebpage, articleSources: List<ArticleSource>, linkProvider: LinkProvider): Post {
+        val repo = webpage.repository!!
         val gitAccount = repo.gitAccount!!
         val git = gitFactory.openRepo(appHomeDir, repo.workspaceName, repo.repositoryName, gitAccount.appPassword)
         val commitId = git.getCommitId()
+        val shortCommitId = commitId?.substring(0, 7) ?: ""
+        val hash = if (shortCommitId.isNotBlank()) "${shortCommitId}-" else ""
+
 
         txCallbackHandler.registerCallback(
             git,
@@ -40,15 +48,17 @@ class PostService(
             onRollback = { g -> g.resetTo(commitId = commitId ?: "HEAD") }
         )
 
-        this.write(post, articleSources)
+        val (anchorText, url) = linkProvider.get()
+        val filePath = "life/${DATE_RANGE.pick()}-${hash}${anchorText.replace(" ", "-")}.md"
+        val post = Post(filePath, webpage)
+
+        this.write(post, articleSources, anchorText to url)
         git.addAndCommit()
 
-        val savedPost = postRepository.save(post)
-        return savedPost
+        return postRepository.save(post)
     }
 
-    // consider suspend
-    private fun write(post: Post, articles: List<ArticleSource>) {
+    private fun write(post: Post, articles: List<ArticleSource>, link: Pair<String, String>) {
         val articleSource = articles.getMinUsed()
         require(articleSource != null) { "Article source not available" }
 
@@ -58,13 +68,19 @@ class PostService(
             .also {
                 it.content = ArticleUtils.removeConsonantsAndGathers(it.content)
                 it.content = ArticleUtils.spinSynonyms(it.content)
-                it.content = ArticleUtils.inject(it.content, linkProvider.getMarkdownLink())
+                it.content = ArticleUtils.inject(it.content, link)
             }
             .let { ArticleUtils.markdownify(it) }
 
         val fullFilePath = post.getLocalFileFullPath(appHomeDir)
         article.byteInputStream().use { input ->
-            File(fullFilePath).outputStream().use {
+            val file = File(fullFilePath)
+            file.parentFile?.let { parentDir ->
+                if (!parentDir.exists()) {
+                    parentDir.mkdirs()
+                }
+            }
+            file.outputStream().use {
                 FileOutputStream(fullFilePath).use { output -> input.copyTo(output) }
             }
         }

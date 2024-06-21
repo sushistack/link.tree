@@ -4,6 +4,7 @@ import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.git.GitAccount
 import com.sushistack.linktree.entity.git.GitRepository
 import com.sushistack.linktree.entity.publisher.StaticWebpage
+import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.repository.content.PostRepository
 import jakarta.persistence.EntityManager
@@ -51,7 +52,7 @@ class PostServiceTest {
         entityManager.persist(repository)
         val post = Post(filePath = "life/test.md", webpage = webpage)
         entityManager.persist(post)
-        postService.createPost(post, listOf(ArticleSource("files/articles/감자의 효능/0.json")))
+        postService.createPost(webpage, listOf(ArticleSource("files/articles/감자의 효능/0.json")), LinkProvider("https://test.com", listOf("감자의 효능")))
         entityManager.flush()
         entityManager.clear()
 

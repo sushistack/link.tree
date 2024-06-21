@@ -2,6 +2,7 @@ package com.sushistack.linktree.jobs.link.gen.tasklet
 
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.order.OrderType
+import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.service.ArticleService
 import com.sushistack.linktree.service.OrderService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -41,6 +42,9 @@ class OrderTasklet(
 
         val anchorTexts: List<String> = Json.decodeFromString(anchorTextsJson)
         contribution.stepExecution.jobExecution.executionContext.put("anchorTexts", anchorTexts)
+
+        val linkProvider = LinkProvider(targetUrl, anchorTexts)
+        contribution.stepExecution.jobExecution.executionContext.put("linkProvider", linkProvider)
 
         val keywords: List<String> = Json.decodeFromString(keywordsJson)
         val articleSources = keywords.flatMap { articleService.getArticleSources(it) }

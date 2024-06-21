@@ -10,17 +10,21 @@ import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.reader.OrderReader
 import com.sushistack.linktree.jobs.link.gen.processor.PrivateBlogLinksToOrderProcessor
 import com.sushistack.linktree.jobs.link.gen.processor.CloudBlogLinksToPrivateBlogsProcessor
+import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.jobs.link.gen.tasklet.ClearingInitializationTask
 import com.sushistack.linktree.jobs.link.gen.tasklet.InitializationTasklet
 import com.sushistack.linktree.jobs.link.gen.tasklet.OrderTasklet
 import com.sushistack.linktree.jobs.link.gen.tasklet.ReportTasklet
 import com.sushistack.linktree.jobs.link.gen.writer.LinkNodeWriter
+import kotlinx.serialization.json.Json
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
+import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.repository.JobRepository
 import org.springframework.batch.core.step.builder.StepBuilder
 import org.springframework.batch.core.step.tasklet.TaskletStep
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.orm.jpa.JpaTransactionManager
@@ -149,4 +153,5 @@ class LinkGenerationJobConfig {
         StepBuilder("clearingInitializationStep", jobRepository)
             .tasklet(clearingInitializationTask, jpaTransactionManager)
             .build()
+
 }
