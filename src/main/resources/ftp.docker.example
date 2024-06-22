@@ -1,0 +1,3 @@
+docker run -d -p 21:21 -p 30000-30009:30000-30009 \
+  -e FTP_USER=ftpuser:ftppassword \
+  stilliard/pure-ftpd

@@ -24,6 +24,12 @@ feign:
           maxPeriod: 1000
           maxAttempts: 3
 
+ftp:
+  host: localhost
+  port: 21
+  username: ftpuser
+  password: ftppassword
+
 jasypt:
   encryptor:
     password: ${jasyptPassword}
