@@ -18,9 +18,11 @@ import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.searchU
 import com.sushistack.linktree.external.crawler.model.Article
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
+import org.springframework.stereotype.Service
 import java.io.FileOutputStream
 import java.nio.file.Paths
 
+@Service
 class CrawlService(
     private val appHomeDir: String
 ) {
