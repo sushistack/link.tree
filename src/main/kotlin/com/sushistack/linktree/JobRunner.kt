@@ -20,7 +20,7 @@ class JobRunner {
         val jobParameters = JobParametersBuilder()
             .addString("orderType", OrderType.DELUXE.name)
             .addString("targetUrl", "https://test.com")
-            .addString("customerName", "고객명11")
+            .addString("customerName", "고객명14")
             .addString("anchorTexts", Json.encodeToString(listOf("감자", "감자맨")))
             .addString("keywords", Json.encodeToString(listOf("감자의 효능")))
             .toJobParameters()

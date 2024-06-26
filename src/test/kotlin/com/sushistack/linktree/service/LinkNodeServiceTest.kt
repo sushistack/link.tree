@@ -1,6 +1,7 @@
 package com.sushistack.linktree.service
 
 import com.sushistack.linktree.entity.content.Post
+import com.sushistack.linktree.entity.content.PublicationType
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.publisher.StaticWebpage

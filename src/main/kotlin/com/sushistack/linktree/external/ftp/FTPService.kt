@@ -10,7 +10,7 @@ import java.nio.file.Path
 class FTPService(private val ftpOutboundChannel: MessageChannel) {
     private val log = KotlinLogging.logger {}
 
-    fun upload(filePath: Path) {
+    suspend fun upload(filePath: Path) {
         log.debug { "File path to upload: $filePath" }
         val file = filePath.toFile()
         require(file.isFile) { "is not file" }

@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 @Transactional
-class StaticWebpageVOGitRepositoryVOUtilTest {
+class StaticWebpageVOSimpleGitRepositoryVOUtilTest {
     @Autowired
     lateinit var entityManager: EntityManager
 

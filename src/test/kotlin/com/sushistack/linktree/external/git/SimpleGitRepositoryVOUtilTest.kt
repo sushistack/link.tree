@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class GitRepositoryVOUtilTest {
+class SimpleGitRepositoryVOUtilTest {
 
     private val log = KotlinLogging.logger {}
 

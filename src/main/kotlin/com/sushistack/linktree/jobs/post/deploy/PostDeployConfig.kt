@@ -1,4 +1,4 @@
-package com.sushistack.linktree.jobs.crawl
+package com.sushistack.linktree.jobs.post.deploy
 
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -12,26 +12,25 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.orm.jpa.JpaTransactionManager
 
 @Configuration
-@ConditionalOnProperty(value = ["spring.batch.job.name"], havingValue = "crawlJob")
-class CrawlConfig {
+@ConditionalOnProperty(value = ["spring.batch.job.name"], havingValue = "postDeployJob")
+class PostDeployConfig {
 
     @Bean
-    fun crawlJob(
+    fun postDeployJob(
         jobRepository: JobRepository,
-        crawlStep: Step,
+        buildAndDeployStep: Step,
     ): Job =
-        JobBuilder("crawlJob", jobRepository)
-            .start(crawlStep)
+        JobBuilder("postDeployJob", jobRepository)
+            .start(buildAndDeployStep)
             .build()
 
     @Bean
-    fun crawlStep(
+    fun buildAndDeployStep(
         jobRepository: JobRepository,
-        crawlTasklet: Tasklet,
+        buildAndDeployTasklet: Tasklet,
         jpaTransactionManager: JpaTransactionManager
     ) =
-        StepBuilder("crawlStep", jobRepository)
-            .tasklet(crawlTasklet, jpaTransactionManager)
+        StepBuilder("buildAndDeployStep", jobRepository)
+            .tasklet(buildAndDeployTasklet, jpaTransactionManager)
             .build()
-
 }
