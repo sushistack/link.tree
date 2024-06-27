@@ -27,17 +27,21 @@ fun Git.pullChanges(
         .call()
 
 fun Git.addAndCommit(filePath: String = ".", commitMessage: String = "Add Post"): RevCommit? {
-    log.info { "Status: ${this.status().call().untracked}" }
+    status(this)
+
     this.add()
         .addFilepattern(filePath)
         .call()
     log.info { "Staged Files on $filePath" }
 
+    status(this)
+
     val statusAfter = this.status().call()
-    log.info { "Status: ${statusAfter.added}" }
-    if (statusAfter.added.isEmpty()) {
-        log.info { "No files staged for commit. Skipping commit." }
-        return null
+    with(statusAfter) {
+        if (added.isEmpty() && changed.isEmpty() && removed.isEmpty()) {
+            log.info { "No files are staged for commit. Skipping commit." }
+            return null
+        }
     }
 
     val commit = this.commit()
@@ -68,6 +72,16 @@ fun Git.push(remoteName: String = DEFAULT_REMOTE_NAME, branchName: String = DEFA
 
     log.info { "Complete Push - $remoteName, Branch - $branchName" }
     return pushResult
+}
+
+fun status(git: Git) {
+    with(git.status().call()) {
+        log.info { "Added: $added" }
+        log.info { "Changed: $changed" }
+        log.info { "Untracked: $untracked" }
+        log.info { "Removed: $removed" }
+    }
+
 }
 
 fun Git.getCommitId(ref: String = DEFAULT_HEAD_REF): String? =
