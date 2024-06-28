@@ -35,7 +35,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.integration:spring-integration-core:6.4.0'
-    implementation 'org.springframework.integration:spring-integration-java-dsl:6.4.0'
     implementation 'org.springframework.integration:spring-integration-ftp:6.4.0'
     implementation 'commons-net:commons-net:3.11.1'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
