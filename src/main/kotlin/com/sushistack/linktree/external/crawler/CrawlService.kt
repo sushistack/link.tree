@@ -1,9 +1,6 @@
 package com.sushistack.linktree.external.crawler
 
-import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserType
-import com.microsoft.playwright.Locator
-import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.*
 import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.ARTICLE_PAGE_TIMEOUT
 import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.MAX_PAGE
 import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.MIN_WORDS
@@ -91,15 +88,15 @@ class CrawlService(
     fun crawlArticle(url: String): String {
         var content = ""
         Playwright.create().use { playwright ->
-            val browser = playwright.chromium().launch(
-                BrowserType.LaunchOptions().setHeadless(true).setTimeout(ARTICLE_PAGE_TIMEOUT)
-            )
-
-            val page = browser.newPage(
-                Browser.NewPageOptions().setUserAgent(MOBILE_UA)
-            )
-
             try {
+                val browser = playwright.chromium().launch(
+                    BrowserType.LaunchOptions().setHeadless(true).setTimeout(ARTICLE_PAGE_TIMEOUT)
+                )
+
+                val page = browser.newPage(
+                    Browser.NewPageOptions().setUserAgent(MOBILE_UA)
+                )
+
                 page.navigate(url)
                 for (selector in articleSelectors) {
                     val elements = page.locator(selector).all()
@@ -108,10 +105,14 @@ class CrawlService(
                         break
                     }
                 }
-            } catch (e: Exception) {
-                log.error(e) { "crawl article failed! url := [$url]" }
-            } finally {
                 browser.close()
+            } catch (e: PlaywrightException) {
+                when (e) {
+                    is TimeoutError -> {
+                        log.error { "Timeout occurred, url := [$url]" }
+                    }
+                    else -> log.error(e) { "crawl article failed! url := [$url]" }
+                }
             }
         }
 
