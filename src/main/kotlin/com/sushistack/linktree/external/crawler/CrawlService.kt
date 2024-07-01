@@ -45,7 +45,18 @@ class CrawlService(
                         log.error(e) { "Page navigate failed!" }
                         continue
                     }
-                    val articleCards = page.locator(articleCardsSelector).all()
+                    var articleCards: List<Locator> = emptyList()
+                    try {
+                        articleCards = page.locator(articleCardsSelector).all()
+                    } catch (e: PlaywrightException) {
+                        when(e) {
+                            is TimeoutError -> {
+                                log.error { "Timeout occurred while locating" }
+                            }
+                            else -> log.error(e) { "crawl article failed!" }
+                        }
+                    }
+
                     log.info { "keyword := [$keyword], page := [${pageNumber}], article.size := [${articleCards.size}]" }
                     for (articleCard in articleCards) {
                         var titleElement: Locator
