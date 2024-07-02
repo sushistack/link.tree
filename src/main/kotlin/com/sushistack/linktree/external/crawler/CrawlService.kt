@@ -64,8 +64,13 @@ class CrawlService(
                         try {
                             titleElement = articleCard.locator(articleTitleSelector)
                             descriptionElement = articleCard.locator(articleDescriptionSelector)
-                        } catch (e: Exception) {
-                            log.error(e) { "Element locating failed!" }
+                        } catch (e: PlaywrightException) {
+                            when(e) {
+                                is TimeoutError -> {
+                                    log.error { "Timeout occurred while locating of title, desc " }
+                                }
+                                else -> log.error(e) { "Element locating failed!" }
+                            }
                             continue
                         }
                         val article = Article(
