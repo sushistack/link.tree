@@ -28,78 +28,16 @@ class CrawlService(
 
     fun crawlArticles(keywords: List<String>) {
         Playwright.create().use { playwright ->
+            val browser: Browser
+            val page: Page
             try {
-                val browser = playwright.chromium().launch(
+                 browser = playwright.chromium().launch(
                     BrowserType.LaunchOptions().setHeadless(true).setTimeout(SEARCH_PAGE_TIMEOUT)
                 )
 
-                val page = browser.newPage(
+                page = browser.newPage(
                     Browser.NewPageOptions().setUserAgent(PC_UA)
                 )
-
-                var articleNumbers = 0
-                for (keyword in keywords) {
-                    for (pageNumber in 1..MAX_PAGE) {
-                        try {
-                            page.navigate(searchUrl(keyword, pageNumber))
-                        } catch (e: Exception) {
-                            log.error(e) { "Page navigate failed!" }
-                            continue
-                        }
-                        var articleCards: List<Locator> = emptyList()
-                        try {
-                            articleCards = page.locator(articleCardsSelector).all()
-                        } catch (e: PlaywrightException) {
-                            when (e) {
-                                is TimeoutError -> {
-                                    log.error { "Timeout occurred while locating" }
-                                }
-                                else -> log.error(e) { "crawl article failed!" }
-                            }
-                        }
-
-                        log.info { "keyword := [$keyword], page := [${pageNumber}], article.size := [${articleCards.size}]" }
-                        for (articleCard in articleCards) {
-                            var titleElement: Locator
-                            var descriptionElement: Locator
-                            try {
-                                titleElement = articleCard.locator(articleTitleSelector)
-                                descriptionElement = articleCard.locator(articleDescriptionSelector)
-                            } catch (e: PlaywrightException) {
-                                when (e) {
-                                    is TimeoutError -> {
-                                        log.error { "Timeout occurred while locating of title, desc " }
-                                    }
-                                    else -> log.error(e) { "Element locating failed!" }
-                                }
-                                continue
-                            }
-                            val article = Article(
-                                title = titleElement.innerText(),
-                                description = descriptionElement.innerText(),
-                                content = crawlArticle(titleElement.getAttribute("href"))
-                            )
-
-                            if (article.content.split(" ").size > MIN_WORDS) {
-                                val articleJson = Json.encodeToString(Article.serializer(), article)
-                                val file =
-                                    Paths.get("${appHomeDir}/files/articles/$keyword/${articleNumbers++}.json").toFile()
-                                file.parentFile?.let { parentDir ->
-                                    if (!parentDir.exists()) {
-                                        parentDir.mkdirs()
-                                    }
-                                }
-                                FileOutputStream(file).use { outputStream ->
-                                    outputStream.write(articleJson.toByteArray())
-                                }
-                                log.info { "Article is saved successfully!" }
-                            } else {
-                                log.info { "Skip saving Article." }
-                            }
-                        }
-                    }
-                }
-                browser.close()
             } catch (e: PlaywrightException) {
                 when (e) {
                     is TimeoutError -> {
@@ -107,7 +45,73 @@ class CrawlService(
                     }
                     else -> log.error(e) { "crawl article failed!!!" }
                 }
+                return
             }
+
+            var articleNumbers = 0
+            for (keyword in keywords) {
+                for (pageNumber in 1..MAX_PAGE) {
+                    try {
+                        page.navigate(searchUrl(keyword, pageNumber))
+                    } catch (e: Exception) {
+                        log.error(e) { "Page navigate failed!" }
+                        continue
+                    }
+                    var articleCards: List<Locator> = emptyList()
+                    try {
+                        articleCards = page.locator(articleCardsSelector).all()
+                    } catch (e: PlaywrightException) {
+                        when (e) {
+                            is TimeoutError -> {
+                                log.error { "Timeout occurred while locating" }
+                            }
+                            else -> log.error(e) { "crawl article failed!" }
+                        }
+                    }
+
+                    log.info { "keyword := [$keyword], page := [${pageNumber}], article.size := [${articleCards.size}]" }
+                    for (articleCard in articleCards) {
+                        var titleElement: Locator
+                        var descriptionElement: Locator
+                        try {
+                            titleElement = articleCard.locator(articleTitleSelector)
+                            descriptionElement = articleCard.locator(articleDescriptionSelector)
+                        } catch (e: PlaywrightException) {
+                            when (e) {
+                                is TimeoutError -> {
+                                    log.error { "Timeout occurred while locating of title, desc " }
+                                }
+                                else -> log.error(e) { "Element locating failed!" }
+                            }
+                            continue
+                        }
+                        val article = Article(
+                            title = titleElement.innerText(),
+                            description = descriptionElement.innerText(),
+                            content = crawlArticle(titleElement.getAttribute("href"))
+                        )
+
+                        if (article.content.split(" ").size > MIN_WORDS) {
+                            val articleJson = Json.encodeToString(Article.serializer(), article)
+                            val file =
+                                Paths.get("${appHomeDir}/files/articles/$keyword/${articleNumbers++}.json").toFile()
+                            file.parentFile?.let { parentDir ->
+                                if (!parentDir.exists()) {
+                                    parentDir.mkdirs()
+                                }
+                            }
+                            FileOutputStream(file).use { outputStream ->
+                                outputStream.write(articleJson.toByteArray())
+                            }
+                            log.info { "Article is saved successfully!" }
+                        } else {
+                            log.info { "Skip saving Article." }
+                        }
+                    }
+                }
+            }
+            browser.close()
+
         }
     }
 
