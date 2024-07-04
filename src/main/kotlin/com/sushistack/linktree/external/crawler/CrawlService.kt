@@ -103,7 +103,7 @@ class CrawlService(
             } catch (e: PlaywrightException) {
                 when (e) {
                     is TimeoutError -> {
-                        log.error { "Timeout occurred while locating" }
+                        log.error { "Timeout occurred while searching" }
                     }
                     else -> log.error(e) { "crawl article failed!!!" }
                 }

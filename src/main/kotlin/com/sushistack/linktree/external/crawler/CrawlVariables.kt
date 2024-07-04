@@ -4,7 +4,7 @@ class CrawlVariables {
     companion object {
         const val PC_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
         const val MOBILE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/71.0.3758.78 Mobile/15E148 Safari/605.1"
-        const val SEARCH_PAGE_TIMEOUT = 4000.0
+        const val SEARCH_PAGE_TIMEOUT = 20000.0
         const val ARTICLE_PAGE_TIMEOUT = 60000.0
         const val MAX_PAGE = 10
         const val MIN_WORDS = 300
