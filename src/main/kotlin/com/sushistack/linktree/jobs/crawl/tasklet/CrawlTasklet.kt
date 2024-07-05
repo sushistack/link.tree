@@ -18,7 +18,7 @@ class CrawlTasklet(
 ): Tasklet {
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
         val keywords: List<String> = Json.decodeFromString(keywordsJson)
-        crawlService.crawlArticles(keywords)
+        crawlService.crawl(keywords)
         return RepeatStatus.FINISHED
     }
 }

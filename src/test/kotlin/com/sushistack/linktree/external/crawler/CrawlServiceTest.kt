@@ -31,25 +31,17 @@ class CrawlServiceTest {
     }
 
     @Disabled("It is so slow test.")
-    @DisplayName("CrawlArticle Test.")
-    @ParameterizedTest(name = "[{index}] url = [{0}]")
-    @ValueSource(strings = ["https://43in.tistory.com/517", "https://blog.naver.com/dydtmd4/223610605424"])
-    fun crawlArticleTest(url: String) {
-        log.info { "content = ${crawlService.crawlArticle(url)}" }
-    }
-
-    @Disabled("It is so slow test.")
     @DisplayName("CrawlArticles Test.")
     @ParameterizedTest(name = "[{index}] keyword = [{0}]")
     @MethodSource("keywordsProvider")
     fun crawlArticlesTest(keywords: List<String>) {
-        crawlService.crawlArticles(keywords)
+        crawlService.crawl(keywords)
     }
 
     companion object {
         @JvmStatic
         fun keywordsProvider() = listOf(
-            listOf("감자의 효능")
+            listOf("고구마의 효능")
         )
     }
 

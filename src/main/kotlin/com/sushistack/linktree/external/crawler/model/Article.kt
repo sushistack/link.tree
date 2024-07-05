@@ -8,8 +8,11 @@ data class Article (
     val description: String,
     var content: String
 ) {
+    val wordCount: Int by lazy { content.split(" ").size }
+
     fun getSafeTitle() = title
         .replace("<", "")
         .replace(">", "")
         .replace("\"", "")
+
 }
