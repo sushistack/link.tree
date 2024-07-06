@@ -33,6 +33,7 @@ class DeployService(
     data class SimpleGitRepository (
         val workspaceName: String,
         val repositoryName: String,
+        val domain: String,
         val username: String,
         val appPassword: String
     )
@@ -117,7 +118,7 @@ class DeployService(
 
     suspend fun deploy(serviceProviderType: ServiceProviderType, repo: SimpleGitRepository) {
         when (serviceProviderType) {
-            PRIVATE_BLOG_NETWORK -> ftpService.upload(Paths.get("$appHomeDir/repo/${repo.workspaceName}/${repo.repositoryName}"))
+            PRIVATE_BLOG_NETWORK -> ftpService.upload(repo.workspaceName, repo.repositoryName, repo.domain)
             CLOUD_BLOG_NETWORK -> uploadToRemoteOrigin(repo)
             else -> Unit
         }

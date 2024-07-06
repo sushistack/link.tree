@@ -42,21 +42,11 @@ class BuildAndDeployTasklet(
         val linksOfTier2 = linkNodeService.findWithPostByOrder(order, tier = 2)
 
         runBlocking {
-            linksOfTier1.forEach { linkNode ->
-                jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
-                val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
-                deployService.makePackage(repo)
-                deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
-            }
-        }
-
-
-        runBlocking {
             val jobs1 = async {
                 linksOfTier1.map { linkNode ->
                     async {
                         jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
-                        val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
+                        val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
                         deployService.makePackage(repo)
                         deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
                     }
@@ -67,7 +57,7 @@ class BuildAndDeployTasklet(
                 linksOfTier2.map { linkNode ->
                     async {
                         jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
-                        val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
+                        val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
                         deployService.makePackage(repo)
                         deployService.deploy(CLOUD_BLOG_NETWORK, repo)
                     }

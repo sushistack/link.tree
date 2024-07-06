@@ -12,6 +12,12 @@ spring:
     jdbc.initialize-schema: always
     job.enabled: false
 
+ftp:
+  host: localhost
+  port: 21
+  username: user
+  password: pass
+
 feign:
   client:
     config:

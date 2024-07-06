@@ -6,6 +6,7 @@ data class LinkNodeRepositoryDTO(
     val repositorySeq: Long,
     val workspaceName: String,
     val repositoryName: String,
+    val domain: String,
     val accountSeq: Long,
     val username: String,
     val appPassword: String
