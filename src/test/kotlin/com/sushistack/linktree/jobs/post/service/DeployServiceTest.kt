@@ -35,7 +35,7 @@ class DeployServiceTest {
     @Disabled
     fun makePackageTest() {
         runBlocking {
-            deployService.makePackage(SimpleGitRepository(bitbucketUsername, "pbn-001", bitbucketUsername, bitbucketAppPassword))
+            deployService.makePackage(SimpleGitRepository(bitbucketUsername, "pbn-001", "test.com", bitbucketUsername, bitbucketAppPassword))
         }
 
     }
