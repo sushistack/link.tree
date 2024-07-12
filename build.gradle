@@ -52,6 +52,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}"
+    implementation "com.slack.api:slack-api-client:${slackVersion}"
+    implementation "com.slack.api:slack-api-model:${slackVersion}"
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'io.mockk:mockk:1.13.13'
