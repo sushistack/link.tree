@@ -1,7 +1,6 @@
 package com.sushistack.linktree.jobs.post.deploy.tasklet
 
 import com.sushistack.linktree.entity.order.OrderStatus
-import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
 import com.sushistack.linktree.jobs.post.service.DeployService
@@ -9,7 +8,6 @@ import com.sushistack.linktree.jobs.post.service.DeployService.SimpleGitReposito
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -28,10 +26,9 @@ class BuildAndDeployTasklet(
     private val deployService: DeployService,
     private val linkNodeService: LinkNodeService
 ) : Tasklet {
-    private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
-        val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.DONE)
+        val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCCESSED)
         if (!orderOpt.isPresent) {
             return RepeatStatus.FINISHED
         }
@@ -67,6 +64,8 @@ class BuildAndDeployTasklet(
             jobs1.await()
             jobs2.await()
         }
+
+        order.orderStatus = OrderStatus.next(order.orderStatus)
 
         return RepeatStatus.FINISHED
     }

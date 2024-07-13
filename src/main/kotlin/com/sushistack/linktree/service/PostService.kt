@@ -49,8 +49,10 @@ class PostService(
         )
 
         val (anchorText, url) = linkProvider.get()
-        val filePath = "life/${DATE_RANGE.pick()}-${hash}${anchorText.replace(" ", "-")}.md"
-        val post = Post(filePath, webpage)
+        val postName = "${hash}${anchorText.replace(" ", "-")}"
+        val uri = "life/${postName}"
+        val filePath = "life/${DATE_RANGE.pick()}-${postName}.md"
+        val post = Post(filePath, uri, webpage)
 
         this.write(post, articleSources, anchorText to url)
         git.addAndCommit()

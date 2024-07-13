@@ -7,7 +7,10 @@ data class LinkNodeRepositoryDTO(
     val workspaceName: String,
     val repositoryName: String,
     val domain: String,
+    val uri: String,
     val accountSeq: Long,
     val username: String,
     val appPassword: String
-)
+) {
+    val url: String by lazy { "https://$domain/$uri" }
+}

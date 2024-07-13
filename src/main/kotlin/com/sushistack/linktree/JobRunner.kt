@@ -22,7 +22,7 @@ class JobRunner(private val jobLauncher: JobLauncher, private val job: Job): Com
         val jobParameters = JobParametersBuilder()
             .addString("orderType", paramMap["orderType"] ?: OrderType.DELUXE.name)
             .addString("targetUrl", paramMap["targetUrl"] ?: "https://test.com")
-            .addString("customerName", paramMap["customerName"] ?: "고객명14")
+            .addString("customerName", paramMap["customerName"] ?: "고객명21")
             .addString("anchorTexts", paramMap["anchorTexts"] ?: Json.encodeToString(listOf("감자", "감자맨")))
             .addString("keywords", paramMap["keywords"] ?: Json.encodeToString(listOf("감자의 효능")))
             .toJobParameters()

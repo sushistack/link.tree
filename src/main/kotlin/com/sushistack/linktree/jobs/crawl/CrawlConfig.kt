@@ -1,5 +1,6 @@
 package com.sushistack.linktree.jobs.crawl
 
+import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
@@ -19,9 +20,11 @@ class CrawlConfig {
     fun crawlJob(
         jobRepository: JobRepository,
         crawlStep: Step,
+        jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder("crawlJob", jobRepository)
             .start(crawlStep)
+            .listener(jobListener)
             .build()
 
     @Bean

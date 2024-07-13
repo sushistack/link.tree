@@ -5,6 +5,7 @@ import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.jobs.link.gen.listener.CloudBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.listener.CommentStepListener
+import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
 import com.sushistack.linktree.jobs.link.gen.listener.PrivateBlogsStepListener
 import com.sushistack.linktree.jobs.link.gen.processor.CloudBlogLinksToPrivateBlogsProcessor
 import com.sushistack.linktree.jobs.link.gen.processor.CommentLinksToCloudBlogsProcessor
@@ -45,7 +46,8 @@ class LinkGenerationJobConfig {
         addPrivateBlogsToOrderStep: Step,
         addCloudBlogsToOrderStep: Step,
         addCommentsToLinkNodesStep: Step,
-        saveToExcelStep: Step
+        saveToExcelStep: Step,
+        jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
             .start(initializationStep)
@@ -54,6 +56,7 @@ class LinkGenerationJobConfig {
             .next(addCloudBlogsToOrderStep)
             .next(addCommentsToLinkNodesStep)
             .next(saveToExcelStep)
+            .listener(jobListener)
             .build()
 
     @Bean

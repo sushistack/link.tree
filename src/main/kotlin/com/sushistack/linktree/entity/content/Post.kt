@@ -10,6 +10,9 @@ class Post (
     @Column(name = "file_path")
     val filePath: String? = null,
 
+    @Column(name = "uri")
+    val uri: String? = null,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "webpage_seq")
     val webpage: StaticWebpage? = null,
