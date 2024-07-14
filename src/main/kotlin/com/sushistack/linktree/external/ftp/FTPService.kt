@@ -1,19 +1,15 @@
 package com.sushistack.linktree.external.ftp
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.integration.core.MessagingTemplate
-import org.springframework.integration.support.MessageBuilder
-import org.springframework.messaging.MessageChannel
 import org.springframework.stereotype.Service
-import java.nio.file.Path
+import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.isDirectory
 
 @Service
 class FTPService(
     private val appHomeDir: String,
-    private val ftpInboundChannel: MessageChannel,
-    private val ftpOutboundChannel: MessageChannel
+    private val ftpGateway: FTPGateway
 ) {
     companion object {
         private const val FTP_REMOTE_DIR = "/public_html"
@@ -32,10 +28,7 @@ class FTPService(
 
         files.forEach { file ->
             if (remoteFiles.contains(file.name)) {
-                MessageBuilder.withPayload(file)
-                    .setHeader("remoteDir", remoteDir)
-                    .build()
-                    .let { ftpOutboundChannel.send(it) }
+                ftpGateway.uploadFile(remoteDir, "", Files.readAllBytes(file.toPath()))
                 log.info { "Uploaded file(${file.name}) to remote server." }
             } else {
                 log.info { "$remoteDir/${file.name} is already exists." }
@@ -43,13 +36,6 @@ class FTPService(
         }
     }
 
-    fun getFilesOnRemote(remoteDir: String): List<String> {
-        val message = MessageBuilder.withPayload("")
-            .setHeader("remoteDir", remoteDir)
-            .build()
-
-        val res = MessagingTemplate(ftpInboundChannel).sendAndReceive(message)
-
-        return res?.payload as? List<String> ?: emptyList()
-    }
+    suspend fun getFilesOnRemote(remoteDir: String): List<String> =
+        ftpGateway.getFiles(remoteDir)
 }

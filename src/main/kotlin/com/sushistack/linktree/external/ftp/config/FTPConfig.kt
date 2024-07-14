@@ -1,5 +1,6 @@
 package com.sushistack.linktree.external.ftp.config
 
+import org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE
 import org.apache.commons.net.ftp.FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,5 +17,6 @@ class FTPConfig(private val ftp: FTPProperties) {
             setUsername(ftp.username)
             setPassword(ftp.password)
             setClientMode(PASSIVE_LOCAL_DATA_CONNECTION_MODE)
+            setFileType(BINARY_FILE_TYPE)
         }
 }

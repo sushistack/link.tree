@@ -7,6 +7,7 @@ import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.MarkdownTextObject
 import com.sushistack.linktree.batch.config.BatchJob.Companion.getDescription
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.batch.core.BatchStatus
 import org.springframework.stereotype.Service
 
 @Service
@@ -34,14 +35,14 @@ class SlackNotificationService(
     fun sendPostValidations(linkMap1: Map<Int, List<UrlStatus>>, linkMap2: Map<Int, List<UrlStatus>>) {
         val blocks = mutableListOf<LayoutBlock>()
 
-        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List*").build()) })
+        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 1)*").build()) })
 
         blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key}):* ${entry.value.size}").build() }) })
 
         blocks.add(Blocks.divider())
 
-        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List*").build()) })
-        blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key}):* ${entry.value.size}").build() }) })
+        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 2)*").build()) })
+        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key}):* ${entry.value.size}").build() }) })
     }
 
     fun sendJobDetail(jobDetail: JobDetail, stepDetails: List<StepDetail>) {
@@ -63,19 +64,21 @@ class SlackNotificationService(
             }
         )
 
-        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Step Details:*").build()) })
+        if (jobDetail.status != BatchStatus.COMPLETED.name) {
+            blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Step Details:*").build()) })
 
-        stepDetails.forEach { step ->
-            blocks.add(
-                Blocks.section {
-                    it.fields(
-                        listOf(
-                            MarkdownTextObject.builder().text("*Step Name:*\n${step.name}").build(),
-                            MarkdownTextObject.builder().text("*Status:*\n${step.status}").build()
+            stepDetails.forEach { step ->
+                blocks.add(
+                    Blocks.section {
+                        it.fields(
+                            listOf(
+                                MarkdownTextObject.builder().text("*Step Name:*\n${step.name}").build(),
+                                MarkdownTextObject.builder().text("*Status:*\n${step.status}").build()
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
         }
 
         jobDetail.message?.let { message ->
