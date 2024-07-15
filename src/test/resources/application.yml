@@ -15,10 +15,10 @@ spring:
     web-application-type: none
 
 ftp:
-  host: ENC(DhL0xr1dNMsqxH607y/UeUG2aDU2EK+LJdegDOMA/8knvD9mrwft78SQvHNQPy4m)
+  host: localhost
   port: 21
-  username: ENC(Lbtc+LHr0n3AqyqxhMKmSCZSvWhCw20fUqQXAmh7TZIAdIiqWKeZ8w==)
-  password: ENC(VXtMpPSnSMa5mKUtumDkRp18N1wKZO9WwoBJ3BjqxJpQ4EJKJDZMwg==)
+  username: user
+  password: pass
 
 slack:
   bot-token: ENC(y+36Ok3MGuvAHPw0LCD1fK0c1skx+oQQMkcQghAZKLxMiH6CAvCcWE1RN4dUAsUAoBMZWDByEk/cyU1QHIBO86gUrkv7rh4edXrw0Efjnfk=)

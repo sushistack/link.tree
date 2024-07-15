@@ -16,6 +16,8 @@ import com.sushistack.linktree.utils.ArticleUtils
 import com.sushistack.linktree.utils.DateRange
 import com.sushistack.linktree.utils.pick
 import kotlinx.serialization.json.Json
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
@@ -32,7 +34,8 @@ class PostService(
         private val DATE_RANGE = DateRange()
     }
 
-    @Transactional
+    @Transactional(rollbackFor = [Exception::class])
+    @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
     fun createPost(webpage: StaticWebpage, articleSources: List<ArticleSource>, linkProvider: LinkProvider): Post {
         val repo = webpage.repository!!
         val gitAccount = repo.gitAccount!!

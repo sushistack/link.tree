@@ -5,8 +5,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.io.File
-import java.nio.charset.Charset
 
 @SpringBootTest
 class FTPServiceTest {
@@ -28,5 +26,10 @@ class FTPServiceTest {
     fun uploadTest() = runBlocking {
         ftpGateway.uploadFile("/public_html/acrid-caring.com/life", "test.txt", "abcd".toByteArray(Charsets.UTF_8))
         println("asdakdaskdaskdmaskdmakdmk")
+    }
+
+    @Test
+    fun deleteTest() = runBlocking {
+        ftpGateway.deleteFile("/public_html/acrid-caring.com/life", "text.txt")
     }
 }

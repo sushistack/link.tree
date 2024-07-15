@@ -10,6 +10,8 @@ import com.sushistack.linktree.external.git.push
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.nio.file.Files
@@ -127,7 +129,8 @@ class DeployService(
         git.checkout().setName(DEFAULT_BRANCH).call()
     }
 
-    private suspend fun uploadToRemoteOrigin(repo: SimpleGitRepository) {
+    @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
+    suspend fun uploadToRemoteOrigin(repo: SimpleGitRepository) {
         val git = GitRepositoryUtil.open(appHomeDir, repo.workspaceName, repo.repositoryName, repo.appPassword)
         git.checkout().setName(DEPLOY_BRANCH).call()
 
