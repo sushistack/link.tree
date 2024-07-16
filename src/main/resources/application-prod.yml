@@ -1,2 +1,8 @@
 spring:
   config.activate.on-profile: prod
+
+ftp:
+  host: ENC(DhL0xr1dNMsqxH607y/UeUG2aDU2EK+LJdegDOMA/8knvD9mrwft78SQvHNQPy4m)
+  port: 21
+  username: ENC(Lbtc+LHr0n3AqyqxhMKmSCZSvWhCw20fUqQXAmh7TZIAdIiqWKeZ8w==)
+  password: ENC(VXtMpPSnSMa5mKUtumDkRp18N1wKZO9WwoBJ3BjqxJpQ4EJKJDZMwg==)

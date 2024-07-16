@@ -1,10 +1,6 @@
 package com.sushistack.linktree.external.ftp
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
@@ -31,38 +27,26 @@ class FTPService(
 
         val files = repoDir.toFile().listFiles() ?: emptyArray()
         val remoteDir = "$FTP_REMOTE_DIR/$domain/life"
-        val remoteFiles = getFilesOnRemote(remoteDir)
+        val remoteFiles = ftpGateway.getFiles(remoteDir)
+
+        log.info { "files: ${files.map { it.name }}" }
+        log.info { "remote: $remoteFiles" }
 
         val filesToUpload: List<File> = files.filter { f -> remoteFiles.none { rf -> rf == f.name } }
         val filesToDelete = remoteFiles.subtract(files.map { it.name }.toSet()).toList()
 
-        runBlocking {
-            val jobs1 = async {
-                filesToUpload.map { file ->
-                    async(Dispatchers.IO) {
-                        ftpGateway.uploadFile(remoteDir, file.name, file.readBytes())
-                        log.info { "Uploaded file(${file.name}) to remote server." }
-                    }
-                }.awaitAll()
-            }
+        log.info { "filesToUpload: ${filesToUpload.map { it.name }}" }
+        log.info { "filesToDelete: $filesToDelete" }
 
-            val jobs2 = async {
-                filesToDelete.map { fileName ->
-                    async(Dispatchers.IO) {
-                        ftpGateway.deleteFile(remoteDir, fileName)
-                        log.info { "Deleted file($fileName) on remote server." }
-                    }
-                }.awaitAll()
-            }
+        filesToUpload.map { file ->
+            ftpGateway.uploadFile(remoteDir, file.name, file.readBytes())
+            log.info { "Uploaded file(${file.name}) to remote server." }
+        }
 
-            jobs1.await()
-            jobs2.await()
+        filesToDelete.map { fileName ->
+            ftpGateway.deleteFile(remoteDir, fileName)
+            log.info { "Deleted file($fileName) on remote server." }
         }
     }
 
-    suspend fun getFilesOnRemote(remoteDir: String): List<String> =
-        ftpGateway.getFiles(remoteDir)
-
-    suspend fun deleteFileOnRemote(remoteDir: String, fileName: String) =
-        ftpGateway.deleteFile(remoteDir, fileName)
 }

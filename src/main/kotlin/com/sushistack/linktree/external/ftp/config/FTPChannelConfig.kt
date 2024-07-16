@@ -2,17 +2,17 @@ package com.sushistack.linktree.external.ftp.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.integration.channel.DirectChannel
-import org.springframework.integration.channel.ExecutorChannel
 import org.springframework.integration.dsl.IntegrationFlow
 import org.springframework.integration.file.remote.gateway.AbstractRemoteFileOutboundGateway
 import org.springframework.integration.file.remote.gateway.AbstractRemoteFileOutboundGateway.Command
 import org.springframework.integration.ftp.dsl.Ftp
 import org.springframework.integration.ftp.gateway.FtpOutboundGateway
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory
-import java.util.concurrent.Executors
 
 @Configuration
+@Profile("prod")
 class FTPChannelConfig(
     private val ftpSessionFactory: DefaultFtpSessionFactory
 ) {
@@ -31,7 +31,7 @@ class FTPChannelConfig(
         .get()
 
     @Bean
-    fun uploadChannel() = ExecutorChannel(Executors.newFixedThreadPool(5))
+    fun uploadChannel() = DirectChannel()
 
     @Bean
     fun ftpDeleteFlow() = IntegrationFlow.from("deleteChannel")
@@ -48,7 +48,7 @@ class FTPChannelConfig(
         ).get()
 
     @Bean
-    fun deleteChannel() = ExecutorChannel(Executors.newFixedThreadPool(5))
+    fun deleteChannel() = DirectChannel()
 
     @Bean
     fun ftpCheckFlow() =
@@ -65,7 +65,7 @@ class FTPChannelConfig(
             .get()
 
     @Bean
-    fun checkInboundChannel() = ExecutorChannel(Executors.newFixedThreadPool(5))
+    fun checkInboundChannel() = DirectChannel()
 
     @Bean
     fun checkOutboundChannel() = DirectChannel()

@@ -12,13 +12,13 @@ interface FTPGateway {
         replyChannel = "checkOutboundChannel",
         headers = [GatewayHeader(name = "remoteDir", expression = "args[0]")]
     )
-    suspend fun getFiles(remoteDir: String): List<String>
+    fun getFiles(remoteDir: String): List<String>
 
     @Gateway(
         requestChannel = "uploadChannel",
         headers = [GatewayHeader(name = "remoteDir", expression = "args[0]")]
     )
-    suspend fun uploadFile(
+    fun uploadFile(
         @Header("remoteDir") remoteDir: String,
         @Header("fileName") fileName: String,
         file: ByteArray
@@ -31,5 +31,5 @@ interface FTPGateway {
             GatewayHeader(name = "fileName", expression = "args[1]")
         ]
     )
-    suspend fun deleteFile(remoteDir: String, fileName: String)
+    fun deleteFile(@Header("remoteDir") remoteDir: String, fileName: String)
 }

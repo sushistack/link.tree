@@ -8,9 +8,7 @@ import com.sushistack.linktree.jobs.post.service.DeployService.SimpleGitReposito
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.scope.context.ChunkContext
@@ -39,30 +37,27 @@ class BuildAndDeployTasklet(
         val linksOfTier2 = linkNodeService.findWithPostByOrder(order, tier = 2)
 
         runBlocking {
-            val jobs1 = async {
-                linksOfTier1.map { linkNode ->
-                    async {
-                        jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
-                        val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
-                        deployService.makePackage(repo)
-                        deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
-                    }
-                }.awaitAll()
+            val jobs1 = linksOfTier1.map { linkNode ->
+                launch(Dispatchers.IO) {
+                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
+                    val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
+                    deployService.makePackage(repo)
+                    deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
+                }
             }
 
-            val jobs2 = async {
-                linksOfTier2.map { linkNode ->
-                    async {
-                        jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
-                        val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
-                        deployService.makePackage(repo)
-                        deployService.deploy(CLOUD_BLOG_NETWORK, repo)
-                    }
-                }.awaitAll()
+
+            val jobs2 = linksOfTier2.map { linkNode ->
+                launch(Dispatchers.IO) {
+                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
+                    val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
+                    deployService.makePackage(repo)
+                    deployService.deploy(CLOUD_BLOG_NETWORK, repo)
+                }
             }
 
-            jobs1.await()
-            jobs2.await()
+            jobs1.joinAll()
+            jobs2.joinAll()
         }
 
         order.orderStatus = OrderStatus.next(order.orderStatus)
