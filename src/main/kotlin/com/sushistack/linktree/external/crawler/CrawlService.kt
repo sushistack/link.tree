@@ -17,6 +17,8 @@ import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.searchU
 import com.sushistack.linktree.external.crawler.model.Article
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import org.springframework.stereotype.Service
 import java.io.FileOutputStream
@@ -28,8 +30,13 @@ class CrawlService(
     private val appHomeDir: String
 ) {
 
+    companion object {
+        private const val THEAD_POOL_SIZE = 10
+    }
+
     private val log = KotlinLogging.logger {}
     private val articleCounter = AtomicInteger(0)
+
 
     fun crawl(keywords: List<String>) {
         Playwright.create().use { playwright ->
@@ -43,7 +50,7 @@ class CrawlService(
                                 log.info { "keyword := [$keyword], page := [$pageNumber]" }
                                 navigate(page, searchUrl(keyword, pageNumber)) ?: continue
                                 val locators = selectorAll(page, articleCardsSelector)
-                                jobs.add(async { collect(locators, keyword) })
+                                collect(locators, keyword)
                             }
                         }
                         jobs.awaitAll()
@@ -53,25 +60,33 @@ class CrawlService(
         }
     }
 
-    suspend fun collect(locators: List<Locator>, keyword: String) {
-        for (locator in locators) {
-            val titleLocator = selector(locator, articleTitleSelector) ?: continue
-            val descLocator = selector(locator, articleDescriptionSelector) ?: continue
+    suspend fun collect(locators: List<Locator>, keyword: String) = coroutineScope {
+        val semaphore = Semaphore(THEAD_POOL_SIZE)
+        locators.map { locator ->
+            async(Dispatchers.IO) {
+                semaphore.withPermit {
+                    try {
+                        val titleLocator = selector(locator, articleTitleSelector) ?: return@withPermit
+                        val descLocator = selector(locator, articleDescriptionSelector) ?: return@withPermit
 
-            val article = Article(
-                title = titleLocator.innerText(),
-                description = descLocator.innerText(),
-                content = crawlContent(titleLocator.getAttribute("href"))
-            )
+                        val article = Article(
+                            title = titleLocator.innerText(),
+                            description = descLocator.innerText(),
+                            content = crawlContent(titleLocator.getAttribute("href"))
+                        )
 
-            when {
-                article.wordCount > MIN_WORDS -> {
-                    writeArticle(article, keyword)
-                    log.info { "Write article successfully!!" }
+                        if (article.wordCount > MIN_WORDS) {
+                            writeArticle(article, keyword)
+                            log.info { "Write article successfully!!" }
+                        } else {
+                            log.info { "Skip writing article." }
+                        }
+                    } catch (e: Exception) {
+                        log.error(e) { "Error processing locator: $locator" }
+                    }
                 }
-                else -> { log.info { "Skip writing article." } }
             }
-        }
+        }.awaitAll()
     }
 
     private fun handlePlayWrightException(e: Exception, message: String = "") = when(e) {
