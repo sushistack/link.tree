@@ -43,6 +43,7 @@ out/
 
 # logs
 logs
+*.log
 
 # files
 files
