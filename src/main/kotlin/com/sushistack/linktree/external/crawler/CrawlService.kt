@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service
 import java.io.FileOutputStream
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.io.path.exists
 
 @Service
 class CrawlService(
@@ -37,15 +38,14 @@ class CrawlService(
     private val log = KotlinLogging.logger {}
     private val articleCounter = AtomicInteger(0)
 
-
     fun crawl(keywords: List<String>) {
+        val notCrawledKeywords = keywords.filter { keyword -> !Paths.get("${appHomeDir}/files/articles/$keyword").exists() }
         Playwright.create().use { playwright ->
             browser(playwright, LaunchOptions().setTimeout(SEARCH_PAGE_TIMEOUT))?.use { browser ->
                 page(browser, PC_UA)?.use { page ->
                     articleCounter.set(0)
                     runBlocking {
-                        val jobs = mutableListOf<Deferred<Unit>>()
-                        for (keyword in keywords) {
+                        for (keyword in notCrawledKeywords) {
                             for (pageNumber in 1..MAX_PAGE) {
                                 log.info { "keyword := [$keyword], page := [$pageNumber]" }
                                 navigate(page, searchUrl(keyword, pageNumber)) ?: continue
@@ -53,7 +53,6 @@ class CrawlService(
                                 collect(locators, keyword)
                             }
                         }
-                        jobs.awaitAll()
                     }
                 }
             }
