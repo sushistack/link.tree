@@ -27,14 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.exists
 
 @Service
-class CrawlService(
-    private val appHomeDir: String
-) {
-
-    companion object {
-        private const val THEAD_POOL_SIZE = 10
-    }
-
+class CrawlService(private val appHomeDir: String) {
     private val log = KotlinLogging.logger {}
     private val articleCounter = AtomicInteger(0)
 
@@ -59,33 +52,40 @@ class CrawlService(
         }
     }
 
-    suspend fun collect(locators: List<Locator>, keyword: String) = coroutineScope {
-        val semaphore = Semaphore(THEAD_POOL_SIZE)
+    fun collect(locators: List<Locator>, keyword: String) = runBlocking {
+        val semaphore = Semaphore(5)
         locators.map { locator ->
             async(Dispatchers.IO) {
                 semaphore.withPermit {
-                    try {
-                        val titleLocator = selector(locator, articleTitleSelector) ?: return@withPermit
-                        val descLocator = selector(locator, articleDescriptionSelector) ?: return@withPermit
 
-                        val article = Article(
-                            title = titleLocator.innerText(),
-                            description = descLocator.innerText(),
-                            content = crawlContent(titleLocator.getAttribute("href"))
-                        )
+                try {
+                    val titleLocator = selector(locator, articleTitleSelector) ?: return@async
+                    val descLocator = selector(locator, articleDescriptionSelector) ?: return@async
 
-                        if (article.wordCount > MIN_WORDS) {
-                            writeArticle(article, keyword)
-                            log.info { "Write article successfully!!" }
-                        } else {
-                            log.info { "Skip writing article." }
-                        }
-                    } catch (e: Exception) {
-                        log.error(e) { "Error processing locator: $locator" }
+                    val titleText = titleLocator.innerText()
+                    val descText = descLocator.innerText()
+                    val href = titleLocator.getAttribute("href") ?: return@async
+
+                    val content = crawlContent(href)
+
+                    val article = Article(
+                        title = titleText,
+                        description = descText,
+                        content = content
+                    )
+
+                    if (article.wordCount > MIN_WORDS) {
+                        writeArticle(article, keyword)
+                        log.info { "Write article successfully!!" }
+                    } else {
+                        log.info { "Skip writing article." }
                     }
+                } catch (e: Exception) {
+                    log.error(e) { "Error processing locator: $locator" }
                 }
+                    }
             }
-        }.awaitAll()
+        }.joinAll()
     }
 
     private fun handlePlayWrightException(e: Exception, message: String = "") = when(e) {
@@ -137,12 +137,15 @@ class CrawlService(
             null
         }
 
-    private fun crawlContent(url: String): String {
+    private suspend fun crawlContent(url: String): String = withContext(Dispatchers.IO) {
         var content = ""
-        Playwright.create().use { playwright ->
-            browser(playwright, LaunchOptions().setTimeout(ARTICLE_PAGE_TIMEOUT))?.use { browser ->
-                page(browser, MOBILE_UA)?.use { page ->
-                    navigate(page, url)?.let {
+        try {
+            Playwright.create().use { playwright ->
+                val browser = browser(playwright, LaunchOptions().setTimeout(ARTICLE_PAGE_TIMEOUT)) ?: return@withContext content
+                browser.use {
+                    val page = page(browser, MOBILE_UA) ?: return@use
+                    page.use {
+                        navigate(page, url) ?: return@use
                         for (selector in articleSelectors) {
                             val elements = selectorAll(page, selector)
                             content = Html2MarkdownConverter.convert(elements)
@@ -153,8 +156,10 @@ class CrawlService(
                     }
                 }
             }
+        } catch (e: Exception) {
+            log.error(e) { "Error crawling content from URL: $url" }
         }
-        return content
+        return@withContext content
     }
 
     private fun writeArticle(article: Article, keyword: String) {
