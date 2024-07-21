@@ -16,9 +16,6 @@ import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.article
 import com.sushistack.linktree.external.crawler.CrawlVariables.Companion.searchUrl
 import com.sushistack.linktree.external.crawler.model.Article
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import org.springframework.stereotype.Service
 import java.io.FileOutputStream
@@ -37,14 +34,12 @@ class CrawlService(private val appHomeDir: String) {
             browser(playwright, LaunchOptions().setTimeout(SEARCH_PAGE_TIMEOUT))?.use { browser ->
                 page(browser, PC_UA)?.use { page ->
                     articleCounter.set(0)
-                    runBlocking {
-                        for (keyword in notCrawledKeywords) {
-                            for (pageNumber in 1..MAX_PAGE) {
-                                log.info { "keyword := [$keyword], page := [$pageNumber]" }
-                                navigate(page, searchUrl(keyword, pageNumber)) ?: continue
-                                val locators = selectorAll(page, articleCardsSelector)
-                                collect(locators, keyword)
-                            }
+                    for (keyword in notCrawledKeywords) {
+                        for (pageNumber in 1..MAX_PAGE) {
+                            log.info { "keyword := [$keyword], page := [$pageNumber]" }
+                            navigate(page, searchUrl(keyword, pageNumber)) ?: continue
+                            val locators = selectorAll(page, articleCardsSelector)
+                            collect(locators, keyword)
                         }
                     }
                 }
@@ -52,40 +47,34 @@ class CrawlService(private val appHomeDir: String) {
         }
     }
 
-    fun collect(locators: List<Locator>, keyword: String) = runBlocking {
-        val semaphore = Semaphore(5)
-        locators.map { locator ->
-            async(Dispatchers.IO) {
-                semaphore.withPermit {
+    fun collect(locators: List<Locator>, keyword: String) {
+        for (locator in locators) {
+            try {
+                val titleLocator = selector(locator, articleTitleSelector) ?: continue
+                val descLocator = selector(locator, articleDescriptionSelector) ?: continue
 
-                try {
-                    val titleLocator = selector(locator, articleTitleSelector) ?: return@async
-                    val descLocator = selector(locator, articleDescriptionSelector) ?: return@async
+                val titleText = titleLocator.innerText()
+                val descText = descLocator.innerText()
+                val href = titleLocator.getAttribute("href") ?: continue
 
-                    val titleText = titleLocator.innerText()
-                    val descText = descLocator.innerText()
-                    val href = titleLocator.getAttribute("href") ?: return@async
+                val content = crawlContent(href)
 
-                    val content = crawlContent(href)
+                val article = Article(
+                    title = titleText,
+                    description = descText,
+                    content = content
+                )
 
-                    val article = Article(
-                        title = titleText,
-                        description = descText,
-                        content = content
-                    )
-
-                    if (article.wordCount > MIN_WORDS) {
-                        writeArticle(article, keyword)
-                        log.info { "Write article successfully!!" }
-                    } else {
-                        log.info { "Skip writing article." }
-                    }
-                } catch (e: Exception) {
-                    log.error(e) { "Error processing locator: $locator" }
+                if (article.wordCount > MIN_WORDS) {
+                    writeArticle(article, keyword)
+                    log.info { "Write article successfully!!" }
+                } else {
+                    log.info { "Skip writing article." }
                 }
-                    }
+            } catch (e: Exception) {
+                log.error(e) { "Error processing locator: $locator" }
             }
-        }.joinAll()
+        }
     }
 
     private fun handlePlayWrightException(e: Exception, message: String = "") = when(e) {
@@ -137,15 +126,13 @@ class CrawlService(private val appHomeDir: String) {
             null
         }
 
-    private suspend fun crawlContent(url: String): String = withContext(Dispatchers.IO) {
+    private fun crawlContent(url: String): String {
         var content = ""
         try {
             Playwright.create().use { playwright ->
-                val browser = browser(playwright, LaunchOptions().setTimeout(ARTICLE_PAGE_TIMEOUT)) ?: return@withContext content
-                browser.use {
-                    val page = page(browser, MOBILE_UA) ?: return@use
-                    page.use {
-                        navigate(page, url) ?: return@use
+                browser(playwright, LaunchOptions().setTimeout(ARTICLE_PAGE_TIMEOUT))?.use { browser ->
+                    page(browser, MOBILE_UA)?.use { page ->
+                        navigate(page, url)
                         for (selector in articleSelectors) {
                             val elements = selectorAll(page, selector)
                             content = Html2MarkdownConverter.convert(elements)
@@ -159,7 +146,7 @@ class CrawlService(private val appHomeDir: String) {
         } catch (e: Exception) {
             log.error(e) { "Error crawling content from URL: $url" }
         }
-        return@withContext content
+        return content
     }
 
     private fun writeArticle(article: Article, keyword: String) {

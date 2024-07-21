@@ -32,6 +32,21 @@ class SlackNotificationService(
             log.error(e) { "Error while sending message." }
         }
 
+    fun send(blocks: List<LayoutBlock>, channel: String = slackChannel) =
+        try {
+            val res = ChatPostMessageRequest.builder()
+                .channel(slackChannel)
+                .blocks(blocks)
+                .build()
+                .let { methodsClient.chatPostMessage(it) }
+            when(res.isOk) {
+                true -> Unit
+                false -> { log.error { "error := [${res.error}]" } }
+            }
+        } catch (e: Exception) {
+            log.error(e) { "Error while sending message." }
+        }
+
     fun sendPostValidations(linkMap1: Map<Int, List<UrlStatus>>, linkMap2: Map<Int, List<UrlStatus>>) {
         val blocks = mutableListOf<LayoutBlock>()
 
@@ -43,6 +58,8 @@ class SlackNotificationService(
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 2)*").build()) })
         blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key}):* ${entry.value.size}").build() }) })
+
+        send(blocks, slackChannel)
     }
 
     fun sendJobDetail(jobDetail: JobDetail, stepDetails: List<StepDetail>) {
@@ -85,19 +102,7 @@ class SlackNotificationService(
             blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text(message).build()) })
         }
 
-        try {
-            val res = ChatPostMessageRequest.builder()
-                .channel(slackChannel)
-                .blocks(blocks)
-                .build()
-                .let { methodsClient.chatPostMessage(it) }
-            when(res.isOk) {
-                true -> Unit
-                false -> { log.error { "error := [${res.error}]" } }
-            }
-        } catch (e: Exception) {
-            log.error(e) { "Error while sending message." }
-        }
+        send(blocks, slackChannel)
     }
 }
 

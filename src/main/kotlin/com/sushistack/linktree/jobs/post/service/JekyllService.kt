@@ -16,7 +16,7 @@ class JekyllService(private val appHomeDir: String) {
 
         try {
             val process = withContext(Dispatchers.IO) {
-                ProcessBuilder(listOf("bash", "-c", "bundle install; bundle update; JEKYLL_ENV=production jekyll build;"))
+                ProcessBuilder(listOf("bash", "-c", "bundle install; bundle update; JEKYLL_ENV=production bundle exec jekyll build;"))
                     .directory(File(appHomeDir, "repo/$workspaceName/$repositoryName"))
                     .redirectErrorStream(true)
                     .start()
