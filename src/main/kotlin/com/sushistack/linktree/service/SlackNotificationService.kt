@@ -55,22 +55,12 @@ class SlackNotificationService(
         val blocks = mutableListOf<LayoutBlock>()
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 1)*").build()) })
-
-        blocks.add(Blocks.section {
-            it.fields(linkMap1.map { entry ->
-                MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build()
-            })
-        })
+        blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build() }) })
 
         blocks.add(Blocks.divider())
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 2)*").build()) })
-        blocks.add(Blocks.section {
-            it.fields(linkMap2.map { entry ->
-                val symbol = if (entry.value.isEmpty()) ":green_circle:" else ":red_circle:"
-                MarkdownTextObject.builder().text("$symbol *Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build()
-            })
-        })
+        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("$symbol *Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build() }) })
 
         send(blocks, slackChannel)
     }
