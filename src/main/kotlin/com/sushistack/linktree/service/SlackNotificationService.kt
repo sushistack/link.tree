@@ -66,7 +66,7 @@ class SlackNotificationService(
     }
 
     fun sendJobDetail(jobDetail: JobDetail, stepDetails: List<StepDetail>) {
-        val isCompleted = jobDetail.status != BatchStatus.COMPLETED.name
+        val isCompleted = jobDetail.status == BatchStatus.COMPLETED.name
 
         val blocks = mutableListOf<LayoutBlock>()
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("${getDescription(jobDetail.name)} 결과").build()) })
@@ -85,7 +85,7 @@ class SlackNotificationService(
             }
         )
 
-        if (isCompleted) {
+        if (!isCompleted) {
             blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Step Details:*").build()) })
             stepDetails.forEach { step ->
                 val isStepCompleted = step.status == BatchStatus.COMPLETED.name
