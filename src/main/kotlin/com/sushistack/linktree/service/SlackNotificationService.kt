@@ -16,7 +16,7 @@ class SlackNotificationService(
     private val slackChannel: String
 ) {
     companion object {
-        private val symbol: (Boolean) -> String = { if (it) ":green_circle:" else ":red_circle:" }
+        private val symbol: (Boolean) -> String = { if (it) ":large_green_circle:" else ":red_circle:" }
     }
 
     private val log = KotlinLogging.logger {}
