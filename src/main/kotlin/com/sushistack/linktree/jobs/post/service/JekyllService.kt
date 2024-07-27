@@ -1,5 +1,7 @@
 package com.sushistack.linktree.jobs.post.service
 
+import com.sushistack.linktree.external.git.GitRepositoryUtil
+import com.sushistack.linktree.external.git.pullChanges
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,9 +12,16 @@ import java.io.InputStreamReader
 
 @Service
 class JekyllService(private val appHomeDir: String) {
+    companion object {
+        const val DEFAULT_BRANCH = "gh-pages"
+    }
+
     private val log = KotlinLogging.logger {}
 
-    suspend fun build(workspaceName: String, repositoryName: String) {
+    suspend fun build(workspaceName: String, repositoryName: String, appPassword: String) {
+        val git = GitRepositoryUtil.open(appHomeDir, workspaceName, repositoryName, appPassword)
+        git.checkout().setName(DEFAULT_BRANCH).call()
+        git.pullChanges(username = workspaceName, appPassword = appPassword)
 
         try {
             val process = withContext(Dispatchers.IO) {

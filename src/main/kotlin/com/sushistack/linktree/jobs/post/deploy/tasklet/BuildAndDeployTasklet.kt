@@ -39,7 +39,7 @@ class BuildAndDeployTasklet(
         runBlocking {
             val jobs1 = linksOfTier1.map { linkNode ->
                 launch(Dispatchers.IO) {
-                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
+                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
                     val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
                     deployService.makePackage(repo)
                     deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
@@ -49,7 +49,7 @@ class BuildAndDeployTasklet(
 
             val jobs2 = linksOfTier2.map { linkNode ->
                 launch(Dispatchers.IO) {
-                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName)
+                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
                     val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
                     deployService.makePackage(repo)
                     deployService.deploy(CLOUD_BLOG_NETWORK, repo)
