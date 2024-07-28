@@ -3,8 +3,6 @@ package com.sushistack.linktree.jobs.post.service
 import com.sushistack.linktree.external.git.GitRepositoryUtil
 import com.sushistack.linktree.external.git.pullChanges
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.File

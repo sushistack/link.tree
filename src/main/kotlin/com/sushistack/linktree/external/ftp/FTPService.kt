@@ -1,5 +1,12 @@
 package com.sushistack.linktree.external.ftp
 
+import com.sushistack.linktree.external.git.DEFAULT_HEAD_REF
+import com.sushistack.linktree.external.git.GitRepositoryUtil
+import com.sushistack.linktree.external.git.cleanup
+import com.sushistack.linktree.external.git.resetTo
+import com.sushistack.linktree.jobs.post.service.DeployService.Companion.DEFAULT_BRANCH
+import com.sushistack.linktree.jobs.post.service.DeployService.Companion.DEPLOY_BRANCH
+import com.sushistack.linktree.jobs.post.service.DeployService.SimpleGitRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
@@ -20,19 +27,22 @@ class FTPService(
     private val log = KotlinLogging.logger {}
 
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
-    fun upload(workspaceName: String, repositoryName: String, domain: String) {
-        val repoDir = Paths.get("$appHomeDir/repo/${workspaceName}/${repositoryName}/life")
-        log.debug { "repoDir $repoDir" }
-        require(repoDir.isDirectory()) { "$repoDir is not a directory" }
+    fun upload(repo: SimpleGitRepository) {
+        val git = GitRepositoryUtil.open(appHomeDir, repo.workspaceName, repo.repositoryName, repo.appPassword)
+        git.checkout().setName(DEPLOY_BRANCH).call()
 
-        val files = repoDir.toFile().listFiles() ?: emptyArray()
-        val remoteDir = "$FTP_REMOTE_DIR/$domain/life"
+        val repoDir = "$appHomeDir/repo/${repo.workspaceName}/${repo.repositoryName}"
+        val targetDir = Paths.get(repoDir, "life")
+        require(targetDir.isDirectory()) { "$targetDir is not a directory" }
+
+        val files = targetDir.toFile().listFiles() ?: emptyArray()
+        val remoteDir = "$FTP_REMOTE_DIR/${repo.domain}/life"
         val remoteFiles = ftpGateway.getFiles(remoteDir)
 
         log.info { "files: ${files.map { it.name }}" }
         log.info { "remote: $remoteFiles" }
 
-        val filesToUpload: List<File> = files.filter { f -> remoteFiles.none { rf -> rf == f.name } }
+        val filesToUpload: List<File> = files.filter { f -> remoteFiles.none { rf -> rf == f.name } }.filter { it.isFile }
         val filesToDelete = remoteFiles.subtract(files.map { it.name }.toSet()).toList()
 
         log.info { "filesToUpload: ${filesToUpload.map { it.name }}" }
@@ -47,6 +57,10 @@ class FTPService(
             ftpGateway.deleteFile(remoteDir, fileName)
             log.info { "Deleted file($fileName) on remote server." }
         }
+
+        git.cleanup()
+        git.resetTo(commitId = DEFAULT_HEAD_REF)
+        git.checkout().setName(DEFAULT_BRANCH).call()
     }
 
 }

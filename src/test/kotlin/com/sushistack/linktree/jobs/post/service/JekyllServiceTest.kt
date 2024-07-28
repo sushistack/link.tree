@@ -22,12 +22,4 @@ class JekyllServiceTest {
     fun setup() {
         jekyllService = JekyllService("/Users/nhn/link.tree")
     }
-
-    @Test
-    @Disabled("not use")
-    fun buildTest() {
-        runBlocking {
-            jekyllService.build("linkswap", "pbn-001")
-        }
-    }
 }

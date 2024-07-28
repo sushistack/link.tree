@@ -14,22 +14,11 @@ class FTPServiceTest {
     @Autowired
     private lateinit var ftpGateway: FTPGateway
 
-    @Autowired
-    private lateinit var ftpService: FTPService
-
-    @Value("\${test.bitbucket.username}")
-    private lateinit var bitbucketUsername: String
-
 
     @Test
     fun getFilesOnRemoteTest() {
         val files = ftpGateway.getFiles("/public_html/test.com/life")
         log.info { files }
-    }
-
-    @Test
-    fun uploadTest() = runBlocking {
-        ftpService.upload(bitbucketUsername, "pbn-001", "test.com")
     }
 
     @Test

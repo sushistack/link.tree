@@ -9,7 +9,7 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.transport.PushResult
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 
-private const val DEFAULT_HEAD_REF = "HEAD"
+const val DEFAULT_HEAD_REF = "HEAD"
 private const val DEFAULT_RESET_COMMIT_REF = "HEAD~1"
 private const val DEFAULT_REMOTE_NAME = "origin"
 private const val DEFAULT_BRANCH_NAME = "gh-pages"
@@ -86,3 +86,14 @@ fun status(git: Git) {
 
 fun Git.getCommitId(ref: String = DEFAULT_HEAD_REF): String? =
     this.repository.use { it.resolve(ref)?.name }
+
+fun Git.cleanup(dir: Boolean = true, force: Boolean = true) {
+    status(this)
+
+    this.clean()
+        .setCleanDirectories(dir)
+        .setForce(force)
+        .call()
+
+    status(this)
+}

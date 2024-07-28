@@ -4,9 +4,8 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
 import com.sushistack.linktree.external.ftp.FTPService
-import com.sushistack.linktree.external.git.GitRepositoryUtil
-import com.sushistack.linktree.external.git.addAndCommit
-import com.sushistack.linktree.external.git.push
+import com.sushistack.linktree.external.git.*
+import com.sushistack.linktree.utils.moveRecursivelyTo
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
@@ -15,7 +14,6 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 
 @Service
 class DeployService(
@@ -61,43 +59,46 @@ class DeployService(
 
         log.info { "checkout to := [${ref.name}]" }
 
-        val repoPath = "$appHomeDir/repo/${repo.workspaceName}/${repo.repositoryName}"
-
-        val removeTargets = Files.walk(Paths.get(repoPath))
-            .filter { it != Paths.get(repoPath) }
-            .filter { Files.isRegularFile(it) }
-            .filter { listOf(DEPLOY_DIR, ".git", ".gitignore").all { f -> !Paths.get(repoPath).relativize(it.toAbsolutePath()).startsWith(f) } }
-            .sorted(Comparator.reverseOrder())
+        val repoPath = Paths.get("$appHomeDir/repo/${repo.workspaceName}/${repo.repositoryName}")
+        log.info { "before delete ls" }
+        ls(repoPath)
+        val removeTargets = Files.walk(repoPath)
+            .filter { it != repoPath }
+            .filter { listOf(DEPLOY_DIR, ".git", ".gitignore").all { f -> !repoPath.relativize(it.toAbsolutePath()).startsWith(f) } }
+            .map { it.toFile() }
             .toList()
 
         removeTargets.forEach {
             try {
-                Files.delete(it)
-                log.info { "Deleted := [$it]" }
+                when (it.isDirectory) {
+                    true -> it.deleteRecursively()
+                    false -> Files.deleteIfExists(it.toPath())
+                }
+                log.info { "Deleted := [${it.name}]" }
             } catch (e: IOException) {
-                log.error(e) { "Error deleting file := [$it]" }
+                log.error(e) { "Error deleting file := [${it.name}]" }
             }
         }
 
-        val deployDir = Path.of(repoPath, DEPLOY_DIR)
+        log.info { "after delete ls" }
+        ls(repoPath)
+
+        val deployDir = repoPath.resolve(DEPLOY_DIR)
         val parentDir = deployDir.parent
 
-
-        Files.list(deployDir).toList().forEach {
-            try {
-                val targetPath = parentDir.resolve(it.fileName)
-                Files.move(it, targetPath, StandardCopyOption.REPLACE_EXISTING)
-                log.info { "Moved := [$it -> $targetPath]" }
-            } catch (e: IOException) {
-                log.error(e) { "Failed to move file := [$it]" }
-            }
+        try {
+            deployDir.toFile().moveRecursivelyTo(parentDir.toFile())
+            log.info { "Moved := [$deployDir -> $parentDir]" }
+        } catch (e: IOException) {
+            log.error(e) { "Failed to move to[$parentDir] from[$deployDir]" }
         }
 
         Files.deleteIfExists(deployDir)
         log.info { "Deploy directory is deleted := [${deployDir.fileName}]" }
 
-        ls(Paths.get(repoPath))
-
+        log.info { "after moved ls" }
+        ls(repoPath)
+        git.close()
     }
 
     private fun ls(dir: Path) {
@@ -106,23 +107,26 @@ class DeployService(
         }
     }
 
-    fun deploy(serviceProviderType: ServiceProviderType, repo: SimpleGitRepository) {
+    fun deploy(serviceProviderType: ServiceProviderType, repo: SimpleGitRepository) =
         when (serviceProviderType) {
-            PRIVATE_BLOG_NETWORK -> ftpService.upload(repo.workspaceName, repo.repositoryName, repo.domain)
+            PRIVATE_BLOG_NETWORK -> ftpService.upload(repo)
             CLOUD_BLOG_NETWORK -> uploadToRemoteOrigin(repo)
             else -> Unit
         }
 
-        val git = GitRepositoryUtil.open(appHomeDir, repo.workspaceName, repo.repositoryName, repo.appPassword)
-        git.checkout().setName(DEFAULT_BRANCH).call()
-    }
-
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
     fun uploadToRemoteOrigin(repo: SimpleGitRepository) {
+        val repoPath = Paths.get("$appHomeDir/repo/${repo.workspaceName}/${repo.repositoryName}")
+        ls(repoPath)
         val git = GitRepositoryUtil.open(appHomeDir, repo.workspaceName, repo.repositoryName, repo.appPassword)
         git.checkout().setName(DEPLOY_BRANCH).call()
 
         git.addAndCommit(commitMessage = "deploy by system")
         git.push(branchName = DEPLOY_BRANCH, username = repo.username, appPassword = repo.appPassword, force = true)
+
+        git.checkout().setName(DEFAULT_BRANCH).call()
+        git.cleanup()
+        git.resetTo(commitId = DEFAULT_HEAD_REF)
+        git.close()
     }
 }

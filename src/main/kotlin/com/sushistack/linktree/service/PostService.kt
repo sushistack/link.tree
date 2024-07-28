@@ -47,8 +47,14 @@ class PostService(
 
         txCallbackHandler.registerCallback(
             git,
-            onCommit = { g -> g.push(username = gitAccount.username, appPassword = gitAccount.appPassword) },
-            onRollback = { g -> g.resetTo(commitId = commitId ?: "HEAD") }
+            onCommit = { g ->
+                g.push(username = gitAccount.username, appPassword = gitAccount.appPassword)
+                g.close()
+            },
+            onRollback = { g ->
+                g.resetTo(commitId = commitId ?: "HEAD")
+                g.close()
+            }
         )
 
         val (anchorText, url) = linkProvider.get()
@@ -59,7 +65,7 @@ class PostService(
 
         this.write(post, articleSources, anchorText to url)
         git.addAndCommit()
-
+        git.close()
         return postRepository.save(post)
     }
 
