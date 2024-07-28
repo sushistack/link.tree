@@ -20,7 +20,7 @@ class FTPService(
     private val log = KotlinLogging.logger {}
 
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
-    suspend fun upload(workspaceName: String, repositoryName: String, domain: String) {
+    fun upload(workspaceName: String, repositoryName: String, domain: String) {
         val repoDir = Paths.get("$appHomeDir/repo/${workspaceName}/${repositoryName}/life")
         log.debug { "repoDir $repoDir" }
         require(repoDir.isDirectory()) { "$repoDir is not a directory" }

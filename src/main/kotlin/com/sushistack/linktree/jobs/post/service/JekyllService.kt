@@ -18,31 +18,25 @@ class JekyllService(private val appHomeDir: String) {
 
     private val log = KotlinLogging.logger {}
 
-    suspend fun build(workspaceName: String, repositoryName: String, appPassword: String) {
+    fun build(workspaceName: String, repositoryName: String, appPassword: String) {
         val git = GitRepositoryUtil.open(appHomeDir, workspaceName, repositoryName, appPassword)
         git.checkout().setName(DEFAULT_BRANCH).call()
         git.pullChanges(username = workspaceName, appPassword = appPassword)
 
         try {
-            val process = withContext(Dispatchers.IO) {
-                ProcessBuilder(listOf("bash", "-c", "bundle install; bundle update; JEKYLL_ENV=production bundle exec jekyll build;"))
-                    .directory(File(appHomeDir, "repo/$workspaceName/$repositoryName"))
-                    .redirectErrorStream(true)
-                    .start()
-            }
+            val process = ProcessBuilder(listOf("bash", "-c", "bundle install; bundle update; JEKYLL_ENV=production bundle exec jekyll build;"))
+                .directory(File(appHomeDir, "repo/$workspaceName/$repositoryName"))
+                .redirectErrorStream(true)
+                .start()
 
-            withContext(Dispatchers.IO) {
-                BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
-                    var line: String?
-                    while (reader.readLine().also { line = it } != null) {
-                        log.info { line }
-                    }
+            BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    log.info { line }
                 }
             }
 
-            val exitCode = withContext(Dispatchers.IO) {
-                process.waitFor()
-            }
+            val exitCode = process.waitFor()
             require(exitCode == 0) { "Process exited with code $exitCode" }
         } catch (ex: Exception) {
             log.error(ex) { "Error occurred while building Jekyll" }

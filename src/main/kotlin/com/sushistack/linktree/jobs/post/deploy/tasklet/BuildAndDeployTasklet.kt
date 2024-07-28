@@ -36,28 +36,18 @@ class BuildAndDeployTasklet(
         val linksOfTier1 = linkNodeService.findWithPostByOrder(order, tier = 1)
         val linksOfTier2 = linkNodeService.findWithPostByOrder(order, tier = 2)
 
-        runBlocking {
-            val jobs1 = linksOfTier1.map { linkNode ->
-                launch(Dispatchers.IO) {
-                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
-                    val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
-                    deployService.makePackage(repo)
-                    deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
-                }
-            }
+        linksOfTier1.forEach { linkNode ->
+            jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
+            val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
+            deployService.makePackage(repo)
+            deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
+        }
 
-
-            val jobs2 = linksOfTier2.map { linkNode ->
-                launch(Dispatchers.IO) {
-                    jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
-                    val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
-                    deployService.makePackage(repo)
-                    deployService.deploy(CLOUD_BLOG_NETWORK, repo)
-                }
-            }
-
-            jobs1.joinAll()
-            jobs2.joinAll()
+        linksOfTier2.forEach { linkNode ->
+            jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
+            val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
+            deployService.makePackage(repo)
+            deployService.deploy(CLOUD_BLOG_NETWORK, repo)
         }
 
         order.orderStatus = OrderStatus.next(order.orderStatus)
