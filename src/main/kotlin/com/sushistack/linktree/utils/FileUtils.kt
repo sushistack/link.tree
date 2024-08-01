@@ -1,7 +1,12 @@
 package com.sushistack.linktree.utils
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
+
+private val log = KotlinLogging.logger {}
 
 @Throws(IOException::class)
 fun File.moveRecursivelyTo(targetDir: File) {
@@ -14,3 +19,8 @@ fun File.moveRecursivelyTo(targetDir: File) {
     val deleted = this.deleteRecursively()
     require(deleted) { "Failed to delete directory: ${this.absolutePath}" }
 }
+
+fun Path.ls() =
+    Files.list(this).use {
+        it.forEach { path -> log.info { path } }
+    }

@@ -50,6 +50,7 @@ class LinkGenerationJobConfig {
         jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
+//            .start(clearingInitializationStep)
             .start(initializationStep)
             .next(saveOrderStep)
             .next(addPrivateBlogsToOrderStep)

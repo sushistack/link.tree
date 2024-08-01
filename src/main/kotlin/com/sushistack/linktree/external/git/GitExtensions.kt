@@ -1,5 +1,6 @@
 package com.sushistack.linktree.external.git
 
+import com.sushistack.linktree.utils.ellipsis
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.PullResult
@@ -10,9 +11,9 @@ import org.eclipse.jgit.transport.PushResult
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 
 const val DEFAULT_HEAD_REF = "HEAD"
-private const val DEFAULT_RESET_COMMIT_REF = "HEAD~1"
-private const val DEFAULT_REMOTE_NAME = "origin"
-private const val DEFAULT_BRANCH_NAME = "gh-pages"
+const val DEFAULT_RESET_COMMIT_REF = "HEAD~1"
+const val DEFAULT_REMOTE_NAME = "origin"
+const val DEFAULT_BRANCH_NAME = "gh-pages"
 private val log = KotlinLogging.logger {}
 
 fun Git.pullChanges(
@@ -31,8 +32,17 @@ fun Git.addAndCommit(filePath: String = ".", commitMessage: String = "Add Post")
 
     this.add()
         .addFilepattern(filePath)
+        .setUpdate(false)
         .call()
-    log.info { "Staged Files on $filePath" }
+
+    log.info { "Staged New/Updated Files on $filePath" }
+
+    this.add()
+        .addFilepattern(filePath)
+        .setUpdate(true)
+        .call()
+
+    log.info { "Staged Deleted Files on $filePath" }
 
     status(this)
 
@@ -70,18 +80,17 @@ fun Git.push(remoteName: String = DEFAULT_REMOTE_NAME, branchName: String = DEFA
         .setCredentialsProvider(UsernamePasswordCredentialsProvider(username, appPassword))
         .call()
 
-    log.info { "Complete Push - $remoteName, Branch - $branchName" }
+    log.info { "Pushed Branch($branchName) on Repo(${this.getRepoName()})" }
     return pushResult
 }
 
 fun status(git: Git) {
     with(git.status().call()) {
-        log.info { "Added: $added" }
-        log.info { "Changed: $changed" }
-        log.info { "Untracked: $untracked" }
-        log.info { "Removed: $removed" }
+        log.info { "Added: ${ellipsis(added.toList())}" }
+        log.info { "Changed: ${ellipsis(changed.toList())}" }
+        log.info { "Untracked: ${ellipsis(untracked.toList())}" }
+        log.info { "Removed: ${ellipsis(removed.toList())}" }
     }
-
 }
 
 fun Git.getCommitId(ref: String = DEFAULT_HEAD_REF): String? =
@@ -97,3 +106,11 @@ fun Git.cleanup(dir: Boolean = true, force: Boolean = true) {
 
     status(this)
 }
+
+fun Git.getRepoName() =
+    this.repository.config.getString("remote", "origin", "url")
+        ?.let { it.substring(it.lastIndexOf('/') + 1) }
+        ?.let {
+            if (it.endsWith(".git")) it.substring(0, it.length - 4)
+            else it
+        }

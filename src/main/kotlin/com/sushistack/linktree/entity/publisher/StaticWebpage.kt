@@ -27,7 +27,7 @@ class StaticWebpage (
     @JoinColumn(name = "repository_seq")
     var repository: GitRepository? = null,
 
-    @OneToMany(mappedBy = "webpage")
+    @OneToMany(mappedBy = "webpage", cascade = [CascadeType.ALL], orphanRemoval = true)
     val posts: List<Post> = emptyList()
 ): BaseTimeEntity() {
     fun changeRepository(repository: GitRepository?) {

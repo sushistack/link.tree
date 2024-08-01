@@ -4,11 +4,13 @@ import com.sushistack.linktree.entity.order.OrderStatus
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
 import com.sushistack.linktree.jobs.post.service.DeployService
-import com.sushistack.linktree.jobs.post.service.DeployService.SimpleGitRepository
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
-import kotlinx.coroutines.*
+import com.sushistack.linktree.utils.git.ExtendedGit
+import com.sushistack.linktree.utils.git.close
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.scope.context.ChunkContext
@@ -19,11 +21,13 @@ import org.springframework.stereotype.Component
 @JobScope
 @Component
 class BuildAndDeployTasklet(
+    private val appHomeDir: String,
     private val orderService: OrderService,
     private val jekyllService: JekyllService,
     private val deployService: DeployService,
     private val linkNodeService: LinkNodeService
 ) : Tasklet {
+    private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
         val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCCESSED)
@@ -37,17 +41,33 @@ class BuildAndDeployTasklet(
         val linksOfTier2 = linkNodeService.findWithPostByOrder(order, tier = 2)
 
         linksOfTier1.forEach { linkNode ->
-            jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
-            val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
-            deployService.makePackage(repo)
-            deployService.deploy(PRIVATE_BLOG_NETWORK, repo)
+            val git = ExtendedGit(appHomeDir, linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
+            try {
+                jekyllService.build(git)
+                deployService.makePackage(git)
+                deployService.deploy(PRIVATE_BLOG_NETWORK, git, linkNode.domain)
+            } catch (e: Exception) {
+                log.error(e) { "Failed to build and deploy [${linkNode.workspaceName}/${linkNode.repositoryName}]" }
+                contribution.exitStatus = ExitStatus.FAILED
+                return RepeatStatus.FINISHED
+            } finally {
+                git.close()
+            }
         }
 
         linksOfTier2.forEach { linkNode ->
-            jekyllService.build(linkNode.workspaceName, linkNode.repositoryName, linkNode.appPassword)
-            val repo = SimpleGitRepository(linkNode.workspaceName, linkNode.repositoryName, linkNode.domain, linkNode.username, linkNode.appPassword)
-            deployService.makePackage(repo)
-            deployService.deploy(CLOUD_BLOG_NETWORK, repo)
+            val git = ExtendedGit(appHomeDir, linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
+            try {
+                jekyllService.build(git)
+                deployService.makePackage(git)
+                deployService.deploy(CLOUD_BLOG_NETWORK, git, linkNode.domain)
+            } catch (e: Exception) {
+                log.error(e) { "Failed to build and deploy [${linkNode.workspaceName}/${linkNode.repositoryName}]" }
+                contribution.exitStatus = ExitStatus.FAILED
+                return RepeatStatus.FINISHED
+            } finally {
+                git.close()
+            }
         }
 
         order.orderStatus = OrderStatus.next(order.orderStatus)

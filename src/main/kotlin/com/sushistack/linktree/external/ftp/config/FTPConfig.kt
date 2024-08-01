@@ -18,5 +18,6 @@ class FTPConfig(private val ftp: FTPProperties) {
             setPassword(ftp.password)
             setClientMode(PASSIVE_LOCAL_DATA_CONNECTION_MODE)
             setFileType(BINARY_FILE_TYPE)
+            setControlEncoding("UTF-8")
         }
 }

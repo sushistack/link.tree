@@ -10,6 +10,7 @@ import com.sushistack.linktree.repository.publisher.CommentableWebpageRepository
 import com.sushistack.linktree.repository.publisher.StaticWebpageRepository
 import com.sushistack.linktree.utils.CsvUtils
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.persistence.EntityManager
 import org.jasypt.encryption.StringEncryptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class InitializationService(
+    private val entityManager: EntityManager,
     private val stringEncryptor: StringEncryptor,
     private val gitRepoRepository: GitRepoRepository,
     private val gitAccountRepository: GitAccountRepository,
@@ -90,6 +92,9 @@ class InitializationService(
     fun clearAll() {
         commentableWebpageRepository.deleteAll()
         gitAccountRepository.deleteAll()
+
+        entityManager.flush()
+        entityManager.clear()
 
         val cc = commentableWebpageRepository.findAll()
         val ac = gitAccountRepository.findAll()

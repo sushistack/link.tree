@@ -60,7 +60,7 @@ class SlackNotificationService(
         blocks.add(Blocks.divider())
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 2)*").build()) })
-        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("$symbol *Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build() }) })
+        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build() }) })
 
         send(blocks, slackChannel)
     }

@@ -4,16 +4,13 @@ import com.sushistack.linktree.config.transaction.TransactionCallbackHandler
 import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.external.crawler.model.Article
-import com.sushistack.linktree.external.git.addAndCommit
-import com.sushistack.linktree.external.git.getCommitId
-import com.sushistack.linktree.external.git.push
-import com.sushistack.linktree.external.git.resetTo
 import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.model.getMinUsed
 import com.sushistack.linktree.repository.content.PostRepository
 import com.sushistack.linktree.utils.ArticleUtils
 import com.sushistack.linktree.utils.DateRange
+import com.sushistack.linktree.utils.git.*
 import com.sushistack.linktree.utils.pick
 import kotlinx.serialization.json.Json
 import org.springframework.retry.annotation.Backoff
@@ -26,7 +23,6 @@ import java.io.FileOutputStream
 @Service
 class PostService(
     private val appHomeDir: String,
-    private val gitFactory: GitFactory,
     private val postRepository: PostRepository,
     private val txCallbackHandler: TransactionCallbackHandler
 ) {
@@ -39,7 +35,7 @@ class PostService(
     fun createPost(webpage: StaticWebpage, articleSources: List<ArticleSource>, linkProvider: LinkProvider): Post {
         val repo = webpage.repository!!
         val gitAccount = repo.gitAccount!!
-        val git = gitFactory.openRepo(appHomeDir, repo.workspaceName, repo.repositoryName, gitAccount.appPassword)
+        val git = ExtendedGit(appHomeDir, repo.workspaceName, repo.repositoryName, gitAccount.username, gitAccount.appPassword)
         val commitId = git.getCommitId()
         val shortCommitId = commitId?.substring(0, 7) ?: ""
         val hash = if (shortCommitId.isNotBlank()) "${shortCommitId}-" else ""
@@ -48,24 +44,23 @@ class PostService(
         txCallbackHandler.registerCallback(
             git,
             onCommit = { g ->
-                g.push(username = gitAccount.username, appPassword = gitAccount.appPassword)
+                g.push()
                 g.close()
             },
             onRollback = { g ->
-                g.resetTo(commitId = commitId ?: "HEAD")
+                g.reset(commitId = commitId ?: "HEAD")
                 g.close()
             }
         )
 
         val (anchorText, url) = linkProvider.get()
         val postName = "${hash}${anchorText.replace(" ", "-")}"
-        val uri = "life/${postName}"
-        val filePath = "life/${DATE_RANGE.pick()}-${postName}.md"
+        val uri = "life/${postName}.html"
+        val filePath = "life/_posts/${DATE_RANGE.pick()}-${postName}.md"
         val post = Post(filePath, uri, webpage)
 
         this.write(post, articleSources, anchorText to url)
         git.addAndCommit()
-        git.close()
         return postRepository.save(post)
     }
 

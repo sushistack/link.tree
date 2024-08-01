@@ -1,29 +1,43 @@
 package com.sushistack.linktree.jobs.post.service
 
-import com.sushistack.linktree.external.git.GitRepositoryUtil
-import com.sushistack.linktree.external.git.pullChanges
+import com.sushistack.linktree.utils.git.*
+import com.sushistack.linktree.utils.ls
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.nio.file.Paths
 
 @Service
 class JekyllService(private val appHomeDir: String) {
     companion object {
-        const val DEFAULT_BRANCH = "gh-pages"
+        private const val DEFAULT_BRANCH = "gh-pages"
+        private const val DEPLOY_BRANCH = "master"
     }
 
     private val log = KotlinLogging.logger {}
 
-    fun build(workspaceName: String, repositoryName: String, appPassword: String) {
-        val git = GitRepositoryUtil.open(appHomeDir, workspaceName, repositoryName, appPassword)
-        git.checkout().setName(DEFAULT_BRANCH).call()
-        git.pullChanges(username = workspaceName, appPassword = appPassword)
+    fun build(git: ExtendedGit) {
+        log.info { "\nBuild Jekyll for ${git.workspaceName}/${git.repositoryName}\n" }
+        val repoPath = Paths.get(git.localRepoPath)
+        git.checkout(DEFAULT_BRANCH)
+        log.info { "\nbefore pull ls on $DEFAULT_BRANCH branch\n" }
+        repoPath.ls()
+        git.pull()
+
+
+        git.branchDelete(DEPLOY_BRANCH)
+        git.branchCreate(DEPLOY_BRANCH)
+
+        git.checkout(DEPLOY_BRANCH)
+
+        log.info { "\nbefore build ls on $DEPLOY_BRANCH branch\n" }
+        repoPath.ls()
 
         try {
-            val process = ProcessBuilder(listOf("bash", "-c", "bundle install; bundle update; JEKYLL_ENV=production bundle exec jekyll build;"))
-                .directory(File(appHomeDir, "repo/$workspaceName/$repositoryName"))
+            val process = ProcessBuilder(listOf("bash", "-c", "bundle update nokogiri ffi; bundle install; JEKYLL_ENV=production bundle exec jekyll build;"))
+                .directory(File(appHomeDir, "repo/${git.workspaceName}/${git.repositoryName}"))
                 .redirectErrorStream(true)
                 .start()
 

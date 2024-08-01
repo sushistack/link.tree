@@ -8,10 +8,6 @@ import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.service.PostService
 import com.sushistack.linktree.service.StaticWebpageService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.beans.factory.annotation.Value
@@ -36,19 +32,15 @@ class PrivateBlogLinksToOrderProcessor(
         log.info { "articleSources.size = ${articleSources.size}" }
         val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.PRIVATE_BLOG_NETWORK, order.orderType.linkCount.toLong())
 
-        return runBlocking {
-            webpages.map { webpage ->
-                async(Dispatchers.IO) {
-                    val post = postService.createPost(webpage, articleSources, linkProvider)
+        return webpages.map { webpage ->
+            val post = postService.createPost(webpage, articleSources, linkProvider)
 
-                    LinkNode(
-                        tier = order.orderStatus.tier,
-                        url = webpage.getPostUrl(post),
-                        order = order,
-                        parentNodeSeq = order.orderSeq
-                    ).also { it.changePublication(post) }
-                }
-            }.awaitAll()
+            LinkNode(
+                tier = order.orderStatus.tier,
+                url = webpage.getPostUrl(post),
+                order = order,
+                parentNodeSeq = order.orderSeq
+            ).also { it.changePublication(post) }
         }
     }
 }

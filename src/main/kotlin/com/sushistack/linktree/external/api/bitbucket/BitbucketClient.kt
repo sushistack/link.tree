@@ -5,6 +5,7 @@ import feign.Response
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.*
 
+@Deprecated("Replaced JGit")
 @FeignClient(name = "bitbucketClient", url = "https://api.bitbucket.org/2.0/repositories")
 interface BitbucketClient {
 

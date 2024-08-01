@@ -1,13 +1,14 @@
 package com.sushistack.linktree.jobs.post.service
 
 import com.sushistack.linktree.external.ftp.FTPService
-import com.sushistack.linktree.jobs.post.service.DeployService.SimpleGitRepository
+import com.sushistack.linktree.utils.git.ExtendedGit
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -20,6 +21,9 @@ class DeployServiceTest {
     @MockBean
     private lateinit var ftpService: FTPService
 
+    @Autowired
+    private lateinit var appHomeDir: String
+
     @Value("\${test.bitbucket.username}")
     private lateinit var bitbucketUsername: String
 
@@ -28,14 +32,15 @@ class DeployServiceTest {
 
     @BeforeEach
     fun setup() {
-        deployService = DeployService("/Users/nhn/link.tree", ftpService)
+        deployService = DeployService(ftpService)
     }
 
     @Test
     @Disabled
     fun makePackageTest() {
         runBlocking {
-            deployService.makePackage(SimpleGitRepository(bitbucketUsername, "pbn-001", "test.com", bitbucketUsername, bitbucketAppPassword))
+            val git = ExtendedGit(appHomeDir, bitbucketUsername, "pbn-003", bitbucketUsername, bitbucketAppPassword)
+            deployService.makePackage(git)
         }
 
     }

@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.Git
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import java.io.File
@@ -17,6 +18,9 @@ class GitExtensionsTest {
     private val log = KotlinLogging.logger {}
 
     private lateinit var git: Git
+
+    @Autowired
+    private lateinit var appHomeDir: String
 
     @Value("\${spring.application.name}")
     private lateinit var appName: String

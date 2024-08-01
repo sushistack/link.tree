@@ -43,7 +43,7 @@ class FTPChannelConfig(
             FtpOutboundGateway(
                 ftpSessionFactory,
                 Command.RM.command,
-                "$REMOTE_DIR_REGEX/$FILE_NAME_REGEX"
+                "headers['remoteDir'] + '/' + headers['fileName']"
             )
         ).get()
 

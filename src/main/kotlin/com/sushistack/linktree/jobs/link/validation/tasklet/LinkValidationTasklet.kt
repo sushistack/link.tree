@@ -5,6 +5,7 @@ import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
 import com.sushistack.linktree.service.SlackNotificationService
 import com.sushistack.linktree.service.ValidationService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
@@ -18,6 +19,8 @@ class LinkValidationTasklet(
     private val validationService: ValidationService,
     private val slackNotificationService: SlackNotificationService
 ): Tasklet {
+
+    private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
         val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.DEPLOYED)
@@ -34,6 +37,8 @@ class LinkValidationTasklet(
             .map { it.url }
             .let { validationService.validatePosts(it).block() }
             ?.groupBy { it.statusCode } ?: emptyMap()
+
+        statusOfLinks1.forEach { entry -> log.info { "\n Code(${entry.key}): \n\n ${entry.value.joinToString("\n")}" } }
 
         val statusOfLinks2 = linksOfTier2
             .map { it.url }

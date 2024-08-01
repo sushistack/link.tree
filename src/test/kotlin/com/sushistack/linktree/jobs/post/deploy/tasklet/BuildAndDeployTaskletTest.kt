@@ -2,8 +2,8 @@ package com.sushistack.linktree.jobs.post.deploy.tasklet
 
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.jobs.post.service.DeployService
-import com.sushistack.linktree.jobs.post.service.DeployService.SimpleGitRepository
 import com.sushistack.linktree.jobs.post.service.JekyllService
+import com.sushistack.linktree.utils.git.ExtendedGit
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -18,6 +18,9 @@ class BuildAndDeployTaskletTest {
     @Autowired
     private lateinit var deployService: DeployService
 
+    @Autowired
+    private lateinit var appHomeDir: String
+
     @Value("\${test.bitbucket.username}")
     private lateinit var bitbucketUsername: String
 
@@ -26,10 +29,10 @@ class BuildAndDeployTaskletTest {
 
     @Test
     fun buildAndDeployTest() {
-        jekyllService.build(bitbucketUsername, "pbn-003", bitbucketAppPassword)
-        val repo = SimpleGitRepository(bitbucketUsername, "pbn-003", "test3.com", bitbucketUsername, bitbucketAppPassword)
-        deployService.makePackage(repo)
-        deployService.deploy(CLOUD_BLOG_NETWORK, repo)
+        val git = ExtendedGit(appHomeDir, bitbucketUsername, "pbn-003", bitbucketUsername, bitbucketAppPassword)
+        jekyllService.build(git)
+        deployService.makePackage(git)
+        deployService.deploy(CLOUD_BLOG_NETWORK, git, "test.com")
     }
 
 }
