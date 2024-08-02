@@ -34,23 +34,14 @@ class PostService(
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
     fun createPost(webpage: StaticWebpage, articleSources: List<ArticleSource>, linkProvider: LinkProvider): Post {
         val repo = webpage.repository!!
-        val gitAccount = repo.gitAccount!!
-        val git = ExtendedGit(appHomeDir, repo.workspaceName, repo.repositoryName, gitAccount.username, gitAccount.appPassword)
+        val git = Git(appHomeDir, repo.workspaceName, repo.repositoryName)
         val commitId = git.getCommitId()
-        val shortCommitId = commitId?.substring(0, 7) ?: ""
-        val hash = if (shortCommitId.isNotBlank()) "${shortCommitId}-" else ""
-
+        val hash = if (commitId.isNotBlank()) "${commitId}-" else ""
 
         txCallbackHandler.registerCallback(
             git,
-            onCommit = { g ->
-                g.push()
-                g.close()
-            },
-            onRollback = { g ->
-                g.reset(commitId = commitId ?: "HEAD")
-                g.close()
-            }
+            onCommit = { g -> g.push() },
+            onRollback = { g -> g.reset(hash = commitId) }
         )
 
         val (anchorText, url) = linkProvider.get()
@@ -60,7 +51,8 @@ class PostService(
         val post = Post(filePath, uri, webpage)
 
         this.write(post, articleSources, anchorText to url)
-        git.addAndCommit()
+        git.addAll()
+        git.commit("Add Post")
         return postRepository.save(post)
     }
 

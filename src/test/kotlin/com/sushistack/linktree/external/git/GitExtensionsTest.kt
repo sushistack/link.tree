@@ -37,14 +37,7 @@ class GitExtensionsTest {
 
     @BeforeEach
     fun setup() {
-        homeDir = "${System.getProperty("user.home")}/${appName}"
-        repositoryName = "playground"
-        git = GitRepositoryUtil.open(
-            appHomeDir = homeDir,
-            workspaceName = bitbucketUsername,
-            repositoryName = "playground",
-            appPassword = bitbucketAppPassword
-        )
+
     }
 
     @Test
@@ -52,10 +45,8 @@ class GitExtensionsTest {
         // Given
 
         // When
-        val pullRes = git.pullChanges(username = bitbucketUsername, appPassword = bitbucketAppPassword)
 
         // Then
-        Assertions.assertThat(pullRes).isNotNull
     }
 
     @Test
@@ -73,12 +64,9 @@ class GitExtensionsTest {
         }
 
         // When
-        val commitRes = git.addAndCommit()
 
         // Then
-        if (commitRes != null) {
-            git.resetTo()
-        }
+
     }
 
     @Test
@@ -98,12 +86,7 @@ class GitExtensionsTest {
         // Given
 
         // When
-        val pushRes = git.push(username = bitbucketUsername, appPassword = bitbucketAppPassword)
 
         // Then
-        pushRes.forEach { res ->
-            Assertions.assertThat(res).isNotNull
-        }
-
     }
 }

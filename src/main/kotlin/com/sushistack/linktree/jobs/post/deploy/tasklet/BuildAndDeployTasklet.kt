@@ -8,7 +8,7 @@ import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
 import com.sushistack.linktree.utils.git.ExtendedGit
-import com.sushistack.linktree.utils.git.close
+import com.sushistack.linktree.utils.git.Git
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.StepContribution
@@ -41,7 +41,7 @@ class BuildAndDeployTasklet(
         val linksOfTier2 = linkNodeService.findWithPostByOrder(order, tier = 2)
 
         linksOfTier1.forEach { linkNode ->
-            val git = ExtendedGit(appHomeDir, linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
+            val git = Git(appHomeDir, linkNode.workspaceName, linkNode.repositoryName)
             try {
                 jekyllService.build(git)
                 deployService.makePackage(git)
@@ -50,13 +50,11 @@ class BuildAndDeployTasklet(
                 log.error(e) { "Failed to build and deploy [${linkNode.workspaceName}/${linkNode.repositoryName}]" }
                 contribution.exitStatus = ExitStatus.FAILED
                 return RepeatStatus.FINISHED
-            } finally {
-                git.close()
             }
         }
 
         linksOfTier2.forEach { linkNode ->
-            val git = ExtendedGit(appHomeDir, linkNode.workspaceName, linkNode.repositoryName, linkNode.username, linkNode.appPassword)
+            val git = Git(appHomeDir, linkNode.workspaceName, linkNode.repositoryName)
             try {
                 jekyllService.build(git)
                 deployService.makePackage(git)
@@ -65,8 +63,6 @@ class BuildAndDeployTasklet(
                 log.error(e) { "Failed to build and deploy [${linkNode.workspaceName}/${linkNode.repositoryName}]" }
                 contribution.exitStatus = ExitStatus.FAILED
                 return RepeatStatus.FINISHED
-            } finally {
-                git.close()
             }
         }
 

@@ -1,7 +1,7 @@
 package com.sushistack.linktree.jobs.post.service
 
 import com.sushistack.linktree.external.ftp.FTPService
-import com.sushistack.linktree.utils.git.ExtendedGit
+import com.sushistack.linktree.utils.git.Git
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -39,7 +39,7 @@ class DeployServiceTest {
     @Disabled
     fun makePackageTest() {
         runBlocking {
-            val git = ExtendedGit(appHomeDir, bitbucketUsername, "pbn-003", bitbucketUsername, bitbucketAppPassword)
+            val git = Git(appHomeDir, bitbucketUsername, "pbn-003")
             deployService.makePackage(git)
         }
 

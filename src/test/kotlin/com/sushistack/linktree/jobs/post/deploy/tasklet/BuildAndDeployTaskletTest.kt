@@ -4,6 +4,7 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_N
 import com.sushistack.linktree.jobs.post.service.DeployService
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.utils.git.ExtendedGit
+import com.sushistack.linktree.utils.git.Git
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -29,7 +30,7 @@ class BuildAndDeployTaskletTest {
 
     @Test
     fun buildAndDeployTest() {
-        val git = ExtendedGit(appHomeDir, bitbucketUsername, "pbn-003", bitbucketUsername, bitbucketAppPassword)
+        val git = Git(appHomeDir, bitbucketUsername, "pbn-003")
         jekyllService.build(git)
         deployService.makePackage(git)
         deployService.deploy(CLOUD_BLOG_NETWORK, git, "test.com")

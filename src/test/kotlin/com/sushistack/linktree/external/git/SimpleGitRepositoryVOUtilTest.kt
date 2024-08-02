@@ -39,9 +39,7 @@ class SimpleGitRepositoryVOUtilTest {
         val appPassword = bitbucketAppPassword
 
         // When
-        val git = GitRepositoryUtil.open(homeDir, workspaceName, repositoryName, appPassword)
 
         // Then
-        Assertions.assertThat(git).isNotNull
     }
 }

@@ -25,8 +25,8 @@ class DeployService(private val ftpService: FTPService) {
         const val DEPLOY_DIR = "_site"
     }
 
-    fun makePackage(git: ExtendedGit) {
-        val repoPath = Paths.get(git.localRepoPath)
+    fun makePackage(git: Git) {
+        val repoPath = Paths.get(git.repoDir)
         /*
         log.info { "\nbefore delete ls\n" }
         repoPath.ls()
@@ -73,7 +73,7 @@ class DeployService(private val ftpService: FTPService) {
         */
     }
 
-    fun deploy(serviceProviderType: ServiceProviderType, git: ExtendedGit, domain: String) {
+    fun deploy(serviceProviderType: ServiceProviderType, git: Git, domain: String) {
         log.info { "Deploying for ${git.workspaceName}/${git.repositoryName} ($domain)" }
         when (serviceProviderType) {
             PRIVATE_BLOG_NETWORK -> ftpService.upload(git, domain)
@@ -83,16 +83,17 @@ class DeployService(private val ftpService: FTPService) {
     }
 
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
-    fun uploadToRemoteOrigin(git: ExtendedGit) {
+    fun uploadToRemoteOrigin(git: Git) {
         log.info { "Upload to remote" }
 
-        val repoPath = Paths.get(git.localRepoPath)
+        val repoPath = Paths.get(git.repoDir)
         repoPath.ls()
 
-        git.addAndCommit(commitMessage = "deploy by system")
-        git.push(branchName = DEPLOY_BRANCH, force = true)
+        git.addAll()
+        git.commit("deploy by system")
+        git.push(branch = DEPLOY_BRANCH, force = true)
 
-        git.cleanup()
+        git.clean()
         git.checkout(DEFAULT_BRANCH)
     }
 }

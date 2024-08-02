@@ -18,17 +18,20 @@ class JekyllService(private val appHomeDir: String) {
 
     private val log = KotlinLogging.logger {}
 
-    fun build(git: ExtendedGit) {
+    fun build(git: Git) {
         log.info { "\nBuild Jekyll for ${git.workspaceName}/${git.repositoryName}\n" }
-        val repoPath = Paths.get(git.localRepoPath)
+        val repoPath = Paths.get(git.repoDir)
         git.checkout(DEFAULT_BRANCH)
         log.info { "\nbefore pull ls on $DEFAULT_BRANCH branch\n" }
         repoPath.ls()
         git.pull()
 
-
-        git.branchDelete(DEPLOY_BRANCH)
-        git.branchCreate(DEPLOY_BRANCH)
+        if (git.branchExists(DEPLOY_BRANCH)) {
+            git.deleteBranch(DEPLOY_BRANCH)
+        }
+        if (!git.branchExists(DEFAULT_BRANCH)) {
+            git.createBranch(DEPLOY_BRANCH)
+        }
 
         git.checkout(DEPLOY_BRANCH)
 

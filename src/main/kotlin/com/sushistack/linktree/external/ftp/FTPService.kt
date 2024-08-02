@@ -1,8 +1,5 @@
 package com.sushistack.linktree.external.ftp
 
-import com.sushistack.linktree.external.git.DEFAULT_HEAD_REF
-import com.sushistack.linktree.jobs.post.service.DeployService
-import com.sushistack.linktree.jobs.post.service.DeployService.Companion
 import com.sushistack.linktree.utils.ellipsis
 import com.sushistack.linktree.utils.git.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -14,10 +11,7 @@ import java.nio.file.Paths
 import kotlin.io.path.isDirectory
 
 @Service
-class FTPService(
-    private val appHomeDir: String,
-    private val ftpGateway: FTPGateway
-) {
+class FTPService(private val ftpGateway: FTPGateway) {
     companion object {
         private const val FTP_REMOTE_DIR = "/public_html"
         private const val DEFAULT_BRANCH = "gh-pages"
@@ -27,8 +21,8 @@ class FTPService(
     private val log = KotlinLogging.logger {}
 
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000L, multiplier = 2.0))
-    fun upload(git: ExtendedGit, domain: String) {
-        val repoDir = "$appHomeDir/repo/${git.workspaceName}/${git.repositoryName}"
+    fun upload(git: Git, domain: String) {
+        val repoDir = git.repoDir
         val targetDir = Paths.get(repoDir, "life")
         require(targetDir.isDirectory()) { "$targetDir is not a directory" }
 
@@ -55,10 +49,12 @@ class FTPService(
             log.info { "Deleted file($fileName) on remote server." }
         }
 
-        git.cleanup()
-        git.reset(commitId = DEFAULT_HEAD_REF)
+        git.clean()
+        git.reset(hash = "HEAD")
         git.checkout(DEFAULT_BRANCH)
-        git.branchDelete(DEPLOY_BRANCH)
+        if (git.branchExists(DEPLOY_BRANCH)) {
+            git.deleteBranch(DEPLOY_BRANCH)
+        }
     }
 
 }
