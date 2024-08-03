@@ -66,7 +66,16 @@ class Git(
     }
     private fun clone() = command("clone", sshUrl, repoDir)
 
-    fun status(): String = command("status")
+    fun status(): FileStatus =
+        command("status", "--short").lines()
+            .filter { it.isNotBlank() }
+            .let { lines ->
+                FileStatus(
+                    untracked = lines.filter { it.substring(0, 3).trim() == "??" }.map { it.substring(3) },
+                    staged = lines.filter { listOf("A", "C", "AD").contains(it.substring(0, 3).trim()) }.map { it.substring(3) },
+                    changed = lines.filter { listOf("M", "D", "R", "AM", "MA").contains(it.substring(0, 3).trim()) }.map { it.substring(3) }
+                )
+        }
 
     fun pull(): String = command("pull")
 
@@ -76,29 +85,42 @@ class Git(
 
     fun push(branch: String, force: Boolean = false): String = command("push", "origin", branch)
 
+    fun add(path: String): String = command("add", path)
+
     fun addAll(): String = command("add", ".")
 
     fun commit(message: String): String = command("commit", "-m", message)
+
+    fun commitedFiles(hash: String): List<String> =
+        command("show", "--name-only", "--pretty=format:", hash)
+            .lines()
+            .filter { it.isNotBlank() }
 
     fun checkout(branch: String): String = command("checkout", branch)
 
     fun branch(): String = command("branch")
 
     fun branchExists(branch: String): Boolean =
-        command("branch")
+        command("branch", "--list", branch)
             .split("\n")
-            .any { it.trim() == branch }
+            .any { it.trim() == branch || it.trim().removePrefix("* ") == branch }
 
     fun createBranch(branch: String): String = command("checkout", "-b", branch)
 
     fun deleteBranch(branch: String): String = command("branch", "-D", branch)
 
-    fun reset(type: ResetType = ResetType.HARD, hash: String = "HEAD~1"): String =
+    fun reset(type: ResetType = ResetType.MIXED, hash: String = "HEAD"): String =
         command("reset", type.cmdOpt, hash)
 
     fun clean(): String = command("clean", "-fd")
 
     fun getCommitId(): String =
-        command("git", "log", "-n", "1", "--oneline")
+        command("log", "-n", "1", "--oneline")
             .split(" ")[0]
+
+    data class FileStatus(
+        val untracked: List<String>,
+        val staged: List<String>,
+        val changed: List<String>
+    )
 }

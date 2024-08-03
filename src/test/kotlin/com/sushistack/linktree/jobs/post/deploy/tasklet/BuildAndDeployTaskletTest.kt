@@ -3,7 +3,6 @@ package com.sushistack.linktree.jobs.post.deploy.tasklet
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.jobs.post.service.DeployService
 import com.sushistack.linktree.jobs.post.service.JekyllService
-import com.sushistack.linktree.utils.git.ExtendedGit
 import com.sushistack.linktree.utils.git.Git
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

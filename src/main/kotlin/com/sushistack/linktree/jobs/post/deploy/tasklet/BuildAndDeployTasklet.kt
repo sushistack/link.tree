@@ -7,7 +7,6 @@ import com.sushistack.linktree.jobs.post.service.DeployService
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
-import com.sushistack.linktree.utils.git.ExtendedGit
 import com.sushistack.linktree.utils.git.Git
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.ExitStatus

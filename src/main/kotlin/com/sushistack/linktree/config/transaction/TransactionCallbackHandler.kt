@@ -1,6 +1,5 @@
 package com.sushistack.linktree.config.transaction
 
-import com.sushistack.linktree.utils.git.ExtendedGit
 import com.sushistack.linktree.utils.git.Git
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component

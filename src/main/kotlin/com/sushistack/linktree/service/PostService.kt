@@ -11,6 +11,7 @@ import com.sushistack.linktree.repository.content.PostRepository
 import com.sushistack.linktree.utils.ArticleUtils
 import com.sushistack.linktree.utils.DateRange
 import com.sushistack.linktree.utils.git.*
+import com.sushistack.linktree.utils.git.enums.ResetType
 import com.sushistack.linktree.utils.pick
 import kotlinx.serialization.json.Json
 import org.springframework.retry.annotation.Backoff
@@ -41,7 +42,7 @@ class PostService(
         txCallbackHandler.registerCallback(
             git,
             onCommit = { g -> g.push() },
-            onRollback = { g -> g.reset(hash = commitId) }
+            onRollback = { g -> g.reset(type = ResetType.HARD, hash = commitId) }
         )
 
         val (anchorText, url) = linkProvider.get()

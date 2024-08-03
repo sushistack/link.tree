@@ -2,6 +2,7 @@ package com.sushistack.linktree.external.ftp
 
 import com.sushistack.linktree.utils.ellipsis
 import com.sushistack.linktree.utils.git.*
+import com.sushistack.linktree.utils.git.enums.ResetType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
@@ -50,7 +51,7 @@ class FTPService(private val ftpGateway: FTPGateway) {
         }
 
         git.clean()
-        git.reset(hash = "HEAD")
+        git.reset(type = ResetType.HARD, hash = "HEAD")
         git.checkout(DEFAULT_BRANCH)
         if (git.branchExists(DEPLOY_BRANCH)) {
             git.deleteBranch(DEPLOY_BRANCH)
