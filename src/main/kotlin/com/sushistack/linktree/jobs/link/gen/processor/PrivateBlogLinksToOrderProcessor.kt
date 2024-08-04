@@ -2,7 +2,7 @@ package com.sushistack.linktree.jobs.link.gen.processor
 
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
-import com.sushistack.linktree.entity.publisher.ServiceProviderType
+import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
 import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.service.PostService
@@ -28,13 +28,15 @@ class PrivateBlogLinksToOrderProcessor(
     @Value("#{jobExecutionContext['linkProvider']}")
     private lateinit var linkProvider: LinkProvider
 
+    @Value("#{jobExecutionContext['jobInstanceId']}")
+    private var jobInstanceId: Long = 0
+
     override fun process(order: Order): List<LinkNode> {
         log.info { "articleSources.size = ${articleSources.size}" }
-        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.PRIVATE_BLOG_NETWORK)
-        val doubled = webpages + webpages
-        val pages = doubled.shuffled().take(order.orderType.linkCount)
+        val seed = jobInstanceId + order.orderSeq
+        val webpages = staticWebpageService.findStaticWebpagesByProviderType(providerType = PRIVATE_BLOG_NETWORK, seed = seed, fixedSize = order.orderType.linkCount)
 
-        return pages.map { webpage ->
+        return webpages.map { webpage ->
             val post = postService.createPost(webpage, articleSources, linkProvider)
 
             LinkNode(

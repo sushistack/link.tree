@@ -6,7 +6,6 @@ import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 class JobRunner(private val jobLauncher: JobLauncher, private val job: Job): CommandLineRunner {
@@ -19,7 +18,6 @@ class JobRunner(private val jobLauncher: JobLauncher, private val job: Job): Com
         paramMap.forEach { (key, value) -> builder.addString(key, value) }
 
         val jobParameters = builder.toJobParameters()
-
         log.info { "jobParameters = $jobParameters" }
 
         val jobExecution = jobLauncher.run(job, jobParameters)

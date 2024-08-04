@@ -31,7 +31,7 @@ class CommentableWebpageServiceTest {
         commentableWebpageRepository.saveAll(commentableWebpages)
 
         // Then
-        val savedCommentableWebpages = commentableWebpageService.findByOrderByUsedCountLimit(limit)
+        val savedCommentableWebpages = commentableWebpageService.findBySeed(1L, limit.toInt())
         Assertions.assertThat(savedCommentableWebpages).hasSize(expectedSize)
     }
 

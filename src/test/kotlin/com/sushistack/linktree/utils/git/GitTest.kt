@@ -69,7 +69,7 @@ class GitTest {
         git.addAll()
         git.commit("Add test file")
 
-        val pushOutput = git.push()
+        val pushOutput = git.push(Git.DEFAULT_BRANCH)
         assertThat(pushOutput).isNotBlank
 
         // Reset and force push

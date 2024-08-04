@@ -1,7 +1,7 @@
 package com.sushistack.linktree.jobs.link.gen.processor
 
 import com.sushistack.linktree.entity.link.LinkNode
-import com.sushistack.linktree.entity.publisher.ServiceProviderType
+import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.service.PostService
@@ -18,7 +18,7 @@ class CloudBlogLinksToPrivateBlogsProcessor(
     private val staticWebpageService: StaticWebpageService
 ): ItemProcessor<LinkNode, List<LinkNode>> {
     companion object {
-        private const val LINK_SIZE = 20L
+        private const val LINK_SIZE = 20
     }
 
     @Value("#{jobExecutionContext['articleSources']}")
@@ -27,11 +27,12 @@ class CloudBlogLinksToPrivateBlogsProcessor(
     @Value("#{jobExecutionContext['linkProvider']}")
     private lateinit var linkProvider: LinkProvider
 
-    override fun process(parentNode: LinkNode): List<LinkNode> {
-        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.CLOUD_BLOG_NETWORK)
-            .shuffled()
-            .take(LINK_SIZE.toInt())
+    @Value("#{jobExecutionContext['jobInstanceId']}")
+    private var jobInstanceId: Long = 0
 
+    override fun process(parentNode: LinkNode): List<LinkNode> {
+        val seed = jobInstanceId + parentNode.nodeSeq
+        val webpages = staticWebpageService.findStaticWebpagesByProviderType(providerType = CLOUD_BLOG_NETWORK, seed = seed, fixedSize = LINK_SIZE)
         return webpages.map { webpage ->
             val post = postService.createPost(webpage, articleSources, linkProvider)
 

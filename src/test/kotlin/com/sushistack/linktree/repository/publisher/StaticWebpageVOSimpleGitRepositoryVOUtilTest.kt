@@ -45,7 +45,7 @@ class StaticWebpageVOSimpleGitRepositoryVOUtilTest {
         entityManager.clear()
 
         // Then
-        val webpages = staticWebpageRepository.findStaticWebpagesProviderTypeByOrderByUsedCountAscLimit(providerType = ServiceProviderType.UNKNOWN, limit = 10)
-        Assertions.assertThat(webpages.size).isEqualTo(10)
+        val webpages = staticWebpageRepository.findAll()
+        Assertions.assertThat(webpages.size).isEqualTo(12)
     }
 }

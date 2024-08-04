@@ -4,5 +4,5 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.StaticWebpage
 
 interface StaticWebpageRepositoryCustom {
-    fun findStaticWebpagesProviderTypeByOrderByUsedCountAsc(providerType: ServiceProviderType): List<StaticWebpage>
+    fun findAllByProviderType(providerType: ServiceProviderType): List<StaticWebpage>
 }

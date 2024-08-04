@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component
 class JobCompletionNotificationListener(
     private val slackNotificationService: SlackNotificationService
 ): JobExecutionListener {
+
     override fun afterJob(jobExecution: JobExecution) {
         val message = when (jobExecution.status.isUnsuccessful) {
             true -> "Some steps failed during the job execution."
