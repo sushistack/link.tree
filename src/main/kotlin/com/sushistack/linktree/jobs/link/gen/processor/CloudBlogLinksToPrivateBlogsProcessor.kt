@@ -28,7 +28,9 @@ class CloudBlogLinksToPrivateBlogsProcessor(
     private lateinit var linkProvider: LinkProvider
 
     override fun process(parentNode: LinkNode): List<LinkNode> {
-        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.CLOUD_BLOG_NETWORK, LINK_SIZE)
+        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.CLOUD_BLOG_NETWORK)
+            .shuffled()
+            .take(LINK_SIZE.toInt())
 
         return webpages.map { webpage ->
             val post = postService.createPost(webpage, articleSources, linkProvider)

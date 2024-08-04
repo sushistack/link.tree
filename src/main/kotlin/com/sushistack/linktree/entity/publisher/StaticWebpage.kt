@@ -36,7 +36,7 @@ class StaticWebpage (
     }
 
     fun getPostUrl(post: Post): String =
-        "https://${domain}/${post.filePath?.split(".")?.get(0) ?: ""}"
+        "https://${domain}/${post.uri}"
 
     override fun toString(): String = "StaticWebpage(webpageSeq=$webpageSeq, domain='$domain', providerType=$providerType, usedCount=$usedCount)"
 }

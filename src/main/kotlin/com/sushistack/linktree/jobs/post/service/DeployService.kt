@@ -4,8 +4,7 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
 import com.sushistack.linktree.external.ftp.FTPService
-import com.sushistack.linktree.utils.git.*
-import com.sushistack.linktree.utils.ls
+import com.sushistack.linktree.utils.git.Git
 import com.sushistack.linktree.utils.moveRecursivelyTo
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
@@ -27,10 +26,6 @@ class DeployService(private val ftpService: FTPService) {
 
     fun makePackage(git: Git) {
         val repoPath = Paths.get(git.repoDir)
-        /*
-        log.info { "\nbefore delete ls\n" }
-        repoPath.ls()
-        */
         val removeTargets = Files.walk(repoPath)
             .filter { it != repoPath }
             .filter { listOf(DEPLOY_DIR, ".git", ".gitignore").all { f -> !repoPath.relativize(it.toAbsolutePath()).startsWith(f) } }
@@ -43,16 +38,10 @@ class DeployService(private val ftpService: FTPService) {
                     true -> it.deleteRecursively()
                     false -> Files.deleteIfExists(it.toPath())
                 }
-                // log.info { "Deleted := [${it.name}]" }
             } catch (e: IOException) {
                 log.error(e) { "Error deleting file := [${it.name}]" }
             }
         }
-
-        /*
-        log.info { "\nafter delete ls\n" }
-        repoPath.ls()
-        */
 
         val deployDir = repoPath.resolve(DEPLOY_DIR)
         val parentDir = deployDir.parent
@@ -66,11 +55,6 @@ class DeployService(private val ftpService: FTPService) {
 
         Files.deleteIfExists(deployDir)
         log.info { "Deploy directory is deleted := [${deployDir.fileName}]" }
-
-        /*
-        log.info { "\nafter moved ls\n" }
-        repoPath.ls()
-        */
     }
 
     fun deploy(serviceProviderType: ServiceProviderType, git: Git, domain: String) {
@@ -84,10 +68,7 @@ class DeployService(private val ftpService: FTPService) {
 
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
     fun uploadToRemoteOrigin(git: Git) {
-        log.info { "Upload to remote" }
-
-        val repoPath = Paths.get(git.repoDir)
-        repoPath.ls()
+        log.info { "Upload to remote, ${git.workspaceName}/${git.repositoryName}" }
 
         git.addAll()
         git.commit("deploy by system")

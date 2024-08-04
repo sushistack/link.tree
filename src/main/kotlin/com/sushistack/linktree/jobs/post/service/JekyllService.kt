@@ -1,13 +1,11 @@
 package com.sushistack.linktree.jobs.post.service
 
-import com.sushistack.linktree.utils.git.*
-import com.sushistack.linktree.utils.ls
+import com.sushistack.linktree.utils.git.Git
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
-import java.nio.file.Paths
 
 @Service
 class JekyllService(private val appHomeDir: String) {
@@ -20,23 +18,17 @@ class JekyllService(private val appHomeDir: String) {
 
     fun build(git: Git) {
         log.info { "\nBuild Jekyll for ${git.workspaceName}/${git.repositoryName}\n" }
-        val repoPath = Paths.get(git.repoDir)
         git.checkout(DEFAULT_BRANCH)
-        log.info { "\nbefore pull ls on $DEFAULT_BRANCH branch\n" }
-        repoPath.ls()
-        git.pull()
+        git.pull(branch = DEFAULT_BRANCH)
 
         if (git.branchExists(DEPLOY_BRANCH)) {
             git.deleteBranch(DEPLOY_BRANCH)
         }
-        if (!git.branchExists(DEFAULT_BRANCH)) {
+        if (!git.branchExists(DEPLOY_BRANCH)) {
             git.createBranch(DEPLOY_BRANCH)
         }
 
         git.checkout(DEPLOY_BRANCH)
-
-        log.info { "\nbefore build ls on $DEPLOY_BRANCH branch\n" }
-        repoPath.ls()
 
         try {
             val process = ProcessBuilder(listOf("bash", "-c", "bundle update nokogiri ffi; bundle install; JEKYLL_ENV=production bundle exec jekyll build;"))

@@ -9,14 +9,13 @@ import com.sushistack.linktree.entity.publisher.StaticWebpage
 
 class StaticWebpageRepositoryImpl(private val queryFactory: JPAQueryFactory): StaticWebpageRepositoryCustom {
 
-    override fun findStaticWebpagesProviderTypeByOrderByUsedCountAscLimit(providerType: ServiceProviderType, limit: Long): List<StaticWebpage> =
+    override fun findStaticWebpagesProviderTypeByOrderByUsedCountAsc(providerType: ServiceProviderType): List<StaticWebpage> =
         queryFactory
             .selectFrom(staticWebpage)
             .join(staticWebpage.repository, gitRepository).fetchJoin()
             .join(gitRepository.gitAccount, gitAccount).fetchJoin()
             .where(staticWebpage.providerType.eq(providerType))
             .orderBy(staticWebpage.usedCount.asc())
-            .limit(limit)
             .fetch()
 
 }

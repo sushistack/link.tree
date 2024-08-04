@@ -11,16 +11,14 @@ import com.sushistack.linktree.jobs.link.gen.processor.CloudBlogLinksToPrivateBl
 import com.sushistack.linktree.jobs.link.gen.processor.CommentLinksToCloudBlogsProcessor
 import com.sushistack.linktree.jobs.link.gen.processor.PrivateBlogLinksToOrderProcessor
 import com.sushistack.linktree.jobs.link.gen.reader.OrderReader
-import com.sushistack.linktree.jobs.link.gen.tasklet.ClearingInitializationTask
-import com.sushistack.linktree.jobs.link.gen.tasklet.InitializationTasklet
-import com.sushistack.linktree.jobs.link.gen.tasklet.OrderTasklet
-import com.sushistack.linktree.jobs.link.gen.tasklet.ReportTasklet
+import com.sushistack.linktree.jobs.link.gen.tasklet.*
 import com.sushistack.linktree.jobs.link.gen.writer.LinkNodeWriter
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.repository.JobRepository
 import org.springframework.batch.core.step.builder.StepBuilder
+import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.core.step.tasklet.TaskletStep
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -43,19 +41,23 @@ class LinkGenerationJobConfig {
         initializationStep: Step,
         clearingInitializationStep: Step,
         saveOrderStep: Step,
+        fixOrderStep: Step,
         addPrivateBlogsToOrderStep: Step,
         addCloudBlogsToOrderStep: Step,
         addCommentsToLinkNodesStep: Step,
+        syncOriginStep: Step,
         saveToExcelStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder("linkGenerationJob", jobRepository)
 //            .start(clearingInitializationStep)
+//            .start(fixOrderStep)
             .start(initializationStep)
             .next(saveOrderStep)
             .next(addPrivateBlogsToOrderStep)
             .next(addCloudBlogsToOrderStep)
             .next(addCommentsToLinkNodesStep)
+            .next(syncOriginStep)
             .next(saveToExcelStep)
             .listener(jobListener)
             .build()
@@ -75,9 +77,19 @@ class LinkGenerationJobConfig {
         jobRepository: JobRepository,
         orderTasklet: OrderTasklet,
         jpaTransactionManager: JpaTransactionManager
-    ): TaskletStep =
+    ): Step =
         StepBuilder("saveOrderStep", jobRepository)
             .tasklet(orderTasklet, jpaTransactionManager)
+            .build()
+
+    @Bean
+    fun fixOrderStep(
+        jobRepository: JobRepository,
+        fixOrderTasklet: FixOrderTasklet,
+        jpaTransactionManager: JpaTransactionManager
+    ): Step =
+        StepBuilder("fixOrderStep", jobRepository)
+            .tasklet(fixOrderTasklet, jpaTransactionManager)
             .build()
 
 
@@ -156,4 +168,13 @@ class LinkGenerationJobConfig {
             .tasklet(clearingInitializationTask, jpaTransactionManager)
             .build()
 
+    @Bean
+    fun syncOriginStep(
+        syncOriginTasklet: Tasklet,
+        jobRepository: JobRepository,
+        jpaTransactionManager: JpaTransactionManager
+    ): Step =
+        StepBuilder("syncOriginStep", jobRepository)
+            .tasklet(syncOriginTasklet, jpaTransactionManager)
+            .build()
 }

@@ -14,7 +14,9 @@ class CommentLinksToCloudBlogsProcessor(
 ): ItemProcessor<LinkNode, List<LinkNode>> {
 
     override fun process(parentNode: LinkNode): List<LinkNode> {
-        val commentableWebpages = commentableWebpageService.findByOrderByUsedCountLimit(limit = 3)
+        val commentableWebpages = commentableWebpageService.findByOrderByUsedCountLimit(limit = 100)
+            .shuffled()
+            .take(3)
 
         return commentableWebpages.map { commentableWebpage ->
             val comment = commentService.createComment(

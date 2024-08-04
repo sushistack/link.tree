@@ -29,7 +29,7 @@ class BuildAndDeployTasklet(
     private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
-        val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCCESSED)
+        val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCESSED)
         if (!orderOpt.isPresent) {
             return RepeatStatus.FINISHED
         }

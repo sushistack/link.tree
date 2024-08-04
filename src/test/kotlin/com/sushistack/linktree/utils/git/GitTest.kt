@@ -48,7 +48,7 @@ class GitTest {
     @Test
     @DisplayName("pull should execute without errors")
     fun pull() {
-        val pullOutput = git.pull()
+        val pullOutput = git.pull(Git.DEFAULT_BRANCH)
         assertThat(pullOutput).isNotBlank
     }
 

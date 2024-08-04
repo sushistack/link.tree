@@ -23,7 +23,11 @@ class Git(
     private val sshUrl: String by lazy { "git@bitbucket.org:${workspaceName}/${repositoryName}.git" }
 
     init {
-        require(repoDir.isNotBlank() && Files.exists(Paths.get(repoDir))) { "$repoDir does not exist." }
+        require(repoDir.isNotBlank()) { "repoDir is empty." }
+        if (!Files.exists(Paths.get(repoDir))) {
+            Files.createDirectories(Paths.get(repoDir))
+        }
+
         val gitDir = File(repoDir, ".git")
         try {
             when (gitDir.exists()) {
@@ -64,6 +68,7 @@ class Git(
             throw GitException("Git command interrupted: ${e.message}")
         }
     }
+
     private fun clone() = command("clone", sshUrl, repoDir)
 
     fun status(): FileStatus =
@@ -77,13 +82,13 @@ class Git(
                 )
         }
 
-    fun pull(): String = command("pull")
-
     fun pull(branch: String): String = command("pull", "origin", branch)
 
-    fun push(force: Boolean = false): String = command("push")
-
-    fun push(branch: String, force: Boolean = false): String = command("push", "origin", branch)
+    fun push(branch: String, force: Boolean = false): String =
+        if (force)
+            command("push", "origin", branch, "-f")
+        else
+            command("push", "origin", branch)
 
     fun add(path: String): String = command("add", path)
 
@@ -97,6 +102,7 @@ class Git(
             .filter { it.isNotBlank() }
 
     fun checkout(branch: String): String = command("checkout", branch)
+        .also { log.info { it } }
 
     fun branch(): String = command("branch")
 
@@ -105,9 +111,13 @@ class Git(
             .split("\n")
             .any { it.trim() == branch || it.trim().removePrefix("* ") == branch }
 
-    fun createBranch(branch: String): String = command("checkout", "-b", branch)
+    fun createBranch(branch: String): String =
+        command("checkout", "-b", branch)
+            .also { log.info { it } }
 
-    fun deleteBranch(branch: String): String = command("branch", "-D", branch)
+    fun deleteBranch(branch: String): String =
+        command("branch", "-D", branch)
+            .also { log.info { it } }
 
     fun reset(type: ResetType = ResetType.MIXED, hash: String = "HEAD"): String =
         command("reset", type.cmdOpt, hash)

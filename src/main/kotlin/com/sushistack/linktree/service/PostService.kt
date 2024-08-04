@@ -13,6 +13,7 @@ import com.sushistack.linktree.utils.DateRange
 import com.sushistack.linktree.utils.git.*
 import com.sushistack.linktree.utils.git.enums.ResetType
 import com.sushistack.linktree.utils.pick
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
@@ -27,6 +28,8 @@ class PostService(
     private val postRepository: PostRepository,
     private val txCallbackHandler: TransactionCallbackHandler
 ) {
+    private val log = KotlinLogging.logger {}
+
     companion object {
         private val DATE_RANGE = DateRange()
     }
@@ -36,12 +39,13 @@ class PostService(
     fun createPost(webpage: StaticWebpage, articleSources: List<ArticleSource>, linkProvider: LinkProvider): Post {
         val repo = webpage.repository!!
         val git = Git(appHomeDir, repo.workspaceName, repo.repositoryName)
+        git.checkout(branch = Git.DEFAULT_BRANCH)
         val commitId = git.getCommitId()
         val hash = if (commitId.isNotBlank()) "${commitId}-" else ""
 
         txCallbackHandler.registerCallback(
             git,
-            onCommit = { g -> g.push() },
+            onCommit = { g ->  },
             onRollback = { g -> g.reset(type = ResetType.HARD, hash = commitId) }
         )
 

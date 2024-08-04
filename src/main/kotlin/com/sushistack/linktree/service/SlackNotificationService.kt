@@ -55,12 +55,12 @@ class SlackNotificationService(
         val blocks = mutableListOf<LayoutBlock>()
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 1)*").build()) })
-        blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build() }) })
+        blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.all { res -> res.statusCode == 200 })}):* ${entry.value.size}").build() }) })
 
         blocks.add(Blocks.divider())
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 2)*").build()) })
-        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.isEmpty())}):* ${entry.value.size}").build() }) })
+        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.all { res -> res.statusCode != 404 })}):* ${entry.value.size}").build() }) })
 
         send(blocks, slackChannel)
     }

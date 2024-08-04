@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class StaticWebpageService(private val staticWebpageRepository: StaticWebpageRepository) {
 
-    fun findStaticWebpagesByProviderType(providerType: ServiceProviderType, limit: Long): List<StaticWebpage> =
-        staticWebpageRepository.findStaticWebpagesProviderTypeByOrderByUsedCountAscLimit(providerType = providerType, limit = limit)
+    fun findStaticWebpagesByProviderType(providerType: ServiceProviderType): List<StaticWebpage> =
+        staticWebpageRepository.findStaticWebpagesProviderTypeByOrderByUsedCountAsc(providerType = providerType)
 
 }

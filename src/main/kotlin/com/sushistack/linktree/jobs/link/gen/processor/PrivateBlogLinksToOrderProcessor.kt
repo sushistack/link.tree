@@ -30,9 +30,11 @@ class PrivateBlogLinksToOrderProcessor(
 
     override fun process(order: Order): List<LinkNode> {
         log.info { "articleSources.size = ${articleSources.size}" }
-        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.PRIVATE_BLOG_NETWORK, order.orderType.linkCount.toLong())
+        val webpages = staticWebpageService.findStaticWebpagesByProviderType(ServiceProviderType.PRIVATE_BLOG_NETWORK)
+        val doubled = webpages + webpages
+        val pages = doubled.shuffled().take(order.orderType.linkCount)
 
-        return webpages.map { webpage ->
+        return pages.map { webpage ->
             val post = postService.createPost(webpage, articleSources, linkProvider)
 
             LinkNode(
