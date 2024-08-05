@@ -17,22 +17,20 @@ spring:
   main:
     web-application-type: none
 
-feign:
-  client:
-    config:
-      postClient:
-        connectTimeout: 5000
-        readTimeout: 5000
-        retryer:
-          period: 100
-          maxPeriod: 1000
-          maxAttempts: 3
-
 ftp:
   host: localhost
   port: 21
   username: user
   password: pass
+
+cohere:
+  api:
+    keys:
+      - ENC(yjYpRD4RvTAsC3wzLEJd2P1OWLvkxuTUmhPfxu6Z2mw6Xc65ZmVF/eZpBCDaaI9TRV6IkuiyOFtqQW36NNkS5w==)
+      - ENC(l+G72emKx96gH7cigIPcIwPYBl732f3LuTAv8F12iS/cvMOO/177+KpOGitlhlZ08CgI88brIFwRbqL3Qotc2Q==)
+      - ENC(71GYR6of8koLCsyUyqtp4LldhYyWJ/90IO2zirbNtRQG6vtAKl6BBy40lRVOt3MrkTvHkBtEQSlVQN98m4AZOA==)
+      - ENC(lJcKv6RayoSSgQm8dvL9HaJrEjQsBT97ZPfB340h8vESzQtpIXAOxXFB3d9d7zCzhfDg15FfCtxCR0cNaf95sg==)
+      - ENC(U5l/yg0FEfpRR0iwT3INRu0EAVL90miMHtrKImZg79i4MyWDkYmYJwB5Tm7G+PIUdUpo+79/eGf/5t1WECROCw==)
 
 slack:
   bot-token: ENC(y+36Ok3MGuvAHPw0LCD1fK0c1skx+oQQMkcQghAZKLxMiH6CAvCcWE1RN4dUAsUAoBMZWDByEk/cyU1QHIBO86gUrkv7rh4edXrw0Efjnfk=)
@@ -58,3 +56,8 @@ decorator:
       log-format: '%(currentTime)|%(executionTime)ms|connection %(connectionId)|[%(category)]:%(sql)'
       log-filter:
         pattern: '^(?!.*(BATCH_JOB_|BATCH_STEP_)).*$'
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
