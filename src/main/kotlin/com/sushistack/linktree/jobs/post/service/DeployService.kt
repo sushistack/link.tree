@@ -1,5 +1,6 @@
 package com.sushistack.linktree.jobs.post.service
 
+import com.sushistack.linktree.config.measure.MeasureTime
 import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
@@ -24,6 +25,7 @@ class DeployService(private val ftpService: FTPService) {
         const val DEPLOY_DIR = "_site"
     }
 
+    @MeasureTime
     fun makePackage(git: Git) {
         val repoPath = Paths.get(git.repoDir)
         val removeTargets = Files.walk(repoPath)
@@ -57,6 +59,7 @@ class DeployService(private val ftpService: FTPService) {
         log.info { "Deploy directory is deleted := [${deployDir.fileName}]" }
     }
 
+    @MeasureTime
     fun deploy(serviceProviderType: ServiceProviderType, git: Git, domain: String) {
         log.info { "Deploying for ${git.workspaceName}/${git.repositoryName} ($domain)" }
         when (serviceProviderType) {

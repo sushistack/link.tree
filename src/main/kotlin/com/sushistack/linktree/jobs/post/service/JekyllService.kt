@@ -1,5 +1,6 @@
 package com.sushistack.linktree.jobs.post.service
 
+import com.sushistack.linktree.config.measure.MeasureTime
 import com.sushistack.linktree.utils.git.Git
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
@@ -16,6 +17,7 @@ class JekyllService(private val appHomeDir: String) {
 
     private val log = KotlinLogging.logger {}
 
+    @MeasureTime
     fun build(git: Git) {
         log.info { "\nBuild Jekyll for ${git.workspaceName}/${git.repositoryName}\n" }
         git.checkout(DEFAULT_BRANCH)

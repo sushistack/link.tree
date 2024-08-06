@@ -1,5 +1,6 @@
 package com.sushistack.linktree.service
 
+import com.sushistack.linktree.config.measure.MeasureTime
 import com.sushistack.linktree.config.transaction.TransactionCallbackHandler
 import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.publisher.StaticWebpage
@@ -34,6 +35,7 @@ class PostService(
         private val DATE_RANGE = DateRange()
     }
 
+    @MeasureTime
     @Transactional(rollbackFor = [Exception::class])
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
     fun createPost(webpage: StaticWebpage, articleSources: List<ArticleSource>, linkProvider: LinkProvider): Post {
@@ -61,7 +63,8 @@ class PostService(
         return postRepository.save(post)
     }
 
-    private fun write(post: Post, articles: List<ArticleSource>, link: Pair<String, String>) {
+    @MeasureTime
+    fun write(post: Post, articles: List<ArticleSource>, link: Pair<String, String>) {
         val articleSource = articles.getMinUsed()
         require(articleSource != null) { "Article source not available" }
 
