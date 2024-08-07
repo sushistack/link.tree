@@ -38,6 +38,8 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation "org.springframework.integration:spring-integration-core:${springIntegrationVersion}"
     implementation "org.springframework.integration:spring-integration-ftp:${springIntegrationVersion}"
+    implementation "org.aspectj:aspectjweaver:${aspectjVersion}"
+    implementation "org.aspectj:aspectjrt:${aspectjVersion}"
     implementation 'commons-net:commons-net:3.11.1'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.apache.poi:poi-ooxml:5.3.0'

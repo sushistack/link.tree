@@ -63,8 +63,8 @@ class PostService(
         return postRepository.save(post)
     }
 
-    @MeasureTime
-    fun write(post: Post, articles: List<ArticleSource>, link: Pair<String, String>) {
+
+    private fun write(post: Post, articles: List<ArticleSource>, link: Pair<String, String>) {
         val articleSource = articles.getMinUsed()
         require(articleSource != null) { "Article source not available" }
 

@@ -1,0 +1,8 @@
+<aspectj>
+    <weaver options="-verbose">
+        <include within="com.sushistack.linktree..*" />
+    </weaver>
+    <aspects>
+        <aspect name="com.sushistack.linktree.config.measure.MeasureTimeAspect"/>
+    </aspects>
+</aspectj>

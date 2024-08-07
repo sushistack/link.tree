@@ -4,24 +4,31 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
-import org.springframework.stereotype.Component
 import kotlin.system.measureTimeMillis
 
 @Aspect
-@Component
 class MeasureTimeAspect {
-    private val logger = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}
 
-    @Around("@annotation(com.sushistack.linktree.config.measure.MeasureTime)")
+    init {
+        log.info { "✅ MeasureTimeAspect가 로드되었습니다!" }
+    }
+
+    @Around("call(@com.sushistack.linktree.config.measure.MeasureTime * *(..))")
     fun measureExecutionTime(joinPoint: ProceedingJoinPoint): Any? {
         val methodName = "${joinPoint.signature.declaringType.simpleName}.${joinPoint.signature.name}"
 
-        var result: Any?
+        var result: Any? = null
         val timeMillis = measureTimeMillis {
-            result = joinPoint.proceed()
+            result = try {
+                joinPoint.proceed()
+            } catch (e: Throwable) {
+                log.error(e) { "$methodName 실행 중 예외 발생" }
+                throw e
+            }
         }
 
-        logger.info { "$methodName 실행 시간: ${timeMillis}ms" }
+        log.info { "$methodName 실행 시간: ${timeMillis}ms" }
         return result
     }
 }

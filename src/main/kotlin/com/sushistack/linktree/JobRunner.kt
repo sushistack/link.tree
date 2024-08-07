@@ -1,5 +1,6 @@
 package com.sushistack.linktree
 
+import com.sushistack.linktree.entity.order.OrderType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.JobParametersBuilder
@@ -16,6 +17,12 @@ class JobRunner(private val jobLauncher: JobLauncher, private val job: Job): Com
 
         val builder = JobParametersBuilder()
         paramMap.forEach { (key, value) -> builder.addString(key, value) }
+
+        builder.addString("orderType", OrderType.STANDARD.name)
+        builder.addString("targetUrl", "https://test.com")
+        builder.addString("customerName", "고객명0048")
+        builder.addString("anchorTexts", """["딸기"]""")
+        builder.addString("keywords", """["딸기"]""")
 
         val jobParameters = builder.toJobParameters()
         log.info { "jobParameters = $jobParameters" }
