@@ -1,6 +1,5 @@
 package com.sushistack.linktree.utils.git
 
-import com.sushistack.linktree.config.measure.MeasureTime
 import com.sushistack.linktree.utils.git.enums.ResetType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -35,7 +34,7 @@ class Git(
                 true -> {
                     this.clean()
                     this.checkout(DEFAULT_BRANCH)
-                    this.pull(DEFAULT_BRANCH)
+                    /* this.pull(DEFAULT_BRANCH) */
                 }
                 false -> this.clone()
             }
@@ -85,11 +84,18 @@ class Git(
 
     fun pull(branch: String): String = command("pull", "origin", branch)
 
-    fun push(branch: String, force: Boolean = false): String =
-        if (force)
-            command("push", "origin", branch, "-f")
-        else
-            command("push", "origin", branch)
+    fun push(branch: String, force: Boolean = false): String {
+        if (force) {
+            return command("push", "origin", branch, "-f")
+        }
+        val res = command("push", "origin", branch)
+        if ("(fetch first)" in res) {
+            log.info { "Conflict with Origin, Pull and Push" }
+            this.pull(branch)
+        }
+        return command("push", "origin", branch)
+    }
+
 
     fun add(path: String): String = command("add", path)
 

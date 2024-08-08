@@ -20,7 +20,7 @@ class JobRunner(private val jobLauncher: JobLauncher, private val job: Job): Com
 
         builder.addString("orderType", OrderType.STANDARD.name)
         builder.addString("targetUrl", "https://test.com")
-        builder.addString("customerName", "고객명0048")
+        builder.addString("customerName", "고객명0050")
         builder.addString("anchorTexts", """["딸기"]""")
         builder.addString("keywords", """["딸기"]""")
 
