@@ -32,8 +32,12 @@ class Git(
         try {
             when (gitDir.exists()) {
                 true -> {
-                    this.clean()
-                    this.checkout(DEFAULT_BRANCH)
+                    if (this.branch() == DEPLOY_BRANCH) {
+                        log.info { "Branch $DEPLOY_BRANCH to $DEFAULT_BRANCH" }
+                        this.clean()
+                        this.reset(type = ResetType.HARD, hash = "HEAD")
+                        this.checkout(DEFAULT_BRANCH)
+                    }
                     /* this.pull(DEFAULT_BRANCH) */
                 }
                 false -> this.clone()

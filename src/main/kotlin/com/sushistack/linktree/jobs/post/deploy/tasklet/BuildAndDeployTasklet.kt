@@ -5,8 +5,8 @@ import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_N
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
 import com.sushistack.linktree.jobs.post.service.DeployService
 import com.sushistack.linktree.jobs.post.service.JekyllService
-import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.OrderService
+import com.sushistack.linktree.service.StaticWebpageService
 import com.sushistack.linktree.utils.git.Git
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.ExitStatus
@@ -24,48 +24,44 @@ class BuildAndDeployTasklet(
     private val orderService: OrderService,
     private val jekyllService: JekyllService,
     private val deployService: DeployService,
-    private val linkNodeService: LinkNodeService
+    private val staticWebpageService: StaticWebpageService
 ) : Tasklet {
     private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
-        val orderOpt = orderService.findTop1ByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCESSED)
-        if (!orderOpt.isPresent) {
-            return RepeatStatus.FINISHED
-        }
+        val staticWebPages1 = staticWebpageService.findStaticWebpagesByProviderType(PRIVATE_BLOG_NETWORK)
+        val staticWebPages2 = staticWebpageService.findStaticWebpagesByProviderType(CLOUD_BLOG_NETWORK)
 
-        val order = orderOpt.get()
-
-        val linksOfTier1 = linkNodeService.findWithPostByOrder(order, tier = 1)
-        val linksOfTier2 = linkNodeService.findWithPostByOrder(order, tier = 2)
-
-        linksOfTier1.forEach { linkNode ->
-            val git = Git(appHomeDir, linkNode.workspaceName, linkNode.repositoryName)
+        staticWebPages1.forEach {
+            val repo = it.repository ?: throw NullPointerException("No repo to build")
+            val git = Git(appHomeDir, repo.workspaceName, repo.repositoryName)
             try {
                 jekyllService.build(git)
                 deployService.makePackage(git)
-                deployService.deploy(PRIVATE_BLOG_NETWORK, git, linkNode.domain)
+                deployService.deploy(PRIVATE_BLOG_NETWORK, git, it.domain)
             } catch (e: Exception) {
-                log.error(e) { "Failed to build and deploy [${linkNode.workspaceName}/${linkNode.repositoryName}]" }
+                log.error(e) { "Failed to build and deploy [${repo.workspaceName}/${repo.repositoryName}]" }
                 contribution.exitStatus = ExitStatus.FAILED
                 return RepeatStatus.FINISHED
             }
         }
 
-        linksOfTier2.forEach { linkNode ->
-            val git = Git(appHomeDir, linkNode.workspaceName, linkNode.repositoryName)
+        staticWebPages2.forEach {
+            val repo = it.repository ?: throw NullPointerException("No repo to build")
+            val git = Git(appHomeDir, repo.workspaceName, repo.repositoryName)
             try {
                 jekyllService.build(git)
                 deployService.makePackage(git)
-                deployService.deploy(CLOUD_BLOG_NETWORK, git, linkNode.domain)
+                deployService.deploy(CLOUD_BLOG_NETWORK, git, it.domain)
             } catch (e: Exception) {
-                log.error(e) { "Failed to build and deploy [${linkNode.workspaceName}/${linkNode.repositoryName}]" }
+                log.error(e) { "Failed to build and deploy [${repo.workspaceName}/${repo.repositoryName}]" }
                 contribution.exitStatus = ExitStatus.FAILED
                 return RepeatStatus.FINISHED
             }
         }
 
-        order.orderStatus = OrderStatus.next(order.orderStatus)
+        val orders = orderService.findAllByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCESSED)
+        orders.forEach { it.orderStatus = OrderStatus.next(it.orderStatus) }
 
         return RepeatStatus.FINISHED
     }

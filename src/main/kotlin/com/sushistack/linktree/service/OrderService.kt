@@ -21,4 +21,6 @@ class OrderService(private val orderRepository: OrderRepository) {
     fun findTop1ByOrderStatusOrderByOrderSeqDesc(orderStatus: OrderStatus): Optional<Order> =
         orderRepository.findTop1ByOrderStatusOrderByOrderSeqDesc(orderStatus)
 
+    fun findAllByOrderStatusOrderByOrderSeqDesc(orderStatus: OrderStatus): List<Order> =
+        orderRepository.findAllByOrderStatusOrderByOrderSeqDesc(orderStatus)
 }

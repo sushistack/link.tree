@@ -7,4 +7,5 @@ import java.util.*
 
 interface OrderRepository : JpaRepository<Order, Long> {
     fun findTop1ByOrderStatusOrderByOrderSeqDesc(orderStatus: OrderStatus): Optional<Order>
+    fun findAllByOrderStatusOrderByOrderSeqDesc(orderStatus: OrderStatus): List<Order>
 }

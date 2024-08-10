@@ -19,4 +19,7 @@ class StaticWebpageService(private val staticWebpageRepository: StaticWebpageRep
             .map { i -> staticWebpages[(random.nextInt(staticWebpages.size) + i * step) % staticWebpages.size] }
     }
 
+    fun findStaticWebpagesByProviderType(providerType: ServiceProviderType): List<StaticWebpage> =
+        staticWebpageRepository.findAllByProviderType(providerType = providerType)
+
 }

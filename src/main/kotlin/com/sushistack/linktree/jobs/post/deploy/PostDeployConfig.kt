@@ -20,6 +20,8 @@ class PostDeployConfig {
     fun postDeployJob(
         jobRepository: JobRepository,
         buildAndDeployStep: Step,
+        initializationStep: Step,
+        clearingInitializationStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder("postDeployJob", jobRepository)
