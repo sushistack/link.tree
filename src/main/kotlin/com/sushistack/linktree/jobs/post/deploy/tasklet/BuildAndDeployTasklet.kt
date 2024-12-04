@@ -60,7 +60,7 @@ class BuildAndDeployTasklet(
             }
         }
 
-        val orders = orderService.findAllByOrderStatusOrderByOrderSeqDesc(OrderStatus.PROCESSED)
+        val orders = orderService.findByOrderStatus(OrderStatus.PROCESSED)
         orders.forEach { it.orderStatus = OrderStatus.next(it.orderStatus) }
 
         return RepeatStatus.FINISHED

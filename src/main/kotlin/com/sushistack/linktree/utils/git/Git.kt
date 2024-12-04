@@ -1,6 +1,7 @@
 package com.sushistack.linktree.utils.git
 
 import com.sushistack.linktree.utils.git.enums.ResetType
+import com.sushistack.linktree.utils.git.exceptions.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.io.IOException
@@ -8,7 +9,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
-class Git(
+data class Git(
     val appHomeDir: String,
     val workspaceName: String,
     val repositoryName: String
@@ -47,21 +48,23 @@ class Git(
         }
     }
 
-    private fun command(vararg args: String, timeoutSeconds: Long = 10): String {
-        return try {
+    private fun command(vararg args: String, timeoutSeconds: Long = 10): String =
+        try {
             val process = ProcessBuilder("git", *args)
                 .directory(File(repoDir))
                 .redirectErrorStream(true)
                 .start()
 
             val output = process.inputStream.bufferedReader().use { it.readText() }
-            if (!process.waitFor(timeoutSeconds, TimeUnit.SECONDS)) {
+            val processedInTime = process.waitFor(timeoutSeconds, TimeUnit.SECONDS)
+
+            if (!processedInTime) {
                 process.destroy()
-                throw GitException("Git command timed out: git ${args.joinToString(" ")}")
+                throw GitTimeoutException("Git command timed out after $timeoutSeconds s: git ${args.joinToString(" ")}")
             }
 
             if (process.exitValue() != 0) {
-                throw GitException("Git command failed: git ${args.joinToString(" ")}\n$output")
+                throw handleGitException(output)
             }
 
             output.trim()
@@ -71,7 +74,6 @@ class Git(
             Thread.currentThread().interrupt()
             throw GitException("Git command interrupted: ${e.message}")
         }
-    }
 
     private fun clone() = command("clone", sshUrl, repoDir)
 
@@ -86,20 +88,34 @@ class Git(
                 )
         }
 
-    fun pull(branch: String): String = command("pull", "origin", branch)
+    fun pull(branch: String, rebase: Boolean = true): String =
+        try {
+            if (rebase) command("pull", "origin", branch, "--rebase")
+            else command("pull", "origin", branch)
+        } catch (e: GitMergeConflictException) {
+            log.error(e) { "Pull Failed" }
+            ""
+        }
 
     fun push(branch: String, force: Boolean = false): String {
         if (force) {
             return command("push", "origin", branch, "-f")
         }
-        val res = command("push", "origin", branch)
-        if ("(fetch first)" in res) {
+        return try {
+            command("push", "origin", branch)
+        } catch (e: GitRejectedException) {
             log.info { "Conflict with Origin, Pull and Push" }
             this.pull(branch)
+            command("push", "origin", branch)
+        } catch (e: GitNonFastForwardException) {
+            log.info { "Non-fast-forward error: Pull with rebase and push again" }
+            this.pull(branch)
+            command("push", "origin", branch)
+        } catch (e: GitException) {
+            log.error(e) { "Git push failed" }
+            ""
         }
-        return command("push", "origin", branch)
     }
-
 
     fun add(path: String): String = command("add", path)
 
