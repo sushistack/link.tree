@@ -3,6 +3,8 @@ package com.sushistack.linktree.utils.git
 import com.sushistack.linktree.utils.git.enums.ResetType
 import com.sushistack.linktree.utils.git.exceptions.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -115,6 +117,10 @@ data class Git(
             log.error(e) { "Git push failed" }
             ""
         }
+    }
+
+    suspend fun pushAsync(branch: String, force: Boolean = false): String = withContext(Dispatchers.IO) {
+        push(branch, force)
     }
 
     fun add(path: String): String = command("add", path)
