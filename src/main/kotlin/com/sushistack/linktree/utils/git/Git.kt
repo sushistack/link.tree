@@ -92,11 +92,20 @@ data class Git(
 
     fun pull(branch: String, rebase: Boolean = true): String =
         try {
-            if (rebase) command("pull", "origin", branch, "--rebase")
-            else command("pull", "origin", branch)
-        } catch (e: GitMergeConflictException) {
-            log.error(e) { "Pull Failed" }
-            ""
+            command("pull", "origin", branch, *listOfNotNull("--rebase".takeIf { rebase }).toTypedArray())
+        } catch (e: GitException) {
+            when (e) {
+                is GitUnstagedChangesException, is GitMergeConflictException -> {
+                    log.info { "Pull Failed by ${e.message}" }
+                    this.clean()
+                    this.reset(type = ResetType.HARD, hash = "HEAD")
+                    command("pull", "origin", branch, *listOfNotNull("--rebase".takeIf { rebase }).toTypedArray())
+                }
+                else -> {
+                    log.error(e) { e.message }
+                    e.message ?: "Unknown error"
+                }
+            }
         }
 
     fun push(branch: String, force: Boolean = false): String {

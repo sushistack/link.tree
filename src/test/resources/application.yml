@@ -21,6 +21,7 @@ ftp:
   password: pass
 
 slack:
+  enabled: true
   bot-token: ENC(y+36Ok3MGuvAHPw0LCD1fK0c1skx+oQQMkcQghAZKLxMiH6CAvCcWE1RN4dUAsUAoBMZWDByEk/cyU1QHIBO86gUrkv7rh4edXrw0Efjnfk=)
   channel: ENC(d8+EXqMeA+qsCeMnO5uqPiDG9srpQKAcRIJW7/jPfo0=)
 
@@ -37,14 +38,6 @@ cohere:
       - ENC(71GYR6of8koLCsyUyqtp4LldhYyWJ/90IO2zirbNtRQG6vtAKl6BBy40lRVOt3MrkTvHkBtEQSlVQN98m4AZOA==)
       - ENC(lJcKv6RayoSSgQm8dvL9HaJrEjQsBT97ZPfB340h8vESzQtpIXAOxXFB3d9d7zCzhfDg15FfCtxCR0cNaf95sg==)
       - ENC(U5l/yg0FEfpRR0iwT3INRu0EAVL90miMHtrKImZg79i4MyWDkYmYJwB5Tm7G+PIUdUpo+79/eGf/5t1WECROCw==)
-
-decorator:
-  datasource:
-    p6spy:
-      logging: slf4j
-      log-format: '%(currentTime)|%(executionTime)ms|connection %(connectionId)|[%(category)]:%(sql)'
-      log-filter:
-        pattern: '^(?!.*(BATCH_JOB_|BATCH_STEP_)).*$'
 
 # for test
 test:

@@ -12,7 +12,7 @@ import java.io.File
 import java.nio.file.Paths
 
 @Configuration
-@Profile("default")
+@Profile("default", "dev")
 class FileSystemChannelConfig(private val appHomeDir: String) {
     companion object {
         private const val REMOTE_DIR_REGEX = "headers['remoteDir']"

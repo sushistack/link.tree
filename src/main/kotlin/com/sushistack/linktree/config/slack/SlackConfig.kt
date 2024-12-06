@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties(prefix = "slack")
 class SlackConfig {
+    var enabled: Boolean = true
     lateinit var botToken: String
     lateinit var channel: String
 

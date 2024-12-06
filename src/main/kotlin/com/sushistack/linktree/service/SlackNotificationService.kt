@@ -8,12 +8,14 @@ import com.slack.api.model.block.composition.MarkdownTextObject
 import com.sushistack.linktree.batch.config.BatchJob.Companion.getDescription
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.BatchStatus
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class SlackNotificationService(
     private val methodsClient: MethodsClient,
-    private val slackChannel: String
+    private val slackChannel: String,
+    @Value("\${slack.enabled:true}") private val slackEnabled: Boolean
 ) {
     companion object {
         private val symbol: (Boolean) -> String = { if (it) ":large_green_circle:" else ":red_circle:" }
@@ -21,7 +23,11 @@ class SlackNotificationService(
 
     private val log = KotlinLogging.logger {}
 
-    fun send(message: String, channel: String = slackChannel) =
+    fun send(message: String, channel: String = slackChannel) {
+        if (!slackEnabled) {
+            log.info { "slack is disabled" }
+            return
+        }
         try {
             val res = ChatPostMessageRequest.builder()
                 .channel(channel)
@@ -35,8 +41,14 @@ class SlackNotificationService(
         } catch (e: Exception) {
             log.error(e) { "Error while sending message." }
         }
+    }
 
-    fun send(blocks: List<LayoutBlock>, channel: String = slackChannel) =
+
+    fun send(blocks: List<LayoutBlock>, channel: String = slackChannel) {
+        if (!slackEnabled) {
+            log.info { "slack is disabled" }
+            return
+        }
         try {
             val res = ChatPostMessageRequest.builder()
                 .channel(slackChannel)
@@ -50,6 +62,8 @@ class SlackNotificationService(
         } catch (e: Exception) {
             log.error(e) { "Error while sending message." }
         }
+    }
+
 
     fun sendPostValidations(linkMap1: Map<Int, List<UrlStatus>>, linkMap2: Map<Int, List<UrlStatus>>) {
         val blocks = mutableListOf<LayoutBlock>()
