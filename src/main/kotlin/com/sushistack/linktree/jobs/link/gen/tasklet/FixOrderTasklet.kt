@@ -18,7 +18,7 @@ class FixOrderTasklet(
     private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
-        val order = orderService.getOrderBySeq(-1)
+        val order = orderService.getOrderBySeq(1)
 
         contribution.stepExecution.jobExecution.executionContext.put("order", order)
         log.info { "Fixed Order := [${order}]" }

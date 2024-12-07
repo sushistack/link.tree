@@ -48,6 +48,7 @@ class LinkNodeRepositoryImpl(private val queryFactory: JPAQueryFactory): LinkNod
                     gitRepository.repositoryName,
                     staticWebpage.domain,
                     post.uri,
+                    post.filePath,
                     gitAccount.accountSeq,
                     gitAccount.username,
                     gitAccount.appPassword

@@ -8,6 +8,7 @@ data class LinkNodeRepositoryDTO(
     val repositoryName: String,
     val domain: String,
     val uri: String,
+    val filePath: String,
     val accountSeq: Long,
     val username: String,
     val appPassword: String

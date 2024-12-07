@@ -30,4 +30,8 @@ class Order (
     val linkNodes: List<LinkNode> = emptyList(),
 ): BaseTimeEntity(), java.io.Serializable {
     override fun toString(): String = "Order(seq=$orderSeq,type=$orderType,url='$targetUrl',customerName=$customerName,orderStatus=$orderStatus)"
+
+    fun isValid(): Boolean {
+        return orderSeq != -1L
+    }
 }
