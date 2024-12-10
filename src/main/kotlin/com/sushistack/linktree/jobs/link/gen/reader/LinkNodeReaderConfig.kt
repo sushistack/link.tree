@@ -27,7 +27,7 @@ class LinkNodeReaderConfig {
                 .join(linkNode.order, QOrder.order).fetchJoin()
                 .join(linkNode.publication, publication).fetchJoin()
                 .where(
-                    linkNode.tier.eq(order.orderStatus.tier - 1)
+                    linkNode.tier.eq(order.orderStatus.phase - 1)
                         .and(linkNode.order.orderSeq.eq(QOrder.order.orderSeq))
                         .and(QOrder.order.orderSeq.eq(order.orderSeq))
                 )

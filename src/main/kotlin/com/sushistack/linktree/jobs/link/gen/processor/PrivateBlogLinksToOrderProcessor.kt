@@ -40,7 +40,7 @@ class PrivateBlogLinksToOrderProcessor(
             val post = postService.createPost(webpage, articleSources, linkProvider)
 
             LinkNode(
-                tier = order.orderStatus.tier,
+                tier = order.orderStatus.phase,
                 url = webpage.getPostUrl(post),
                 order = order,
                 parentNodeSeq = order.orderSeq
