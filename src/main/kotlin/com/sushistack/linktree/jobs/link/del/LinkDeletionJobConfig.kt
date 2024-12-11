@@ -1,5 +1,6 @@
 package com.sushistack.linktree.jobs.link.del
 
+import com.sushistack.linktree.batch.config.BatchJob.LINK_DELETION
 import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -24,7 +25,7 @@ class LinkDeletionJobConfig {
         syncOriginStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
-        JobBuilder("linkDeletionJob", jobRepository)
+        JobBuilder(LINK_DELETION.jobName, jobRepository)
             .start(fixOrderStep)
             .next(deleteLinksStep)
             .next(syncOriginStep)

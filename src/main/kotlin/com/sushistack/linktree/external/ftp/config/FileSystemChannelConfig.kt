@@ -1,6 +1,7 @@
 package com.sushistack.linktree.external.ftp.config
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -13,6 +14,7 @@ import java.nio.file.Paths
 
 @Configuration
 @Profile("default", "dev")
+@ConditionalOnProperty(value = ["spring.batch.job.name"], havingValue = "postDeployJob")
 class FileSystemChannelConfig(private val appHomeDir: String) {
     companion object {
         private const val REMOTE_DIR_REGEX = "headers['remoteDir']"

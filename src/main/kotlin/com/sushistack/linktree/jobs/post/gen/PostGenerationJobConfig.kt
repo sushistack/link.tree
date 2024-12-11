@@ -1,6 +1,7 @@
-package com.sushistack.linktree.jobs.post.deploy
+package com.sushistack.linktree.jobs.post.gen
 
-import com.sushistack.linktree.batch.config.BatchJob.POST_DEPLOY
+import com.sushistack.linktree.batch.config.BatchJob
+import com.sushistack.linktree.batch.config.BatchJob.POST_GENERATION
 import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -14,29 +15,27 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.orm.jpa.JpaTransactionManager
 
 @Configuration
-@ConditionalOnProperty(value = ["spring.batch.job.name"], havingValue = "postDeployJob")
-class PostDeployConfig {
+@ConditionalOnProperty(value = ["spring.batch.job.name"], havingValue = "postGenerationJob")
+class PostGenerationJobConfig {
 
     @Bean
-    fun postDeployJob(
+    fun postGenerationJob(
         jobRepository: JobRepository,
-        buildAndDeployStep: Step,
-        initializationStep: Step,
-        clearingInitializationStep: Step,
+        postGenerationStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
-        JobBuilder(POST_DEPLOY.jobName, jobRepository)
-            .start(buildAndDeployStep)
+        JobBuilder(POST_GENERATION.jobName, jobRepository)
+            .start(postGenerationStep)
             .listener(jobListener)
             .build()
 
     @Bean
-    fun buildAndDeployStep(
+    fun postGenerationStep(
         jobRepository: JobRepository,
-        buildAndDeployTasklet: Tasklet,
+        postGenerationTasklet: Tasklet,
         jpaTransactionManager: JpaTransactionManager
-    ) =
-        StepBuilder("buildAndDeployStep", jobRepository)
-            .tasklet(buildAndDeployTasklet, jpaTransactionManager)
+    ): Step =
+        StepBuilder("postGenerationStep", jobRepository)
+            .tasklet(postGenerationTasklet, jpaTransactionManager)
             .build()
 }

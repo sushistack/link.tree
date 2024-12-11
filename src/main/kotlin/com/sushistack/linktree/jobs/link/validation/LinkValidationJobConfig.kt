@@ -1,5 +1,6 @@
 package com.sushistack.linktree.jobs.link.validation
 
+import com.sushistack.linktree.batch.config.BatchJob.LINK_VALIDATION
 import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -22,7 +23,7 @@ class LinkValidationJobConfig {
         linkValidationStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
-        JobBuilder("linkValidationJob", jobRepository)
+        JobBuilder(LINK_VALIDATION.jobName, jobRepository)
             .start(linkValidationStep)
             .listener(jobListener)
             .build()

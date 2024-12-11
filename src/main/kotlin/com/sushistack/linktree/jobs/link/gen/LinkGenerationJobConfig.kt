@@ -1,5 +1,7 @@
 package com.sushistack.linktree.jobs.link.gen
 
+import com.sushistack.linktree.batch.config.BatchJob
+import com.sushistack.linktree.batch.config.BatchJob.LINK_GENERATION
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.link.LinkNode
 import com.sushistack.linktree.entity.order.Order
@@ -49,7 +51,7 @@ class LinkGenerationJobConfig {
         saveToExcelStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
-        JobBuilder("linkGenerationJob", jobRepository)
+        JobBuilder(LINK_GENERATION.jobName, jobRepository)
             .start(initializationStep)
             .next(saveOrderStep)
             .next(addPrivateBlogsToOrderStep)
