@@ -4,6 +4,7 @@ import com.sushistack.linktree.entity.order.OrderStatus
 import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
+import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.jobs.post.service.DeployService
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.OrderService
@@ -31,7 +32,7 @@ class BuildAndDeployTasklet(
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? = runBlocking {
         val staticWebPages1 = staticWebpageService.findStaticWebpagesByProviderType(PRIVATE_BLOG_NETWORK)
-        val staticWebPages2 = staticWebpageService.findStaticWebpagesByProviderType(CLOUD_BLOG_NETWORK)
+        val staticWebPages2 = emptyList<StaticWebpage>() // staticWebpageService.findStaticWebpagesByProviderType(CLOUD_BLOG_NETWORK)
 
         staticWebPages1
             .filter { it.repository != null }
