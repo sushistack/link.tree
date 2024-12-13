@@ -12,4 +12,9 @@ class PostConfig {
     fun postGenerationReqPool() =
         Executors.newFixedThreadPool(2)
             .asCoroutineDispatcher()
+
+    @Bean
+    fun postBuildAndDeployPool() =
+        Executors.newFixedThreadPool(8)
+            .asCoroutineDispatcher()
 }

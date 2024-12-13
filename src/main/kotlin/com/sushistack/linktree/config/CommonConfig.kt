@@ -1,5 +1,7 @@
 package com.sushistack.linktree.config
 
+import io.netty.channel.ChannelOption
+import io.netty.resolver.DefaultAddressResolverGroup
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,7 +23,9 @@ class CommonConfig {
             .clientConnector(ReactorClientHttpConnector(
                 HttpClient
                     .create()
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                     .responseTimeout(Duration.ofSeconds(10))
+                    .resolver(DefaultAddressResolverGroup.INSTANCE)
             ))
             .build()
 

@@ -1,7 +1,10 @@
 package com.sushistack.linktree.service
 
 import com.slack.api.methods.MethodsClient
+import com.slack.api.methods.SlackApiException
+import com.slack.api.methods.SlackFilesUploadV2Exception
 import com.slack.api.methods.request.chat.ChatPostMessageRequest
+import com.slack.api.methods.request.files.FilesUploadV2Request
 import com.slack.api.model.block.Blocks
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.MarkdownTextObject
@@ -10,6 +13,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.BatchStatus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.io.File
+import java.io.IOException
 
 @Service
 class SlackNotificationService(
@@ -65,16 +70,11 @@ class SlackNotificationService(
     }
 
 
-    fun sendPostValidations(linkMap1: Map<Int, List<UrlStatus>>, linkMap2: Map<Int, List<UrlStatus>>) {
+    fun sendPostValidations(linkMap1: Map<Int, List<UrlStatus>>) {
         val blocks = mutableListOf<LayoutBlock>()
 
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 1)*").build()) })
         blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.all { res -> res.statusCode == 200 })}):* ${entry.value.size}").build() }) })
-
-        blocks.add(Blocks.divider())
-
-        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 2)*").build()) })
-        blocks.add(Blocks.section { it.fields(linkMap2.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.all { res -> res.statusCode != 404 })}):* ${entry.value.size}").build() }) })
 
         send(blocks, slackChannel)
     }
@@ -121,6 +121,31 @@ class SlackNotificationService(
         }
 
         send(blocks, slackChannel)
+    }
+
+    fun uploadReport(reportFile: File) {
+        val request = FilesUploadV2Request.builder()
+            .channel(slackChannel)
+            .file(reportFile)
+            .filename(reportFile.name)
+            .title(reportFile.name)
+            .initialComment("${reportFile.name} 작업 완료")
+            .build()
+
+        try {
+            val response = methodsClient.filesUploadV2(request)
+            if (response.isOk) {
+                log.info { "File uploaded successfully: ${response.file?.permalink}" }
+            } else {
+                log.error { "Failed to upload file: ${response.error}" }
+            }
+        } catch (e: IOException) {
+            log.error(e) { "Failed to upload file: ${e.message}" }
+        } catch (e: SlackApiException) {
+            log.error(e) { "Failed to upload file: ${e.message}" }
+        } catch (e: SlackFilesUploadV2Exception) {
+            log.error(e) { "Failed to upload file: ${e.message}" }
+        }
     }
 }
 

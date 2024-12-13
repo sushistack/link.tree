@@ -4,7 +4,6 @@ import com.sushistack.linktree.entity.order.OrderStatus
 import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
-import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.jobs.post.service.DeployService
 import com.sushistack.linktree.jobs.post.service.JekyllService
 import com.sushistack.linktree.service.OrderService
@@ -26,15 +25,16 @@ class BuildAndDeployTasklet(
     private val orderService: OrderService,
     private val jekyllService: JekyllService,
     private val deployService: DeployService,
-    private val staticWebpageService: StaticWebpageService
+    private val staticWebpageService: StaticWebpageService,
+    private val postBuildAndDeployPool: ExecutorCoroutineDispatcher
 ) : Tasklet {
     private val log = KotlinLogging.logger {}
 
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? = runBlocking {
         val staticWebPages1 = staticWebpageService.findStaticWebpagesByProviderType(PRIVATE_BLOG_NETWORK)
-        val staticWebPages2 = emptyList<StaticWebpage>() // staticWebpageService.findStaticWebpagesByProviderType(CLOUD_BLOG_NETWORK)
+        val staticWebPages2 = staticWebpageService.findStaticWebpagesByProviderType(CLOUD_BLOG_NETWORK)
 
-        staticWebPages1
+        (staticWebPages1 + staticWebPages2)
             .filter { it.repository != null }
             .map {
                 async {
@@ -46,25 +46,13 @@ class BuildAndDeployTasklet(
                 }
             }.awaitAll()
 
-        staticWebPages2
-            .filter { it.repository != null }
-            .map {
-                async {
-                    buildAndDeployAsync(
-                        Git(appHomeDir, it.repository!!.workspaceName, it.repository!!.repositoryName),
-                        CLOUD_BLOG_NETWORK,
-                        it.domain
-                    )
-                }
-            }.awaitAll()
-
         val orders = orderService.findByOrderStatus(OrderStatus.PROCESSED)
         orders.forEach { it.orderStatus = OrderStatus.next(it.orderStatus) }
 
         RepeatStatus.FINISHED
     }
 
-    suspend fun buildAndDeployAsync(git: Git, providerType: ServiceProviderType, domain: String) = withContext(Dispatchers.IO) {
+    suspend fun buildAndDeployAsync(git: Git, providerType: ServiceProviderType, domain: String) = withContext(postBuildAndDeployPool) {
         log.info { "build and deploy for (${git.workspaceName}/${git.repositoryName}), domain: $domain" }
         jekyllService.build(git)
         deployService.makePackage(git)

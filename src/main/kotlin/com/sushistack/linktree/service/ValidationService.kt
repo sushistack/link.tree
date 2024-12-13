@@ -1,6 +1,7 @@
 package com.sushistack.linktree.service
 
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.mono
@@ -12,21 +13,19 @@ import reactor.core.publisher.Mono
 class ValidationService(private val webClient: WebClient) {
 
     fun validatePosts(urls: List<String>) = mono {
-        coroutineScope {
-            urls.map { url ->
-                async {
-                    try {
-                        webClient.get()
-                            .uri(url)
-                            .exchangeToMono { res -> Mono.just(res.statusCode().value()) }
-                            .awaitSingle()
-                            .let { UrlStatus(url, it) }
-                    } catch (e: Exception) {
-                        UrlStatus(url, -1, e.message)
-                    }
+        urls.map { url ->
+            async {
+                try {
+                    webClient.get()
+                        .uri(url)
+                        .exchangeToMono { res -> Mono.just(res.statusCode().value()) }
+                        .awaitSingle()
+                        .let { UrlStatus(url, it) }
+                } catch (e: Exception) {
+                    UrlStatus(url, -1, e.message)
                 }
-            }.map { it.await() }
-        }
+            }
+        }.awaitAll()
     }
 
 }

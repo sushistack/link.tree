@@ -5,6 +5,7 @@ import com.sushistack.linktree.external.excel.ExcelUtil
 import com.sushistack.linktree.external.excel.model.ExcelSheet
 import com.sushistack.linktree.model.LinkTable
 import com.sushistack.linktree.service.LinkNodeService
+import com.sushistack.linktree.service.SlackNotificationService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobScope
@@ -13,6 +14,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.io.File
 import java.nio.file.Paths
 import java.time.LocalDate
 
@@ -20,7 +22,8 @@ import java.time.LocalDate
 @Component
 class ReportTasklet(
     private val appHomeDir: String,
-    private val linkNodeService: LinkNodeService
+    private val linkNodeService: LinkNodeService,
+    private val slackNotificationService: SlackNotificationService
 ): Tasklet {
     companion object {
         private const val FIRST_TIER_SHEET_NAME = "기사형 1티어 백링크"
@@ -50,8 +53,9 @@ class ReportTasklet(
             ExcelSheet(THIRD_TIER_SHEET_NAME, third.map { LinkTable(second.find { f -> f.nodeSeq == it.parentNodeSeq }?.url ?: "", it.url, it.createdDate.toString()) })
         )
 
-        ExcelUtil.writeExcel(sheets, Paths.get("${appHomeDir}/files/excel/${order.customerName}_${order.orderSeq}_${LocalDate.now()}.xlsx"))
-
+        val reportFilePath = "${appHomeDir}/files/excel/${order.customerName}_${order.orderSeq}_${LocalDate.now()}.xlsx"
+        ExcelUtil.writeExcel(sheets, Paths.get(reportFilePath))
+        slackNotificationService.uploadReport(File(reportFilePath))
         return RepeatStatus.FINISHED
     }
 

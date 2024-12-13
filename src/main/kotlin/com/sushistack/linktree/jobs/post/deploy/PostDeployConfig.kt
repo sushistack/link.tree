@@ -30,9 +30,9 @@ class PostDeployConfig {
         jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder(POST_DEPLOY.jobName, jobRepository)
-            .start(clearingInitializationStep)
-            .next(initializationStep)
-            .next(syncOriginStep)
+//            .start(clearingInitializationStep)
+//            .next(initializationStep)
+            .start(syncOriginStep)
             .next(buildAndDeployStep)
             .listener(jobListener)
             .build()
