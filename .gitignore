@@ -47,3 +47,6 @@ logs
 
 # files
 files
+
+# h2
+!**/src/main/resouces/h2db/
