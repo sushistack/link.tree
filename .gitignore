@@ -49,4 +49,4 @@ logs
 files
 
 # h2
-!**/src/main/resouces/h2db/
+**/h2db/
