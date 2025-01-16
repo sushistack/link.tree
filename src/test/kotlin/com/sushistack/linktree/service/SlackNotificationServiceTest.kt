@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.io.File
 
 @SpringBootTest
 class SlackNotificationServiceTest {
@@ -15,5 +16,11 @@ class SlackNotificationServiceTest {
     @Disabled
     fun sendTest() {
         slackNotificationService.send(message = "Hello, world!")
+    }
+
+    @Test
+    @Disabled
+    fun uploadTest() {
+        slackNotificationService.uploadReport(File("filepath.txt"))
     }
 }

@@ -20,6 +20,7 @@ import java.io.IOException
 class SlackNotificationService(
     private val methodsClient: MethodsClient,
     private val slackChannel: String,
+    @Value("\${slack.bot-token}") private val botToken: String,
     @Value("\${slack.enabled:true}") private val slackEnabled: Boolean
 ) {
     companion object {
@@ -124,27 +125,23 @@ class SlackNotificationService(
     }
 
     fun uploadReport(reportFile: File) {
-        val request = FilesUploadV2Request.builder()
-            .channel(slackChannel)
-            .file(reportFile)
-            .filename(reportFile.name)
-            .title(reportFile.name)
-            .initialComment("${reportFile.name} 작업 완료")
-            .build()
-
         try {
-            val response = methodsClient.filesUploadV2(request)
-            if (response.isOk) {
-                log.info { "File uploaded successfully: ${response.file?.permalink}" }
-            } else {
-                log.error { "Failed to upload file: ${response.error}" }
+            val response = methodsClient.filesUploadV2 { req: FilesUploadV2Request.FilesUploadV2RequestBuilder ->
+                req.channel(slackChannel)
+                    .file(reportFile)
+                    .filename(reportFile.name)
+                    .title("${reportFile.name} 작업 완료")
+            }
+            when(response.isOk) {
+                true -> log.info { "✅ 파일 업로드 성공: ${response.file.id}" }
+                else -> log.info { "❌ 업로드 실패: ${response.error}" }
             }
         } catch (e: IOException) {
-            log.error(e) { "Failed to upload file: ${e.message}" }
+            log.error(e) { "❌ 업로드 실패: ${e.message}" }
         } catch (e: SlackApiException) {
-            log.error(e) { "Failed to upload file: ${e.message}" }
+            log.error(e) { "❌ 업로드 실패: ${e.message}" }
         } catch (e: SlackFilesUploadV2Exception) {
-            log.error(e) { "Failed to upload file: ${e.message}" }
+            log.error(e) { "❌ 업로드 실패: ${e.message}" }
         }
     }
 }
