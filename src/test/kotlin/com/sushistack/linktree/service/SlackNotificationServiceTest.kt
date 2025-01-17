@@ -21,6 +21,7 @@ class SlackNotificationServiceTest {
     @Test
     @Disabled
     fun uploadTest() {
-        slackNotificationService.uploadReport(File("filepath.txt"))
+        val filepath = "filepath.txt"
+        slackNotificationService.uploadReport(File(filepath))
     }
 }

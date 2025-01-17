@@ -1,9 +1,9 @@
 package com.sushistack.linktree.jobs.post.service
 
 import com.sushistack.linktree.config.measure.MeasureTime
-import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.CLOUD_BLOG_NETWORK
 import com.sushistack.linktree.entity.publisher.ServiceProviderType.PRIVATE_BLOG_NETWORK
+import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.external.ftp.FTPService
 import com.sushistack.linktree.utils.git.Git
 import com.sushistack.linktree.utils.moveRecursivelyTo
@@ -16,7 +16,10 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @Service
-class DeployService(private val ftpService: FTPService) {
+class DeployService(
+    private val appHomeDir: String,
+    private val ftpService: FTPService
+) {
     private val log = KotlinLogging.logger {}
 
     companion object {
@@ -25,8 +28,9 @@ class DeployService(private val ftpService: FTPService) {
         const val DEPLOY_DIR = "_site"
     }
 
-    @MeasureTime
-    fun makePackage(git: Git) {
+    fun makePackage(webpage: StaticWebpage) {
+        val git = Git(appHomeDir, webpage.repository!!.workspaceName, webpage.repository!!.repositoryName)
+        log.info { "[Arrange Directory Started] ${git.workspaceName}/${git.repositoryName}(${webpage.domain})" }
         val repoPath = Paths.get(git.repoDir)
         val removeTargets = Files.walk(repoPath)
             .filter { it != repoPath }
@@ -50,29 +54,27 @@ class DeployService(private val ftpService: FTPService) {
 
         try {
             deployDir.toFile().moveRecursivelyTo(parentDir.toFile())
-            log.info { "Moved := [$deployDir -> $parentDir]" }
         } catch (e: IOException) {
             log.error(e) { "Failed to move to[$parentDir] from[$deployDir]" }
         }
 
         Files.deleteIfExists(deployDir)
-        log.info { "Deploy directory is deleted := [${deployDir.fileName}]" }
+        log.info { "[Arrange Directory Ended] ${git.workspaceName}/${git.repositoryName}(${webpage.domain})" }
     }
 
-    @MeasureTime
-    fun deploy(serviceProviderType: ServiceProviderType, git: Git, domain: String) {
-        log.info { "Deploying for ${git.workspaceName}/${git.repositoryName} ($domain)" }
-        when (serviceProviderType) {
-            PRIVATE_BLOG_NETWORK -> ftpService.upload(git, domain)
+    fun deploy(webpage: StaticWebpage) {
+        val git = Git(appHomeDir, webpage.repository!!.workspaceName, webpage.repository!!.repositoryName)
+        log.info { "[Deploy Started] ${git.workspaceName}/${git.repositoryName}(${webpage.domain})" }
+        when (webpage.providerType) {
+            PRIVATE_BLOG_NETWORK -> ftpService.upload(git, webpage.domain)
             CLOUD_BLOG_NETWORK -> uploadToRemoteOrigin(git)
             else -> Unit
         }
+        log.info { "[Deploy Ended] ${git.workspaceName}/${git.repositoryName}(${webpage.domain})" }
     }
 
     @Retryable(value = [Exception::class], maxAttempts = 3, backoff = Backoff(delay = 2000, multiplier = 2.0))
     fun uploadToRemoteOrigin(git: Git) {
-        log.info { "Upload to remote, ${git.workspaceName}/${git.repositoryName}" }
-
         git.addAll()
         git.commit("deploy by system")
         git.push(branch = DEPLOY_BRANCH, force = true)

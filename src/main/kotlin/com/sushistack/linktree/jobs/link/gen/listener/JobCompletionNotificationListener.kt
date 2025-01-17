@@ -1,8 +1,8 @@
 package com.sushistack.linktree.jobs.link.gen.listener
 
-import com.sushistack.linktree.service.JobDetail
+import com.sushistack.linktree.model.batch.JobDetail
+import com.sushistack.linktree.model.batch.StepDetail
 import com.sushistack.linktree.service.SlackNotificationService
-import com.sushistack.linktree.service.StepDetail
 import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.JobExecutionListener
 import org.springframework.stereotype.Component

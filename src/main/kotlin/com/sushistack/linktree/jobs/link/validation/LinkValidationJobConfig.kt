@@ -20,23 +20,23 @@ class LinkValidationJobConfig {
     @Bean
     fun linkValidationJob(
         jobRepository: JobRepository,
-        initOrderStep: Step,
+        fixOrderStep: Step,
         linkValidationStep: Step,
         jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder(LINK_VALIDATION.jobName, jobRepository)
-            .start(initOrderStep)
+            .start(fixOrderStep)
             .next(linkValidationStep)
             .listener(jobListener)
             .build()
 
     @Bean
-    fun initOrderStep(
+    fun fixOrderStep(
         jobRepository: JobRepository,
         fixOrderTasklet: Tasklet,
         jpaTransactionManager: JpaTransactionManager
     ) =
-        StepBuilder("initOrderStep", jobRepository)
+        StepBuilder("fixOrderStep", jobRepository)
             .tasklet(fixOrderTasklet, jpaTransactionManager)
             .build()
 

@@ -5,6 +5,7 @@ import com.sushistack.linktree.entity.order.OrderStatus
 import com.sushistack.linktree.repository.order.OrderRepository
 import org.springframework.stereotype.Service
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class OrderService(private val orderRepository: OrderRepository) {
@@ -15,8 +16,8 @@ class OrderService(private val orderRepository: OrderRepository) {
     fun updateOrder(order: Order): Order =
         orderRepository.save(order)
 
-    fun getOrderBySeq(orderSeq: Long): Order =
-        orderRepository.findById(orderSeq).orElseThrow()
+    fun getOrderBySeq(orderSeq: Long): Order? =
+        orderRepository.findById(orderSeq).getOrNull()
 
     fun findTop1ByOrderStatusOrderByOrderSeqDesc(orderStatus: OrderStatus): Optional<Order> =
         orderRepository.findTop1ByOrderStatusOrderByOrderSeqDesc(orderStatus)

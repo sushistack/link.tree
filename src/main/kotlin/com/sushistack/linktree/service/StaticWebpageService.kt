@@ -1,5 +1,6 @@
 package com.sushistack.linktree.service
 
+import com.sushistack.linktree.entity.order.Order
 import com.sushistack.linktree.entity.publisher.ServiceProviderType
 import com.sushistack.linktree.entity.publisher.StaticWebpage
 import com.sushistack.linktree.repository.publisher.StaticWebpageRepository
@@ -18,6 +19,9 @@ class StaticWebpageService(private val staticWebpageRepository: StaticWebpageRep
         return (0 until fixedSize)
             .map { i -> staticWebpages[(random.nextInt(staticWebpages.size) + i * step) % staticWebpages.size] }
     }
+
+    fun findStaticWebpagesByOrderAndProviderType(order: Order, providerType: ServiceProviderType): List<StaticWebpage> =
+        staticWebpageRepository.findAllByOrderAndProviderType(order, providerType)
 
     fun findStaticWebpagesByProviderType(providerType: ServiceProviderType): List<StaticWebpage> =
         staticWebpageRepository.findAllByProviderType(providerType = providerType)

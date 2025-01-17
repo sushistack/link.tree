@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
 class SlackConfig {
     var enabled: Boolean = true
     lateinit var botToken: String
-    lateinit var channel: String
+    var channel: Map<String, String> = mutableMapOf()
 
     @Bean
     fun slack() = Slack.getInstance()!!
@@ -18,6 +18,10 @@ class SlackConfig {
     @Bean
     fun methodsClient(slack: Slack) = slack.methods(botToken)!!
 
-    @Bean(name = ["slackChannel"])
-    fun slackChannel() = channel
+    @Bean(name = ["workflowChannel"])
+    fun workflowChannel(): String = channel["workflow"] ?: throw IllegalStateException("Channel not set!")
+
+    @Bean(name = ["reportChannel"])
+    fun reportChannel(): String = channel["report"] ?: throw IllegalStateException("Channel not set!")
+
 }

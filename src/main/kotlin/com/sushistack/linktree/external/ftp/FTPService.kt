@@ -29,7 +29,12 @@ class FTPService(private val ftpGateway: FTPGateway) {
 
         val files = targetDir.toFile().listFiles() ?: emptyArray()
         val remoteDir = "$FTP_REMOTE_DIR/$domain/life"
-        val remoteFiles = ftpGateway.getFiles(remoteDir)
+        var remoteFiles = emptyList<String>()
+        try {
+            remoteFiles = ftpGateway.getFiles(remoteDir)
+        } catch (e: Exception) {
+            log.error(e) { "failed to fetch files := [${e.message}], remote dir := [$remoteDir]" }
+        }
 
         log.info { "files: ${ellipsis(files.map { it.name })}" }
         log.info { "remote: ${ellipsis(remoteFiles)}" }
@@ -40,12 +45,12 @@ class FTPService(private val ftpGateway: FTPGateway) {
         log.info { "filesToUpload: ${filesToUpload.map { it.name }}" }
         log.info { "filesToDelete: $filesToDelete" }
 
-        filesToUpload.map { file ->
+        filesToUpload.forEach { file ->
             ftpGateway.uploadFile(remoteDir, file.name, file.readBytes())
             log.info { "Uploaded file(${file.name}) to remote server." }
         }
 
-        filesToDelete.map { fileName ->
+        filesToDelete.forEach { fileName ->
             ftpGateway.deleteFile(remoteDir, fileName)
             log.info { "Deleted file($fileName) on remote server." }
         }

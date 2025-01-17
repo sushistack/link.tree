@@ -9,6 +9,8 @@ import com.slack.api.model.block.Blocks
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.MarkdownTextObject
 import com.sushistack.linktree.batch.config.BatchJob.Companion.getDescription
+import com.sushistack.linktree.model.batch.JobDetail
+import com.sushistack.linktree.model.batch.StepDetail
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.BatchStatus
 import org.springframework.beans.factory.annotation.Value
@@ -19,9 +21,9 @@ import java.io.IOException
 @Service
 class SlackNotificationService(
     private val methodsClient: MethodsClient,
-    private val slackChannel: String,
-    @Value("\${slack.bot-token}") private val botToken: String,
-    @Value("\${slack.enabled:true}") private val slackEnabled: Boolean
+    private val reportChannel: String,
+    private val workflowChannel: String,
+    @Value("\${slack.enabled:true}") private val slackEnabled: Boolean,
 ) {
     companion object {
         private val symbol: (Boolean) -> String = { if (it) ":large_green_circle:" else ":red_circle:" }
@@ -29,7 +31,7 @@ class SlackNotificationService(
 
     private val log = KotlinLogging.logger {}
 
-    fun send(message: String, channel: String = slackChannel) {
+    fun send(message: String, channel: String = workflowChannel) {
         if (!slackEnabled) {
             log.info { "slack is disabled" }
             return
@@ -50,14 +52,14 @@ class SlackNotificationService(
     }
 
 
-    fun send(blocks: List<LayoutBlock>, channel: String = slackChannel) {
+    fun send(blocks: List<LayoutBlock>, channel: String = workflowChannel) {
         if (!slackEnabled) {
             log.info { "slack is disabled" }
             return
         }
         try {
             val res = ChatPostMessageRequest.builder()
-                .channel(slackChannel)
+                .channel(workflowChannel)
                 .blocks(blocks)
                 .build()
                 .let { methodsClient.chatPostMessage(it) }
@@ -77,7 +79,7 @@ class SlackNotificationService(
         blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 1)*").build()) })
         blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.all { res -> res.statusCode == 200 })}):* ${entry.value.size}").build() }) })
 
-        send(blocks, slackChannel)
+        send(blocks, workflowChannel)
     }
 
     fun sendJobDetail(jobDetail: JobDetail, stepDetails: List<StepDetail>) {
@@ -121,13 +123,13 @@ class SlackNotificationService(
             blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text(message).build()) })
         }
 
-        send(blocks, slackChannel)
+        send(blocks, workflowChannel)
     }
 
     fun uploadReport(reportFile: File) {
         try {
             val response = methodsClient.filesUploadV2 { req: FilesUploadV2Request.FilesUploadV2RequestBuilder ->
-                req.channel(slackChannel)
+                req.channel(reportChannel)
                     .file(reportFile)
                     .filename(reportFile.name)
                     .title("${reportFile.name} 작업 완료")
@@ -145,18 +147,3 @@ class SlackNotificationService(
         }
     }
 }
-
-data class JobDetail(
-    val name: String,
-    val status: String,
-    val startTime: String,
-    val endTime: String,
-    val message: String? = null
-)
-
-data class StepDetail(
-    val name: String,
-    val status: String,
-    val startTime: String,
-    val endTime: String
-)

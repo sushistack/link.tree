@@ -1,6 +1,5 @@
 package com.sushistack.linktree.jobs.link.gen
 
-import com.sushistack.linktree.batch.config.BatchJob
 import com.sushistack.linktree.batch.config.BatchJob.LINK_GENERATION
 import com.sushistack.linktree.batch.reader.QuerydslPagingItemReader
 import com.sushistack.linktree.entity.link.LinkNode

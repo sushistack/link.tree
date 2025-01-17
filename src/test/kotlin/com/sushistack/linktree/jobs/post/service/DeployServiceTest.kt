@@ -1,11 +1,8 @@
 package com.sushistack.linktree.jobs.post.service
 
 import com.sushistack.linktree.external.ftp.FTPService
-import com.sushistack.linktree.utils.git.Git
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,17 +29,7 @@ class DeployServiceTest {
 
     @BeforeEach
     fun setup() {
-        deployService = DeployService(ftpService)
-    }
-
-    @Test
-    @Disabled
-    fun makePackageTest() {
-        runBlocking {
-            val git = Git(appHomeDir, bitbucketUsername, "pbn-003")
-            deployService.makePackage(git)
-        }
-
+        deployService = DeployService(appHomeDir, ftpService)
     }
 
     @Disabled

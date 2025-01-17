@@ -2,15 +2,13 @@ package com.sushistack.linktree.jobs.post.deploy
 
 import com.sushistack.linktree.batch.config.BatchJob.POST_DEPLOY
 import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
-import com.sushistack.linktree.jobs.link.gen.tasklet.ClearingInitializationTask
-import com.sushistack.linktree.jobs.link.gen.tasklet.InitializationTasklet
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.repository.JobRepository
 import org.springframework.batch.core.step.builder.StepBuilder
 import org.springframework.batch.core.step.tasklet.Tasklet
-import org.springframework.batch.core.step.tasklet.TaskletStep
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -22,19 +20,27 @@ class PostDeployConfig {
 
     @Bean
     fun postDeployJob(
-        jobRepository: JobRepository,
+        fixOrderStep: Step,
         syncOriginStep: Step,
         buildAndDeployStep: Step,
-        initializationStep: Step,
-        clearingInitializationStep: Step,
+        jobRepository: JobRepository,
         jobListener: JobCompletionNotificationListener
     ): Job =
         JobBuilder(POST_DEPLOY.jobName, jobRepository)
-//            .start(clearingInitializationStep)
-//            .next(initializationStep)
-            .start(syncOriginStep)
+            .start(fixOrderStep)
+            .next(syncOriginStep)
             .next(buildAndDeployStep)
             .listener(jobListener)
+            .build()
+
+    @Bean
+    fun fixOrderStep(
+        jobRepository: JobRepository,
+        fixOrderTasklet: Tasklet,
+        jpaTransactionManager: JpaTransactionManager
+    ) =
+        StepBuilder("fixOrderStep", jobRepository)
+            .tasklet(fixOrderTasklet, jpaTransactionManager)
             .build()
 
     @Bean
@@ -48,26 +54,6 @@ class PostDeployConfig {
             .build()
 
     @Bean
-    fun clearingInitializationStep(
-        jobRepository: JobRepository,
-        clearingInitializationTask: ClearingInitializationTask,
-        jpaTransactionManager: JpaTransactionManager
-    ): TaskletStep =
-        StepBuilder("clearingInitializationStep", jobRepository)
-            .tasklet(clearingInitializationTask, jpaTransactionManager)
-            .build()
-
-    @Bean
-    fun initializationStep(
-        jobRepository: JobRepository,
-        initializationTasklet: InitializationTasklet,
-        jpaTransactionManager: JpaTransactionManager
-    ): TaskletStep =
-        StepBuilder("initializationStep", jobRepository)
-            .tasklet(initializationTasklet, jpaTransactionManager)
-            .build()
-
-    @Bean
     fun buildAndDeployStep(
         jobRepository: JobRepository,
         buildAndDeployTasklet: Tasklet,
@@ -76,4 +62,5 @@ class PostDeployConfig {
         StepBuilder("buildAndDeployStep", jobRepository)
             .tasklet(buildAndDeployTasklet, jpaTransactionManager)
             .build()
+
 }

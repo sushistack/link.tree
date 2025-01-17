@@ -23,7 +23,9 @@ ftp:
 slack:
   enabled: true
   bot-token: ENC(y+36Ok3MGuvAHPw0LCD1fK0c1skx+oQQMkcQghAZKLxMiH6CAvCcWE1RN4dUAsUAoBMZWDByEk/cyU1QHIBO86gUrkv7rh4edXrw0Efjnfk=)
-  channel: ENC(d8+EXqMeA+qsCeMnO5uqPiDG9srpQKAcRIJW7/jPfo0=)
+  channel:
+    workflow: ENC(d8+EXqMeA+qsCeMnO5uqPiDG9srpQKAcRIJW7/jPfo0=)
+    report: ENC(fjSxPrWa83EWuAnzUG7xvXQmKCi3zObMIHKQBJvaLqs=)
 
 jasypt:
   encryptor:
