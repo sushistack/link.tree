@@ -12,12 +12,23 @@ class StaticWebpageService(private val staticWebpageRepository: StaticWebpageRep
 
     fun findStaticWebpagesByProviderType(providerType: ServiceProviderType, seed: Long, fixedSize: Int): List<StaticWebpage> {
         val staticWebpages = staticWebpageRepository.findAllByProviderType(providerType = providerType)
+        val extendedList = mutableListOf<StaticWebpage>()
+        while (extendedList.size < fixedSize) {
+            extendedList.addAll(staticWebpages)
+        }
+
+        val finalList = extendedList.take(fixedSize)
 
         val random = Random(seed)
-        val step = if(staticWebpages.size < fixedSize) 1 else staticWebpages.size / fixedSize
+        val shuffledList = finalList.toMutableList()
+        for (i in shuffledList.indices) {
+            val swapIndex = i + random.nextInt(shuffledList.size - i)
+            val temp = shuffledList[i]
+            shuffledList[i] = shuffledList[swapIndex]
+            shuffledList[swapIndex] = temp
+        }
 
-        return (0 until fixedSize)
-            .map { i -> staticWebpages[(random.nextInt(staticWebpages.size) + i * step) % staticWebpages.size] }
+        return shuffledList
     }
 
     fun findStaticWebpagesByOrderAndProviderType(order: Order, providerType: ServiceProviderType): List<StaticWebpage> =
