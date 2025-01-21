@@ -38,6 +38,7 @@ slack:
   channel:
     workflow: ENC(d8+EXqMeA+qsCeMnO5uqPiDG9srpQKAcRIJW7/jPfo0=)
     report: ENC(fjSxPrWa83EWuAnzUG7xvXQmKCi3zObMIHKQBJvaLqs=)
+    validation: ENC(cO5hoUTt0ivnzx8Ur/CIxRq1nLd9zIfNKTGVrM77VCs=)
 
 jasypt:
   encryptor:

@@ -24,4 +24,7 @@ class SlackConfig {
     @Bean(name = ["reportChannel"])
     fun reportChannel(): String = channel["report"] ?: throw IllegalStateException("Channel not set!")
 
+    @Bean(name = ["validationChannel"])
+    fun validationChannel(): String = channel["validation"] ?: throw IllegalStateException("Channel not set!")
+
 }

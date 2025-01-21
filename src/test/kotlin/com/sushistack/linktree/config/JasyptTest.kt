@@ -18,7 +18,7 @@ class JasyptTest {
     private lateinit var stringEncryptor: StringEncryptor
 
     @ParameterizedTest
-    @ValueSource(strings = ["abcd", "1234", "!@#$"])
+    @ValueSource(strings = ["C08GWFW2N58", "1234", "!@#$"])
     fun encryptTest(plainText: String) {
         val encryptedText: String = stringEncryptor.encrypt(plainText)
         log.info { "Encrypted Text: $encryptedText" }

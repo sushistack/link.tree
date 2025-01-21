@@ -45,7 +45,7 @@ class LinkValidationTasklet(
 
         statusOfLinks1.forEach { entry -> log.info { "\n Code(${entry.key}): \n\n ${entry.value.joinToString("\n")}" } }
 
-        slackNotificationService.sendPostValidations(statusOfLinks1)
+        slackNotificationService.sendPostValidations(o.customerName, statusOfLinks1)
         o.orderStatus = OrderStatus.next(o.orderStatus)
 
         return RepeatStatus.FINISHED

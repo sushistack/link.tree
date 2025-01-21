@@ -25,7 +25,5 @@ class StaticWebpageServiceTest {
     fun findStaticWebpagesByOrder() {
         val order = orderService.getOrderBySeq(7)
         log.info { "order := $order" }
-        val webpages = order?.let { staticWebpageService.findStaticWebpagesByOrder(order) }
-        log.info { "webpages := $webpages" }
     }
 }

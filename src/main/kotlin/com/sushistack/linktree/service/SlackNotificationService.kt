@@ -23,6 +23,7 @@ class SlackNotificationService(
     private val methodsClient: MethodsClient,
     private val reportChannel: String,
     private val workflowChannel: String,
+    private val validationChannel: String,
     @Value("\${slack.enabled:true}") private val slackEnabled: Boolean,
 ) {
     companion object {
@@ -59,7 +60,7 @@ class SlackNotificationService(
         }
         try {
             val res = ChatPostMessageRequest.builder()
-                .channel(workflowChannel)
+                .channel(channel)
                 .blocks(blocks)
                 .build()
                 .let { methodsClient.chatPostMessage(it) }
@@ -73,13 +74,28 @@ class SlackNotificationService(
     }
 
 
-    fun sendPostValidations(linkMap1: Map<Int, List<UrlStatus>>) {
+    fun sendPostValidations(customerName: String, linkMap1: Map<Int, List<UrlStatus>>) {
         val blocks = mutableListOf<LayoutBlock>()
+        val isSuccessful = linkMap1[200]?.all { res -> res.statusCode == 200 } ?: false
 
-        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("*Post Validation List(Tier 1)*").build()) })
+        blocks.add(Blocks.section { it.text(MarkdownTextObject.builder().text("${symbol(isSuccessful)} Tier1 Posts of $customerName is ${if (isSuccessful) "valid" else "invalid"}!").build()) })
         blocks.add(Blocks.section { it.fields(linkMap1.map { entry -> MarkdownTextObject.builder().text("*Code(${entry.key} ${symbol(entry.value.all { res -> res.statusCode == 200 })}):* ${entry.value.size}").build() }) })
 
-        send(blocks, workflowChannel)
+        blocks.add(Blocks.divider())
+
+        linkMap1.flatMap { link -> link.value }
+            .forEach { urlStatus ->
+                blocks.add(
+                    Blocks.section {
+                        it.text(MarkdownTextObject.builder()
+                            .text("Url: ${urlStatus.url}, Code: (${symbol(urlStatus.statusCode == 200)})${urlStatus.statusCode}")
+                            .build()
+                        )
+                    }
+                )
+            }
+
+        send(blocks, validationChannel)
     }
 
     fun sendJobDetail(jobDetail: JobDetail, stepDetails: List<StepDetail>) {
