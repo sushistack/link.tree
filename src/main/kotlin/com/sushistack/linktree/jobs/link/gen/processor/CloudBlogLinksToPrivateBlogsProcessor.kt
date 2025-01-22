@@ -24,15 +24,17 @@ class CloudBlogLinksToPrivateBlogsProcessor(
     @Value("#{jobExecutionContext['articleSources']}")
     private lateinit var articleSources: List<ArticleSource>
 
-    @Value("#{jobExecutionContext['linkProvider']}")
-    private lateinit var linkProvider: LinkProvider
+    @Value("#{jobExecutionContext['anchorTexts']}")
+    private lateinit var anchorTexts: List<String>
 
     @Value("#{jobExecutionContext['jobInstanceId']}")
     private var jobInstanceId: Long = 0
 
     override fun process(parentNode: LinkNode): List<LinkNode> {
+        val linkProvider = LinkProvider(parentNode.url, anchorTexts)
         val seed = jobInstanceId + parentNode.nodeSeq
         val webpages = staticWebpageService.findStaticWebpagesByProviderType(providerType = CLOUD_BLOG_NETWORK, seed = seed, fixedSize = LINK_SIZE)
+
         return webpages.map { webpage ->
             val post = postService.createPost(webpage, articleSources, linkProvider)
 
