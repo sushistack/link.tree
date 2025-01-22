@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GitRepositoryVO(
-    val account: String,
+    val username: String,
     val workspaceName: String,
     val repositoryName: String,
 ) {

@@ -67,7 +67,7 @@ class InitializationService(
         if (rc.isEmpty()) {
             val gitAccounts = gitAccountRepository.findAll()
             val repositories = CsvUtils.read<GitRepositoryVO>(REPOSITORY_FILE_PATH(subPath)).map { repo ->
-                val account = gitAccounts.find { ga -> ga.username == stringEncryptor.decrypt(repo.account) } ?: throw IllegalArgumentException("Not found")
+                val account = gitAccounts.find { ga -> ga.username == stringEncryptor.decrypt(repo.username) } ?: throw IllegalArgumentException("Not found")
                 repo.toEntity(account, stringEncryptor::decrypt)
             }.let { gitRepoRepository.saveAll(it) }
 

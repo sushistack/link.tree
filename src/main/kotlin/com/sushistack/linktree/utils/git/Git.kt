@@ -26,6 +26,7 @@ data class Git(
     private val sshUrl: String by lazy { "git@bitbucket.org:${workspaceName}/${repositoryName}.git" }
 
     init {
+        log.info { "Init repository of ${workspaceName}/${repositoryName}." }
         require(repoDir.isNotBlank()) { "repoDir is empty." }
         if (!Files.exists(Paths.get(repoDir))) {
             Files.createDirectories(Paths.get(repoDir))
@@ -43,7 +44,10 @@ data class Git(
                     }
                     /* this.pull(DEFAULT_BRANCH) */
                 }
-                false -> this.clone()
+                false -> {
+                    this.clone()
+                    this.checkout(DEFAULT_BRANCH)
+                }
             }
         } catch (e: GitException) {
             throw GitException("Can not pull or clone, ${e.message}")
@@ -146,7 +150,7 @@ data class Git(
     fun checkout(branch: String): String = command("checkout", branch)
         .also { log.info { it } }
 
-    fun branch(): String = command("branch")
+    fun branch(): String = command("branch").trim().removePrefix("* ")
 
     fun branchExists(branch: String): Boolean =
         command("branch", "--list", branch)

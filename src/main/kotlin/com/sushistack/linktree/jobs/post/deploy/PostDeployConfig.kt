@@ -2,7 +2,6 @@ package com.sushistack.linktree.jobs.post.deploy
 
 import com.sushistack.linktree.batch.config.BatchJob.POST_DEPLOY
 import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder
