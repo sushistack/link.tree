@@ -1,6 +1,6 @@
 package com.sushistack.linktree.utils
 
-import com.sushistack.linktree.external.crawler.model.Article
+import com.sushistack.linktree.model.Article
 import kotlinx.serialization.json.Json
 import org.springframework.core.io.ClassPathResource
 import java.nio.charset.StandardCharsets

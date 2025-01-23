@@ -1,8 +1,7 @@
 package com.sushistack.linktree.jobs.post.gen
 
-import com.sushistack.linktree.batch.config.BatchJob
 import com.sushistack.linktree.batch.config.BatchJob.POST_GENERATION
-import com.sushistack.linktree.jobs.link.gen.listener.JobCompletionNotificationListener
+import com.sushistack.linktree.jobs.common.listener.JobCompletionNotificationListener
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.job.builder.JobBuilder

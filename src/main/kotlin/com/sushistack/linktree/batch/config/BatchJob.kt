@@ -1,7 +1,6 @@
 package com.sushistack.linktree.batch.config
 
 enum class BatchJob(val jobName: String, val description: String, val idemponent: Boolean) {
-    CRAWL("crawlJob", "크롤링 작업", true),
     POST_GENERATION("postGenerationJob", "기사 생성 작업", true),
     LINK_GENERATION("linkGenerationJob", "링크 빌딩 작업", false),
     POST_DEPLOY("postDeployJob", "게시물 배포 작업", true),

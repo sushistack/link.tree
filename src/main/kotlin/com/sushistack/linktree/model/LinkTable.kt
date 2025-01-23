@@ -1,6 +1,6 @@
 package com.sushistack.linktree.model
 
-import com.sushistack.linktree.external.excel.config.ExcelColumn
+import com.sushistack.linktree.utils.excel.annotation.ExcelColumn
 
 data class LinkTable(
     @ExcelColumn(name = "타겟 URL", order = 1) val parentUrl: String,

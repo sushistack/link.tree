@@ -1,8 +1,8 @@
 package com.sushistack.linktree.jobs.link.gen.tasklet
 
 import com.sushistack.linktree.entity.order.Order
-import com.sushistack.linktree.external.excel.ExcelUtil
-import com.sushistack.linktree.external.excel.model.ExcelSheet
+import com.sushistack.linktree.utils.excel.ExcelUtil
+import com.sushistack.linktree.utils.excel.model.ExcelSheet
 import com.sushistack.linktree.model.LinkTable
 import com.sushistack.linktree.service.LinkNodeService
 import com.sushistack.linktree.service.SlackNotificationService
