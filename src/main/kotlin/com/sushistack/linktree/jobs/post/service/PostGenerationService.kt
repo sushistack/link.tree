@@ -1,7 +1,7 @@
 package com.sushistack.linktree.jobs.post.service
 
-import com.sushistack.linktree.external.crawler.model.Article
-import com.sushistack.linktree.external.llm.impl.CohereService
+import com.sushistack.linktree.model.Article
+import com.sushistack.linktree.service.llm.impl.CohereService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext

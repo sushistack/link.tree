@@ -1,6 +1,6 @@
 package com.sushistack.linktree.jobs.post.service
 
-import com.sushistack.linktree.external.ftp.FTPService
+import com.sushistack.linktree.service.ftp.FTPService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.params.ParameterizedTest

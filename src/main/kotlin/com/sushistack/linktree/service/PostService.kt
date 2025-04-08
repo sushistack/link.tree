@@ -4,8 +4,8 @@ import com.sushistack.linktree.config.measure.MeasureTime
 import com.sushistack.linktree.config.transaction.TransactionCallbackHandler
 import com.sushistack.linktree.entity.content.Post
 import com.sushistack.linktree.entity.publisher.StaticWebpage
-import com.sushistack.linktree.external.crawler.model.Article
 import com.sushistack.linktree.jobs.link.gen.service.LinkProvider
+import com.sushistack.linktree.model.Article
 import com.sushistack.linktree.model.ArticleSource
 import com.sushistack.linktree.model.getMinUsed
 import com.sushistack.linktree.repository.content.PostRepository
